@@ -1,43 +1,176 @@
-# Astro Starter Kit: Minimal
+# HMDG Astro Base Template
 
-```sh
-npm create astro@latest -- --template minimal
+**Version:** 1.0.0 — [Changelog](CHANGELOG.md)
+
+A premium clinic website base template built by [HMDG](https://github.com/felmerald-hmdg). Built with Astro + Tailwind CSS v4. Designed and engineered to Webflow quality standards. Clone this template to start any new UK clinic website project.
+
+---
+
+## Stack
+
+| Technology | Version | Purpose |
+|---|---|---|
+| [Astro](https://astro.build) | v5+ | Static site framework |
+| [Tailwind CSS](https://tailwindcss.com) | v4 | Utility-first styling |
+| [Swiper.js](https://swiperjs.com) | v11 | Carousel components |
+
+---
+
+## What's included
+
+### Pages
+| Route | Description |
+|---|---|
+| `/` | Design system documentation and component reference |
+| `/privacy-policy` | Premium legal page — scroll progress + active sidebar |
+| `/terms-conditions` | Premium legal page — scroll progress + active sidebar |
+| `/cookie-policy` | Premium legal page — cookie tables + compliance badges |
+| `/thank-you` | Animated SVG checkmark thank you page |
+| `/thank-you-booking` | Animated thank you page with "What happens next" steps |
+| `/contact` | Contact page scaffold |
+
+### Design system
+- Global CSS token system (`--color-*`, `--font-*`, `--radius-*`, `--shadow-*`)
+- Typography scale — Inter Tight (headings) + Inter (body)
+- Button variants: `btn-default`, `btn-white`, `btn-outline`
+- Card, badge, eyebrow, and caption patterns
+- Consistent spacing and section rhythm
+
+### Security (applied globally)
+- Content Security Policy (CSP) — scoped to Google Fonts, GA, Maps, Cliniko
+- `X-Frame-Options: SAMEORIGIN`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy` — camera, mic, geolocation, payment blocked
+- `Strict-Transport-Security` (HSTS)
+- `public/_headers` — Netlify HTTP security headers
+- `vercel.json` — Vercel HTTP security headers
+- `.env.example` — secrets template, nothing hardcoded
+
+### AI development standards
+- `CLAUDE.md` — full design, development, and security rules for Claude Code
+- `.claude/memory/` — shared team knowledge base (image formats, colour rules, code quality, security)
+
+---
+
+## Getting started
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/felmerald-hmdg/astro-base-template.git my-project
+cd my-project
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### 2. Install dependencies
 
-## 🚀 Project Structure
+```bash
+npm install
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+### 3. Set up environment variables
 
-```text
-/
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in your values:
+
+```env
+PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+PUBLIC_GOOGLE_MAPS_API_KEY=
+PUBLIC_CLINIKO_BOOKING_URL=
+PUBLIC_SITE_URL=https://yourclinic.co.uk
+CONTACT_EMAIL=hello@yourclinic.co.uk
+```
+
+### 4. Start the dev server
+
+```bash
+npm run dev
+```
+
+Site runs at `http://localhost:4321`
+
+---
+
+## Commands
+
+| Command | Action |
+|---|---|
+| `npm install` | Install dependencies |
+| `npm run dev` | Start dev server at `localhost:4321` |
+| `npm run build` | Build for production into `./dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run astro ...` | Run Astro CLI commands |
+
+---
+
+## Project structure
+
+```
+astro-base-template/
+├── .claude/
+│   └── memory/               # Shared Claude team knowledge base
 ├── public/
+│   ├── images/               # Site images (.avif + .webp)
+│   └── _headers              # Netlify security headers
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/           # Reusable Astro components
+│   ├── layouts/
+│   │   └── BaseLayout.astro  # Shared page layout
+│   ├── pages/                # All routes
+│   └── styles/
+│       └── global.css        # Design tokens + global styles
+├── .env.example              # Environment variable template
+├── CHANGELOG.md              # Version history
+├── CLAUDE.md                 # AI development standards
+├── VERSION                   # Current version number
+└── vercel.json               # Vercel security headers
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+---
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Image format standard
 
-Any static assets, like images, can be placed in the `public/` directory.
+All images must use `.avif` as primary with `.webp` fallback:
 
-## 🧞 Commands
+```html
+<picture>
+  <source srcset="/images/hero.avif" type="image/avif" />
+  <source srcset="/images/hero.webp" type="image/webp" />
+  <img src="/images/hero.webp" alt="Description" loading="lazy" width="1600" height="900" />
+</picture>
+```
 
-All commands are run from the root of the project, from a terminal:
+Use `loading="eager"` for above-the-fold images only.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+---
 
-## 👀 Want to learn more?
+## Deploying
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Netlify
+Push to GitHub and connect to Netlify. Security headers are applied automatically via `public/_headers`.
+
+### Vercel
+Push to GitHub and import into Vercel. Security headers are applied automatically via `vercel.json`.
+
+---
+
+## Versioning
+
+This template follows semantic versioning. See [CHANGELOG.md](CHANGELOG.md) for the full history.
+
+| Bump | When to use |
+|---|---|
+| Patch `1.0.x` | Bug fixes, copy changes, minor tweaks |
+| Minor `1.x.0` | New sections, pages, or components |
+| Major `x.0.0` | Breaking changes, full redesign, stack upgrade |
+
+---
+
+## Maintained by
+
+**HMDG** — [github.com/felmerald-hmdg](https://github.com/felmerald-hmdg)
+
+For internal use only. Private repository.
