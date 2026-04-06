@@ -172,7 +172,7 @@ const navLinks = [
               <div class="flex flex-wrap gap-2">
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Astro v5</span>
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Tailwind v4</span>
-                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">9 AI Agents</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">10 AI Agents</span>
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">v1.0.0</span>
               </div>
               <p class="text-white/50 text-sm m-0">
@@ -1218,7 +1218,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
                 <span class="text-xs font-bold text-[--color-border] font-mono">16</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Agent System</h5>
-                  <p class="text-sm text-[--color-caption] m-0">9 specialist AI agents. Use the review sequence for every important page build.</p>
+                  <p class="text-sm text-[--color-caption] m-0">10 specialist AI agents. Use the review sequence for every important page build.</p>
                 </div>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Agents</span>
@@ -1234,6 +1234,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
                     "information-architecture-reviewer",
                     "ui-designer",
                     "frontend-builder",
+                    "visual-qa-reviewer",
                     "a11y-reviewer",
                     "performance-reviewer",
                     "seo-reviewer",
@@ -1253,14 +1254,15 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
                   { num: "01", name: "information-architecture-reviewer", role: "Sitemap, URL hierarchy, parent/child pages, taxonomy — before design begins" },
-                  { num: "02", name: "ui-designer",                        role: "Layout, hierarchy, typography, spacing, interactions. Plans only — does NOT write code" },
-                  { num: "03", name: "frontend-builder",                   role: "Builds clean Astro + Tailwind. No inline styles, reusable components, global header/footer" },
-                  { num: "04", name: "a11y-reviewer",                      role: "Contrast, focus states, heading structure, keyboard navigation, alt text" },
-                  { num: "05", name: "performance-reviewer",               role: "AVIF/WebP images, DOM weight, lazy loading, JS usage, CLS risk" },
-                  { num: "06", name: "seo-reviewer",                       role: "H1, metadata, heading hierarchy, noindex rules, internal linking, structured data" },
-                  { num: "07", name: "marketing-reviewer",                 role: "Value proposition, trust signals, messaging clarity, service positioning" },
-                  { num: "08", name: "security-reviewer",                  role: "Forms, scripts, unsafe HTML, exposed secrets, external links, OWASP Top 10" },
-                  { num: "09", name: "conversion-reviewer",                role: "CTA clarity, CTA placement, booking flow, friction points, overall user journey — final gate" },
+                  { num: "02", name: "ui-designer",                        role: "Section anatomy, layout, token-based colour planning, mobile-first, interactions. Plans only — does NOT write code" },
+                  { num: "03", name: "frontend-builder",                   role: "Builds clean Astro + Tailwind. Uses existing class system, no inline styles, reusable components, Swiper carousels" },
+                  { num: "04", name: "visual-qa-reviewer",                 role: "Checks built output matches design intent — section variety, hierarchy, hero, CTAs, hover states, mobile layout" },
+                  { num: "05", name: "a11y-reviewer",                      role: "WCAG 2.1 AA — 4.5:1 contrast, focus states, heading structure, keyboard nav, form labels, touch targets, reduced-motion" },
+                  { num: "06", name: "performance-reviewer",               role: "AVIF/WebP images, DOM weight, lazy loading, JS usage, CLS risk" },
+                  { num: "07", name: "seo-reviewer",                       role: "H1, metadata, heading hierarchy, noindex rules, internal linking, structured data" },
+                  { num: "08", name: "marketing-reviewer",                 role: "Value proposition, trust signals, messaging clarity, service positioning" },
+                  { num: "09", name: "security-reviewer",                  role: "Forms, scripts, unsafe HTML, exposed secrets, external links, OWASP Top 10" },
+                  { num: "10", name: "conversion-reviewer",                role: "CTA clarity, CTA placement, booking flow, friction points, overall user journey — final gate" },
                 ].map(a => (
                   <div class="flex flex-col gap-2 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
                     <div class="flex items-center gap-2">
@@ -1281,7 +1283,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
                   <button class="copy-btn" type="button">Copy</button>
                 </div>
                 <div class="px-5 pt-4 pb-5">
-                  <p class="prompt-text prompt-code">Review and build this task using the following agent sequence exactly: information-architecture-reviewer → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer. Task: [describe the page, section, sitemap, or feature here]. Do not skip any agent. Do not rush into code before planning. If something is weak, improve it automatically.</p>
+                  <p class="prompt-text prompt-code">Review and build this task using the following agent sequence exactly: information-architecture-reviewer → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer. Task: [describe the page, section, sitemap, or feature here]. Do not skip any agent. Do not rush into code before planning. If something is weak, improve it automatically.</p>
                 </div>
               </div>
             </div>
