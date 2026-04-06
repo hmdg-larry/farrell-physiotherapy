@@ -20,6 +20,10 @@ const {
 } = Astro.props;
 
 import "../styles/global.css";
+import CookieConsent from "../components/CookieConsent.astro";
+import { cookieConsentConfig } from "../config/cookie-consent.config";
+
+const cfg = cookieConsentConfig;
 ---
 
 <!doctype html>
@@ -57,6 +61,59 @@ import "../styles/global.css";
            - public/_headers  (Netlify)
            - vercel.json      (Vercel)
     ──────────────────────────────────────────────────────────── -->
+    <!-- ── Google Consent Mode v2 — MUST be first, before GTM fires ──────────
+         is:inline is critical — without it Astro defers the script and
+         GTM fires before consent defaults are set, breaking Consent Mode v2.
+    ──────────────────────────────────────────────────────────────────────── -->
+    <script is:inline define:vars={{ _ccmPolicyVersion: cfg.policyVersion, _ccmCookieName: cfg.cookieName }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Default all consent to denied before any tag loads
+      gtag('consent', 'default', {
+        analytics_storage:       'denied',
+        ad_storage:              'denied',
+        ad_user_data:            'denied',
+        ad_personalization:      'denied',
+        functionality_storage:   'denied',
+        personalization_storage: 'denied',
+        security_storage:        'granted',
+        wait_for_update:         500,
+      });
+
+      // Immediately restore consent if visitor already consented this policy version
+      (function () {
+        try {
+          var raw = document.cookie.split(';').find(function (c) {
+            return c.trim().startsWith(_ccmCookieName + '=');
+          });
+          if (raw) {
+            var stored = JSON.parse(decodeURIComponent(raw.split('=').slice(1).join('=')));
+            if (stored && stored.policyVersion === _ccmPolicyVersion) {
+              gtag('consent', 'update', {
+                analytics_storage:       stored.analytics   ? 'granted' : 'denied',
+                ad_storage:              stored.marketing   ? 'granted' : 'denied',
+                ad_user_data:            stored.marketing   ? 'granted' : 'denied',
+                ad_personalization:      stored.marketing   ? 'granted' : 'denied',
+                functionality_storage:   stored.functional  ? 'granted' : 'denied',
+                personalization_storage: stored.functional  ? 'granted' : 'denied',
+              });
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- ── Google Tag Manager — loads AFTER consent defaults above ─────── -->
+    {cfg.gtmId && (
+      <script is:inline define:vars={{ _gtmId: cfg.gtmId }}>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+        j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+        f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',_gtmId);
+      </script>
+    )}
+
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
@@ -204,6 +261,21 @@ import "../styles/global.css";
       </div>
 
     </footer>
+
+    <!-- ── Cookie Consent Manager ──────────────────────────────── -->
+    <CookieConsent />
+
+    <!-- ── GTM noscript fallback ─────────────────────────────────── -->
+    {cfg.gtmId && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${cfg.gtmId}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+        />
+      </noscript>
+    )}
 
   </body>
 </html>

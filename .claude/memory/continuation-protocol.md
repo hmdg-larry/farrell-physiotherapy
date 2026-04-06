@@ -8,21 +8,18 @@
 
 ### Completed
 
-* Fixed Astro parse error — curly braces in `<pre><code>` blocks escaped with `&lbrace;` / `&rbrace;`
-* Sidebar nav colour changed from primary red to headline dark
-* Global custom scrollbar — thin, slate, rounded, cross-browser (WebKit + Firefox)
-* Firefox scrollbar applied to `*` selector (not `html`) so all scroll containers match
-* Full project audit — removed Copilot/Python artifacts and analysis JSONs
-* Removed all inline styles from `cookie-policy.astro`, `index.astro` — replaced with class/data attribute approaches
-* Agent documentation sync — all 10 agent files cross-referenced against CLAUDE.md and index.astro
-* Agent strengthening — all 10 agents fully rewritten to HMDG UK agency standard
-* CLAUDE.md updated — role redefined as premium UK agency replacing Elementor premium builds
-* visual-qa-reviewer.md created and added to agent pipeline (now 10 agents)
-* v1.1.0 and v1.2.0 released and pushed to GitHub
-* Cookie consent Astro plan created — `.claude/memory/cookieconsent.md`
-* Plan rewritten with accuracy fixes and improvements over WordPress plugin
-* `CookieConsentReadme.md` created in project root — marketing team guide (plain English, copy-paste only)
-* continuation-protocol.md created (this file)
+* v1.3.0 — Cookie Consent Manager fully implemented
+* `src/config/cookie-consent.config.ts` — marketing config file created
+* `src/components/CookieConsent.astro` — full banner + modal + JS created
+* `src/layouts/BaseLayout.astro` — consent head script + CookieConsent component added
+* `src/pages/api/book-now.ts` — Netlify Function created
+* `src/pages/api/booking-complete.ts` — Netlify Function created
+* `astro.config.mjs` — Netlify adapter added
+* `.env.example` — GA4 secrets section added
+* `CHANGELOG.md` + `VERSION` updated to v1.3.0
+* `CookieConsentReadme.md` — marketing team guide in project root
+* All agent files strengthened to HMDG UK agency standard (v1.2.0)
+* continuation-protocol.md, cookieconsent.md in .claude/memory/
 
 ### In Progress
 
@@ -30,51 +27,53 @@
 
 ### Remaining Tasks
 
-* [ ] Implement cookie consent in Astro when first client site build begins (plan is ready in `.claude/memory/cookieconsent.md`)
-* [ ] Install `@astrojs/netlify` adapter when adding API routes for cookie consent
-* [ ] Create `src/config/cookie-consent.config.ts` per client build
-* [ ] Create `CookieConsent.astro` component (extract from WordPress plugin)
-* [ ] Create `src/pages/api/book-now.ts` and `booking-complete.ts`
-* [ ] Add `.env.example` to project root when implementing cookie consent
-* [ ] Bump to v1.3.0 when cookie consent is implemented
+* [ ] Test the dev server: `npm run dev` — verify banner appears, buttons work, console debug output
+* [ ] Set `debug: true` in config temporarily to verify all console groups log correctly
+* [ ] Fill in real client GTM ID and GA4 ID in `src/config/cookie-consent.config.ts` when building a client site
+* [ ] Add `GA4_API_SECRET`, `GA4_MEASUREMENT_ID`, `SITE_ORIGIN` to Netlify dashboard for each client site
+* [ ] Test booking tracker: add a test link to a booking domain and verify `book_now_click` fires
 
 ### Important Context to Keep
 
 **Project:** Astro Base Template — HMDG UK web design agency, replacing Elementor premium builds
 **Repo:** https://github.com/felmerald-hmdg/astro-base-template
-**Current version:** v1.2.0
+**Current version:** v1.3.0
 **Astro version:** 6.1.3
-**Stack:** Astro + Tailwind CSS v4 + Netlify
+**Stack:** Astro + Tailwind CSS v4 + Netlify + @astrojs/netlify adapter
 
-**Key files:**
-- `CLAUDE.md` — project instructions and agent workflow (10-agent pipeline)
-- `src/styles/global.css` — all design tokens, scrollbar, global styles
-- `src/pages/index.astro` — documentation/showcase page
-- `src/layouts/BaseLayout.astro` — shared layout (header + footer)
-- `.claude/agents/` — 10 specialist agents (IA → UI → Build → Visual QA → a11y → Performance → SEO → Marketing → Security → Conversion)
-- `.claude/memory/cookieconsent.md` — full Astro cookie consent implementation plan
-- `CookieConsentReadme.md` — marketing team guide (project root)
+**Cookie consent key files:**
+- `src/config/cookie-consent.config.ts` — ONLY file marketing edits (GTM, GA4, policy version, banner text, categories, booking domains)
+- `src/components/CookieConsent.astro` — full component, do not edit unless developer
+- `src/pages/api/book-now.ts` — Netlify Function, `export const prerender = false`
+- `src/pages/api/booking-complete.ts` — Netlify Function, `export const prerender = false`
+- `src/layouts/BaseLayout.astro` — consent head script uses `is:inline define:vars` — CRITICAL, do not remove `is:inline`
 
-**Cookie consent plan key points:**
-- Source: https://github.com/felmerald-hmdg/hmdg-cookie-consent (WordPress plugin)
-- DO NOT use `output: 'hybrid'` — not valid in Astro v6. Use default static + `export const prerender = false` on API routes
-- Head consent script MUST use `is:inline` or GTM fires before consent defaults
-- Rate limiting replaced with HMAC-SHA256 signing (stateless, works on Netlify Functions)
-- GA4 client_id must parse from `_ga` cookie, not UUID
-- Cliniko uses URL redirect (not postMessage) — detect via URL pattern on thank-you page
-- Marketing edits only 8 fields in `src/config/cookie-consent.config.ts`
-- Secrets (GA4_API_SECRET, GA4_MEASUREMENT_ID, SITE_ORIGIN, HMAC_SECRET) go in Netlify env vars only
+**Critical technical notes:**
+- `is:inline` on the consent head script is mandatory — without it Astro defers it and GTM fires before consent defaults
+- `output: 'hybrid'` does NOT exist in Astro v6 — API routes use `export const prerender = false`
+- Netlify adapter (`@astrojs/netlify`) is now installed — API routes become Netlify Functions automatically
+- GA4 client_id parsed from `_ga` cookie (not UUID)
+- GCLID + UTM params persisted to sessionStorage across page navigation
+- Booking deduplication via sessionStorage (survives navigation)
+- Cliniko uses URL pattern detection — NOT postMessage
+- GA4 API secret stays server-side — never in browser source
+
+**Environment variables for every client deploy (Netlify dashboard):**
+```
+GA4_API_SECRET=        ← from GA4 → Admin → Data Streams → Measurement Protocol API secrets
+GA4_MEASUREMENT_ID=    ← G-XXXXXXXXXX
+SITE_ORIGIN=           ← https://clientsite.co.uk
+```
 
 **Design standards:**
 - No inline styles ever (`style=""` is banned)
 - Class-based styling only (Tailwind utilities or stylesheet classes)
 - All images: `<picture>` with `.avif` primary + `.webp` fallback + `decoding="async"`
 - Header and footer must be global/shared — never duplicated per page
-- Design quality benchmark: Webflow-level polish, exceeding Elementor premium builds
 
 **Agent workflow (mandatory for important builds):**
 IA reviewer → UI designer → Frontend builder → Visual QA → a11y → Performance → SEO → Marketing → Security → Conversion
 
 ### Handoff Note
 
-Continue immediately from remaining tasks without restarting. The cookie consent implementation is fully planned — when the time comes, read `.claude/memory/cookieconsent.md` first and follow the step-by-step plan exactly. Preserve all design standards, no inline styles, no output: hybrid, is:inline on head scripts.
+Cookie consent is complete and committed at v1.3.0. Next session should start with testing (`npm run dev`) and then proceed to any new client page build. When building a client site, the first step is always to fill in `src/config/cookie-consent.config.ts` with the client's GTM ID, GA4 ID, and set `debug: true` temporarily to verify consent signals in the browser console.

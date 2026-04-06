@@ -1,0 +1,1371 @@
+---
+/**
+ * CookieConsent.astro
+ * ─────────────────────────────────────────────────────────────────
+ * HMDG Cookie Consent Manager — Astro port of hmdg-cookie-consent
+ *
+ * Features:
+ *  - GDPR/PECR compliant consent banner and preferences modal
+ *  - Google Consent Mode v2 signals
+ *  - Universal Booking Tracker (9 platforms + Cliniko URL detection)
+ *  - GA4 Measurement Protocol relay via server-side API routes
+ *  - GCLID + UTM forwarding to booking events
+ *  - Consent method and time-to-consent GA4 events
+ *  - Debug console mode (set debug: true in config)
+ *  - Mobile bottom sheet layout (≤768px)
+ *  - prefers-reduced-motion compliant
+ *  - Full keyboard accessibility + focus trap + Escape key
+ *
+ * Drop into BaseLayout.astro just before </body>.
+ * ─────────────────────────────────────────────────────────────────
+ */
+
+import { cookieConsentConfig } from '../config/cookie-consent.config';
+
+const cfg = cookieConsentConfig;
+const isDev = import.meta.env.DEV;
+
+// Build enabled categories list for rendering
+const allCategories = [
+  { key: 'necessary',   ...cfg.categories.necessary,   alwaysOn: true  },
+  { key: 'functional',  ...cfg.categories.functional,  alwaysOn: false },
+  { key: 'analytics',   ...cfg.categories.analytics,   alwaysOn: false },
+  { key: 'performance', ...cfg.categories.performance, alwaysOn: false },
+  { key: 'marketing',   ...cfg.categories.marketing,   alwaysOn: false },
+] as const;
+
+const enabledCategories = allCategories.filter(c => c.enabled);
+
+// Serialise config for the inline script (JSON-safe subset)
+const scriptConfig = {
+  cookieName:                  cfg.cookieName,
+  cookieExpiryDays:            cfg.cookieExpiryDays,
+  policyVersion:               cfg.policyVersion,
+  debug:                       cfg.debug,
+  bookingDomains:              cfg.bookingDomains,
+  bookingCompletionMatchers:   cfg.bookingCompletionMatchers,
+  clinikoThankYouUrlPatterns:  cfg.clinikoThankYouUrlPatterns,
+  redirectParam:               cfg.redirectParam,
+  enabledCategories:           enabledCategories.filter(c => !c.alwaysOn).map(c => c.key),
+};
+---
+
+<div id="hmdg-ccm" class="hmdg-ccm">
+
+  <!-- Screen reader live region -->
+  <div id="hmdg-sr-announce" role="status" aria-live="polite" aria-atomic="true" class="hmdg-sr-only"></div>
+
+  <!-- ── Banner ───────────────────────────────────────────── -->
+  <div
+    id="hmdg-banner"
+    class="hmdg-banner"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="hmdg-banner-title"
+    tabindex="-1"
+  >
+    <div class="hmdg-banner-inner">
+      <div class="hmdg-banner-text">
+        <p class="hmdg-banner-title" id="hmdg-banner-title">{cfg.bannerTitle}</p>
+        <p class="hmdg-banner-body">{cfg.bannerText}</p>
+      </div>
+      <div class="hmdg-banner-actions" role="group" aria-label="Cookie consent options">
+        <button type="button" id="hmdg-btn-reject"    class="hmdg-btn hmdg-btn-ghost">{cfg.rejectAllLabel}</button>
+        <button type="button" id="hmdg-btn-customise" class="hmdg-btn hmdg-btn-outline">{cfg.customiseLabel}</button>
+        <button type="button" id="hmdg-btn-accept"    class="hmdg-btn hmdg-btn-primary">{cfg.acceptAllLabel}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Reopen button (shown after consent given) ────────── -->
+  <button
+    type="button"
+    id="hmdg-reopen"
+    class="hmdg-reopen"
+    aria-label="Manage cookie preferences"
+    title="Cookie Preferences"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" width="18" height="18">
+      <path d="M21.598 11.064a1.006 1.006 0 0 0-.854-.172A2.938 2.938 0 0 1 20 11c-1.654 0-3-1.346-3.003-2.937.003-.574.166-1.135.471-1.62a1 1 0 0 0-.2-1.327A9.027 9.027 0 0 0 12 3C7.037 3 3 7.038 3 12s4.038 9 9 9 9-4.038 9-9c0-.028-.002-.056-.002-.084a1 1 0 0 0-.4-.852zM12 19c-3.86 0-7-3.14-7-7s3.14-7 7-7a6.957 6.957 0 0 1 3.02.685A4.938 4.938 0 0 0 15 9c0 2.757 2.243 5 5 5a5.02 5.02 0 0 0 .147-.009A7.016 7.016 0 0 1 12 19z"/>
+      <circle cx="9"  cy="14" r="1.1"/>
+      <circle cx="12" cy="17" r="1.1"/>
+      <circle cx="7"  cy="17" r="1.1"/>
+      <circle cx="15" cy="13" r="1.1"/>
+    </svg>
+  </button>
+
+  <!-- ── Preferences Modal ─────────────────────────────────── -->
+  <div
+    id="hmdg-modal-overlay"
+    class="hmdg-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="hmdg-modal-title"
+  >
+    <div class="hmdg-modal" role="document">
+
+      <!-- Modal header -->
+      <div class="hmdg-modal-head">
+        <p class="hmdg-modal-title" id="hmdg-modal-title">Customise Consent Preferences</p>
+        <button type="button" id="hmdg-modal-close" class="hmdg-modal-close" aria-label="Close preferences">&times;</button>
+      </div>
+
+      <!-- Modal body — category list -->
+      <div class="hmdg-modal-body">
+        <p class="hmdg-modal-intro">
+          We use cookies to help you navigate efficiently and perform certain functions.
+          You will find detailed information about all cookies under each consent category below.
+        </p>
+
+        {enabledCategories.map(cat => (
+          <div class="hmdg-cat">
+            <div class="hmdg-cat-row">
+              <button
+                type="button"
+                class="hmdg-cat-toggle"
+                aria-expanded="false"
+                aria-controls={`hmdg-desc-${cat.key}`}
+              >
+                <span class="hmdg-arrow" aria-hidden="true">&#x203A;</span>
+                <span class="hmdg-cat-name">{cat.label}</span>
+              </button>
+
+              {cat.alwaysOn ? (
+                <span class="hmdg-always-on">Always Active</span>
+              ) : (
+                <label class="hmdg-toggle" aria-label={`Enable ${cat.label} cookies`}>
+                  <input
+                    type="checkbox"
+                    id={`hmdg-chk-${cat.key}`}
+                    name={cat.key}
+                    class="hmdg-toggle-input"
+                  />
+                  <span class="hmdg-toggle-track" aria-hidden="true">
+                    <span class="hmdg-toggle-thumb"></span>
+                  </span>
+                </label>
+              )}
+            </div>
+
+            <div id={`hmdg-desc-${cat.key}`} class="hmdg-cat-desc" hidden>
+              <p>{cat.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Modal footer -->
+      <div class="hmdg-modal-foot">
+        <div class="hmdg-modal-actions" role="group" aria-label="Save your cookie preferences">
+          <button type="button" id="hmdg-modal-reject" class="hmdg-btn hmdg-btn-ghost">{cfg.rejectAllLabel}</button>
+          <button type="button" id="hmdg-modal-save"   class="hmdg-btn hmdg-btn-outline">{cfg.savePreferencesLabel}</button>
+          <button type="button" id="hmdg-modal-accept" class="hmdg-btn hmdg-btn-primary">{cfg.acceptAllLabel}</button>
+        </div>
+        <p class="hmdg-powered">Cookie preferences by <strong>HMDG</strong></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dev-only consent state badge (stripped from production build) -->
+  {isDev && (
+    <div id="hmdg-dev-badge" class="hmdg-dev-badge" title="HMDG CCM Debug — click to log state">
+      <span class="hmdg-dev-label">CCM</span>
+      <span id="hmdg-dev-state" class="hmdg-dev-state">?</span>
+    </div>
+  )}
+
+</div>
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Design tokens — mapped from global.css
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-ccm {
+    --hmdg-primary:    var(--color-primary, #0d6efd);
+    --hmdg-primary-h:  var(--color-primary-hover, #0b5ed7);
+    --hmdg-bg:         var(--color-white, #ffffff);
+    --hmdg-surface:    var(--color-surface, #f8f9fa);
+    --hmdg-heading:    var(--color-headline, #111111);
+    --hmdg-text:       var(--color-body, #444444);
+    --hmdg-caption:    var(--color-caption, #64748b);
+    --hmdg-border:     var(--color-border, rgba(0,0,0,0.10));
+    --hmdg-muted:      var(--color-muted, #f1f5f9);
+    --hmdg-radius:     var(--radius-card, 8px);
+    --hmdg-z:          99999;
+    --hmdg-shadow:     0 -4px 32px rgba(0,0,0,0.10);
+    --hmdg-modal-shadow: 0 8px 48px rgba(0,0,0,0.18);
+    font-family:       var(--font-body, system-ui, sans-serif);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Screen reader only
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-sr-only {
+    position:   absolute;
+    width:      1px;
+    height:     1px;
+    padding:    0;
+    margin:     -1px;
+    overflow:   hidden;
+    clip:       rect(0,0,0,0);
+    white-space: nowrap;
+    border:     0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Banner — bottom bar, slides up
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-banner {
+    position:   fixed;
+    bottom:     0;
+    left:       0;
+    right:      0;
+    z-index:    var(--hmdg-z);
+    background: var(--hmdg-bg);
+    border-top: 1px solid var(--hmdg-border);
+    box-shadow: var(--hmdg-shadow);
+    transform:  translateY(100%);
+    opacity:    0;
+    visibility: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .hmdg-banner.hmdg-open {
+    transform:  translateY(0);
+    opacity:    1;
+    visibility: visible;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .hmdg-banner-inner {
+    max-width:      1280px;
+    margin:         0 auto;
+    padding:        16px 24px;
+    display:        flex;
+    align-items:    center;
+    gap:            24px;
+    flex-wrap:      wrap;
+  }
+
+  .hmdg-banner-text {
+    flex:      1;
+    min-width: 240px;
+  }
+
+  .hmdg-banner-title {
+    margin:        0 0 4px;
+    font-size:     15px;
+    font-weight:   600;
+    color:         var(--hmdg-heading);
+    line-height:   1.4;
+  }
+
+  .hmdg-banner-body {
+    margin:      0;
+    font-size:   13px;
+    color:       var(--hmdg-caption);
+    line-height: 1.5;
+  }
+
+  .hmdg-banner-actions {
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+    flex-shrink: 0;
+    flex-wrap:   wrap;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Reopen button — fixed floating cookie icon
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-reopen {
+    position:        fixed;
+    bottom:          20px;
+    left:            20px;
+    z-index:         var(--hmdg-z);
+    width:           40px;
+    height:          40px;
+    border-radius:   50%;
+    background:      var(--hmdg-primary);
+    color:           #fff;
+    border:          none;
+    cursor:          pointer;
+    display:         none;
+    align-items:     center;
+    justify-content: center;
+    box-shadow:      0 2px 12px rgba(0,0,0,0.20);
+    transition:      background 0.2s ease, transform 0.2s ease;
+  }
+
+  .hmdg-reopen:hover  { background: var(--hmdg-primary-h); }
+  .hmdg-reopen:active { transform: scale(0.95); }
+
+  .hmdg-reopen.hmdg-open {
+    display: flex;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Modal overlay + modal
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-overlay {
+    position:        fixed;
+    inset:           0;
+    z-index:         calc(var(--hmdg-z) + 10);
+    background:      rgba(0,0,0,0.50);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         16px;
+    opacity:         0;
+    visibility:      hidden;
+    transition:      opacity 0.2s ease, visibility 0s linear 0.2s;
+  }
+
+  .hmdg-overlay.hmdg-open {
+    opacity:    1;
+    visibility: visible;
+    transition: opacity 0.2s ease;
+  }
+
+  .hmdg-modal {
+    background:    var(--hmdg-bg);
+    border-radius: calc(var(--hmdg-radius) + 4px);
+    box-shadow:    var(--hmdg-modal-shadow);
+    width:         100%;
+    max-width:     600px;
+    max-height:    88vh;
+    display:       flex;
+    flex-direction: column;
+    overflow:      hidden;
+    transform:     scale(0.96) translateY(8px);
+    transition:    transform 0.2s ease;
+  }
+
+  .hmdg-overlay.hmdg-open .hmdg-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Modal header */
+  .hmdg-modal-head {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         20px 24px 16px;
+    border-bottom:   1px solid var(--hmdg-border);
+    flex-shrink:     0;
+  }
+
+  .hmdg-modal-title {
+    margin:      0;
+    font-size:   16px;
+    font-weight: 600;
+    color:       var(--hmdg-heading);
+  }
+
+  .hmdg-modal-close {
+    background:  transparent;
+    border:      none;
+    color:       var(--hmdg-caption);
+    font-size:   24px;
+    line-height: 1;
+    cursor:      pointer;
+    padding:     4px 8px;
+    border-radius: 4px;
+    transition:  color 0.2s ease, background 0.2s ease;
+  }
+
+  .hmdg-modal-close:hover  { color: var(--hmdg-heading); background: var(--hmdg-muted); }
+  .hmdg-modal-close:focus-visible {
+    outline: 2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+  }
+
+  /* Modal body */
+  .hmdg-modal-body {
+    flex:       1;
+    overflow-y: auto;
+    padding:    16px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--hmdg-border) transparent;
+  }
+
+  .hmdg-modal-intro {
+    margin:      0 0 16px;
+    font-size:   13px;
+    color:       var(--hmdg-caption);
+    line-height: 1.6;
+  }
+
+  /* Category rows */
+  .hmdg-cat {
+    border:        1px solid var(--hmdg-border);
+    border-radius: var(--hmdg-radius);
+    margin-bottom: 8px;
+    overflow:      hidden;
+  }
+
+  .hmdg-cat-row {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         12px 16px;
+    background:      var(--hmdg-surface);
+    gap:             12px;
+  }
+
+  .hmdg-cat-toggle {
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+    background:  transparent;
+    border:      none;
+    cursor:      pointer;
+    font-size:   14px;
+    font-weight: 500;
+    color:       var(--hmdg-heading);
+    text-align:  left;
+    padding:     0;
+    flex:        1;
+    transition:  color 0.15s ease;
+  }
+
+  .hmdg-cat-toggle:hover { color: var(--hmdg-primary); }
+  .hmdg-cat-toggle:focus-visible {
+    outline: 2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  .hmdg-arrow {
+    font-size:  18px;
+    color:      var(--hmdg-caption);
+    transition: transform 0.2s ease;
+    display:    inline-block;
+    line-height: 1;
+  }
+
+  .hmdg-cat-toggle[aria-expanded="true"] .hmdg-arrow {
+    transform: rotate(90deg);
+  }
+
+  .hmdg-cat-name {
+    font-size:   14px;
+    font-weight: 500;
+    color:       var(--hmdg-heading);
+  }
+
+  .hmdg-always-on {
+    font-size:   12px;
+    font-weight: 500;
+    color:       var(--hmdg-primary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Category description */
+  .hmdg-cat-desc {
+    padding:     12px 16px;
+    border-top:  1px solid var(--hmdg-border);
+    background:  var(--hmdg-bg);
+  }
+
+  .hmdg-cat-desc p {
+    margin:      0;
+    font-size:   13px;
+    color:       var(--hmdg-caption);
+    line-height: 1.6;
+  }
+
+  /* Toggle switch */
+  .hmdg-toggle {
+    display:     flex;
+    align-items: center;
+    cursor:      pointer;
+    flex-shrink: 0;
+  }
+
+  .hmdg-toggle-input {
+    position: absolute;
+    opacity:  0;
+    width:    0;
+    height:   0;
+  }
+
+  .hmdg-toggle-track {
+    display:        flex;
+    align-items:    center;
+    width:          44px;
+    height:         24px;
+    border-radius:  12px;
+    background:     var(--hmdg-border);
+    padding:        2px;
+    transition:     background 0.2s ease;
+    position:       relative;
+  }
+
+  .hmdg-toggle-input:checked + .hmdg-toggle-track {
+    background: var(--hmdg-primary);
+  }
+
+  .hmdg-toggle-input:focus-visible + .hmdg-toggle-track {
+    outline:        2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+  }
+
+  .hmdg-toggle-thumb {
+    width:         20px;
+    height:        20px;
+    border-radius: 50%;
+    background:    #fff;
+    box-shadow:    0 1px 4px rgba(0,0,0,0.20);
+    transition:    transform 0.2s ease;
+    position:      absolute;
+    left:          2px;
+  }
+
+  .hmdg-toggle-input:checked ~ .hmdg-toggle-track .hmdg-toggle-thumb {
+    transform: translateX(20px);
+  }
+
+  /* Modal footer */
+  .hmdg-modal-foot {
+    border-top:  1px solid var(--hmdg-border);
+    padding:     16px 24px;
+    flex-shrink: 0;
+  }
+
+  .hmdg-modal-actions {
+    display:     flex;
+    gap:         8px;
+    flex-wrap:   wrap;
+    margin-bottom: 12px;
+  }
+
+  .hmdg-powered {
+    margin:    0;
+    font-size: 11px;
+    color:     var(--hmdg-caption);
+    text-align: center;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Buttons
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-btn {
+    display:       inline-flex;
+    align-items:   center;
+    justify-content: center;
+    gap:           6px;
+    padding:       9px 18px;
+    border-radius: 6px;
+    font-size:     13px;
+    font-weight:   500;
+    line-height:   1;
+    cursor:        pointer;
+    border:        1px solid transparent;
+    transition:    background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    white-space:   nowrap;
+    min-height:    40px;
+    min-width:     44px;
+  }
+
+  .hmdg-btn:active { transform: scale(0.97); }
+
+  .hmdg-btn:focus-visible {
+    outline:        2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+  }
+
+  .hmdg-btn-primary {
+    background:   var(--hmdg-primary);
+    color:        #fff;
+    border-color: var(--hmdg-primary);
+  }
+  .hmdg-btn-primary:hover {
+    background:   var(--hmdg-primary-h);
+    border-color: var(--hmdg-primary-h);
+  }
+
+  .hmdg-btn-outline {
+    background:   transparent;
+    color:        var(--hmdg-heading);
+    border-color: var(--hmdg-border);
+  }
+  .hmdg-btn-outline:hover {
+    background:   var(--hmdg-muted);
+    border-color: var(--hmdg-caption);
+  }
+
+  .hmdg-btn-ghost {
+    background:   transparent;
+    color:        var(--hmdg-caption);
+    border-color: transparent;
+  }
+  .hmdg-btn-ghost:hover {
+    background: var(--hmdg-muted);
+    color:      var(--hmdg-heading);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Dev badge (dev build only)
+  ───────────────────────────────────────────────────────────── */
+  .hmdg-dev-badge {
+    position:      fixed;
+    bottom:        72px;
+    left:          12px;
+    z-index:       calc(var(--hmdg-z) + 20);
+    display:       flex;
+    align-items:   center;
+    gap:           4px;
+    background:    #1e293b;
+    color:         #fff;
+    font-size:     10px;
+    font-weight:   600;
+    font-family:   monospace;
+    padding:       4px 8px;
+    border-radius: 4px;
+    cursor:        pointer;
+    opacity:       0.85;
+    letter-spacing: 0.05em;
+  }
+
+  .hmdg-dev-state {
+    color:       #4ade80;
+    font-weight: 700;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Mobile — banner becomes full bottom sheet ≤768px
+  ───────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .hmdg-banner-inner {
+      flex-direction: column;
+      align-items:    stretch;
+      padding:        16px;
+      gap:            12px;
+    }
+
+    .hmdg-banner-actions {
+      flex-direction: column;
+      width:          100%;
+    }
+
+    .hmdg-btn {
+      width:      100%;
+      min-height: 48px;
+      font-size:  15px;
+      justify-content: center;
+    }
+
+    .hmdg-modal-actions {
+      flex-direction: column;
+    }
+
+    .hmdg-modal-actions .hmdg-btn {
+      width:      100%;
+      min-height: 48px;
+    }
+
+    .hmdg-modal-head,
+    .hmdg-modal-body,
+    .hmdg-modal-foot {
+      padding-left:  16px;
+      padding-right: 16px;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Reduced motion — disable all transitions and animations
+  ───────────────────────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .hmdg-banner,
+    .hmdg-overlay,
+    .hmdg-modal,
+    .hmdg-btn,
+    .hmdg-arrow,
+    .hmdg-toggle-track,
+    .hmdg-toggle-thumb,
+    .hmdg-reopen {
+      transition: none;
+      animation:  none;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ CCM: scriptConfig }}>
+(function () {
+  'use strict';
+
+  // ── Boot guard ──────────────────────────────────────────────────
+  if (window._hmdgCCMBooted) return;
+  window._hmdgCCMBooted = true;
+
+  const _pageLoadTime = Date.now();
+  let   _modalOpener  = null;
+
+  // ── Logging ─────────────────────────────────────────────────────
+  function log() {
+    if (!CCM.debug) return;
+    var args = Array.prototype.slice.call(arguments);
+    console.log.apply(console, ['%c[HMDG CCM]%c ' + args[0], 'color:#6366f1;font-weight:700', 'color:inherit'].concat(args.slice(1)));
+  }
+
+  function logGroup(title) {
+    if (!CCM.debug) return;
+    console.groupCollapsed('%c[HMDG CCM] ' + title, 'color:#6366f1;font-weight:700');
+  }
+
+  function logGroupEnd() {
+    if (!CCM.debug) return;
+    console.groupEnd();
+  }
+
+  // ── Element helper ───────────────────────────────────────────────
+  function el(id) { return document.getElementById(id); }
+
+  // ── Cookie helpers ───────────────────────────────────────────────
+  function readCookie() {
+    try {
+      var match = document.cookie.split(';').find(function (c) {
+        return c.trim().startsWith(CCM.cookieName + '=');
+      });
+      if (!match) return null;
+      return JSON.parse(decodeURIComponent(match.split('=').slice(1).join('=')));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeCookie(data) {
+    var expiry = new Date();
+    expiry.setDate(expiry.getDate() + CCM.cookieExpiryDays);
+    var isHttps = location.protocol === 'https:';
+    var cookie  = CCM.cookieName + '=' + encodeURIComponent(JSON.stringify(data)) +
+      '; expires=' + expiry.toUTCString() +
+      '; path=/' +
+      '; SameSite=Lax' +
+      (isHttps ? '; Secure' : '');
+    document.cookie = cookie;
+    log('Cookie written', data);
+  }
+
+  function buildConsent(cats) {
+    cats = cats || {};
+    return {
+      policyVersion: CCM.policyVersion,
+      consentedAt:   new Date().toISOString(),
+      necessary:     true,
+      functional:    cats.functional    || false,
+      analytics:     cats.analytics     || false,
+      performance:   cats.performance   || false,
+      marketing:     cats.marketing     || false,
+    };
+  }
+
+  // ── GA4 helpers ──────────────────────────────────────────────────
+  function getGA4ClientId() {
+    try {
+      var raw = document.cookie.split(';').find(function (c) {
+        return c.trim().startsWith('_ga=');
+      });
+      if (!raw) return '';
+      var parts = raw.split('=')[1].split('.');
+      // Format: GA1.1.XXXXXXXXX.XXXXXXXXX → return last two segments
+      return parts.length >= 4 ? parts[2] + '.' + parts[3] : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function getGA4SessionId() {
+    try {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var c = cookies[i].trim();
+        if (c.startsWith('_ga_')) {
+          var val   = c.split('=').slice(1).join('=');
+          var parts = val.split('.');
+          // New GS2 format: GS2.1.sSSSSSSSSS.N.N...
+          var sIdx = parts.findIndex(function (p) { return p.startsWith('s'); });
+          if (sIdx !== -1) return parts[sIdx].slice(1);
+          // Legacy format: parts[2]
+          return parts[2] || '';
+        }
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function getGclid() {
+    try {
+      // Check URL first
+      var urlGclid = new URLSearchParams(location.search).get('gclid');
+      if (urlGclid) {
+        sessionStorage.setItem('hmdg_gclid', urlGclid);
+        return urlGclid;
+      }
+      // Fall back to sessionStorage (persists across page navigation)
+      return sessionStorage.getItem('hmdg_gclid') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function getUtmParams() {
+    try {
+      var sp    = new URLSearchParams(location.search);
+      var keys  = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+      var stored = {};
+      var hasNew = false;
+
+      keys.forEach(function (k) {
+        var v = sp.get(k);
+        if (v) {
+          sessionStorage.setItem('hmdg_' + k, v);
+          stored[k] = v;
+          hasNew = true;
+        } else {
+          var sv = sessionStorage.getItem('hmdg_' + k);
+          if (sv) stored[k] = sv;
+        }
+      });
+
+      return stored;
+    } catch (e) {
+      return {};
+    }
+  }
+
+  // ── gtag / dataLayer helpers ─────────────────────────────────────
+  function ensureGtag() {
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) {
+      window.gtag = function () { dataLayer.push(arguments); };
+    }
+  }
+
+  function fireConsentUpdate(stored) {
+    ensureGtag();
+    var update = {
+      analytics_storage:       stored.analytics   ? 'granted' : 'denied',
+      ad_storage:              stored.marketing   ? 'granted' : 'denied',
+      ad_user_data:            stored.marketing   ? 'granted' : 'denied',
+      ad_personalization:      stored.marketing   ? 'granted' : 'denied',
+      functionality_storage:   stored.functional  ? 'granted' : 'denied',
+      personalization_storage: stored.functional  ? 'granted' : 'denied',
+    };
+    window.gtag('consent', 'update', update);
+
+    window.dataLayer.push({
+      event:              'hmdg_consent_update',
+      consent_analytics:  stored.analytics,
+      consent_functional: stored.functional,
+      consent_marketing:  stored.marketing,
+      consent_performance: stored.performance,
+    });
+
+    logGroup('Consent update fired');
+    log('gtag signals', update);
+    logGroupEnd();
+  }
+
+  function fireConsentMethod(method, timeToConsent) {
+    ensureGtag();
+    window.dataLayer.push({
+      event:           'hmdg_consent_method',
+      consent_method:  method,
+      time_to_consent: timeToConsent,
+    });
+    log('Consent method:', method, '(' + timeToConsent + 'ms)');
+  }
+
+  // ── Announce to screen reader ─────────────────────────────────────
+  function announce(msg) {
+    var node = el('hmdg-sr-announce');
+    if (!node) return;
+    node.textContent = '';
+    setTimeout(function () { node.textContent = msg; }, 50);
+  }
+
+  // ── Banner / Modal controls ───────────────────────────────────────
+  function showBanner() {
+    var banner = el('hmdg-banner');
+    if (!banner) return;
+    banner.classList.add('hmdg-open');
+    el('hmdg-reopen') && el('hmdg-reopen').classList.remove('hmdg-open');
+    setTimeout(function () { banner.focus(); }, 50);
+    log('Banner shown');
+  }
+
+  function hideBanner() {
+    var banner = el('hmdg-banner');
+    if (banner) banner.classList.remove('hmdg-open');
+  }
+
+  function showReopen() {
+    var btn = el('hmdg-reopen');
+    if (btn) btn.classList.add('hmdg-open');
+  }
+
+  function openModal() {
+    // Restore saved checkbox states
+    var stored = readCookie();
+    CCM.enabledCategories.forEach(function (key) {
+      var chk = el('hmdg-chk-' + key);
+      if (chk) chk.checked = stored ? !!stored[key] : false;
+    });
+
+    var overlay = el('hmdg-modal-overlay');
+    if (!overlay) return;
+    overlay.classList.add('hmdg-open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () {
+      var closeBtn = el('hmdg-modal-close');
+      if (closeBtn) closeBtn.focus();
+    }, 50);
+    log('Modal opened');
+  }
+
+  function closeModal(returnFocusTo) {
+    var overlay = el('hmdg-modal-overlay');
+    if (overlay) overlay.classList.remove('hmdg-open');
+    document.body.style.overflow = '';
+
+    // Return focus to opener
+    var target = returnFocusTo || _modalOpener;
+    if (target && typeof target.focus === 'function') {
+      setTimeout(function () { target.focus(); }, 50);
+    }
+    _modalOpener = null;
+    log('Modal closed');
+  }
+
+  // ── Consent actions ──────────────────────────────────────────────
+  function doAcceptAll() {
+    var timeToConsent = Date.now() - _pageLoadTime;
+    var stored = buildConsent({ functional: true, analytics: true, performance: true, marketing: true });
+    writeCookie(stored);
+    fireConsentUpdate(stored);
+    fireConsentMethod('accept-all', timeToConsent);
+    hideBanner();
+    closeModal();
+    showReopen();
+    announce('All cookies accepted. Preferences saved.');
+    updateDevBadge(stored);
+    log('Accept All');
+  }
+
+  function doRejectAll() {
+    var timeToConsent = Date.now() - _pageLoadTime;
+    var stored = buildConsent();
+    writeCookie(stored);
+    fireConsentUpdate(stored);
+    fireConsentMethod('reject-all', timeToConsent);
+    hideBanner();
+    closeModal();
+    showReopen();
+    announce('Non-essential cookies rejected. Preferences saved.');
+    updateDevBadge(stored);
+    log('Reject All');
+  }
+
+  function doSavePreferences() {
+    var timeToConsent = Date.now() - _pageLoadTime;
+    var cats = {};
+    CCM.enabledCategories.forEach(function (key) {
+      var chk = el('hmdg-chk-' + key);
+      cats[key] = chk ? chk.checked : false;
+    });
+    var stored = buildConsent(cats);
+    writeCookie(stored);
+    fireConsentUpdate(stored);
+    fireConsentMethod('customise', timeToConsent);
+    hideBanner();
+    closeModal();
+    showReopen();
+    announce('Cookie preferences saved.');
+    updateDevBadge(stored);
+    log('Preferences saved', cats);
+  }
+
+  // ── Dev badge ────────────────────────────────────────────────────
+  function updateDevBadge(stored) {
+    var badge = el('hmdg-dev-badge');
+    var state = el('hmdg-dev-state');
+    if (!badge || !state) return;
+    if (!stored) {
+      state.textContent = '?';
+      state.style.color = '#facc15';
+    } else {
+      var granted = Object.keys(stored).filter(function (k) {
+        return k !== 'policyVersion' && k !== 'consentedAt' && k !== 'necessary' && stored[k];
+      });
+      state.textContent = stored.analytics && stored.marketing ? '✓' : (granted.length > 0 ? '~' : '✗');
+      state.style.color = stored.analytics && stored.marketing ? '#4ade80' : '#facc15';
+    }
+  }
+
+  // ── Focus trap for modal ─────────────────────────────────────────
+  function trapFocus(e) {
+    var modal = el('hmdg-modal-overlay');
+    if (!modal || !modal.classList.contains('hmdg-open')) return;
+
+    var focusable = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    var first = focusable[0];
+    var last  = focusable[focusable.length - 1];
+
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+      }
+    }
+
+    if (e.key === 'Escape') {
+      var hasCookie = readCookie();
+      closeModal(_modalOpener);
+      if (!hasCookie) showBanner();
+    }
+  }
+
+  // ── Booking tracker ──────────────────────────────────────────────
+  function isBookingUrl(href) {
+    if (!href || !CCM.bookingDomains || !CCM.bookingDomains.length) return null;
+    try {
+      var hostname = new URL(href).hostname.replace(/^www\./, '');
+      for (var i = 0; i < CCM.bookingDomains.length; i++) {
+        var domain = CCM.bookingDomains[i].replace(/^www\./, '');
+        if (hostname === domain || hostname.endsWith('.' + domain)) return domain;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function genEventId() {
+    return 'hmdg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function fireMPEvent(endpoint, eventName, platform, bookingUrl, extra) {
+    var clientId  = getGA4ClientId();
+    var sessionId = getGA4SessionId();
+    var gclid     = getGclid();
+    var utms      = getUtmParams();
+
+    if (!clientId) {
+      log('MP skipped — no GA4 client_id (GA not loaded yet?)');
+      return;
+    }
+
+    var payload = Object.assign({
+      client_id:     clientId,
+      session_id:    sessionId,
+      booking_url:   bookingUrl || '',
+      page_url:      location.href,
+      page_title:    document.title,
+      page_referrer: document.referrer,
+      gclid:         gclid,
+      platform:      platform,
+      event_id:      genEventId(),
+      event_name:    eventName,
+    }, utms, extra || {});
+
+    logGroup('MP event: ' + eventName);
+    log('platform', platform);
+    log('client_id', clientId);
+    log('gclid', gclid);
+    log('payload', payload);
+    logGroupEnd();
+
+    var done = false;
+
+    // fetch with keepalive (preferred)
+    try {
+      fetch(endpoint, {
+        method:    'POST',
+        keepalive: true,
+        headers:   { 'Content-Type': 'application/json' },
+        body:      JSON.stringify(payload),
+      }).then(function (res) {
+        done = true;
+        log('POST ' + endpoint + ' →', res.status);
+      }).catch(function (err) {
+        if (!done) log('fetch failed, trying XHR', err);
+      });
+    } catch (e) {
+      // XHR fallback
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', endpoint, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(payload));
+      } catch (e2) {
+        log('XHR fallback failed', e2);
+      }
+    }
+  }
+
+  function fireBookNowClick(bookingUrl, platform) {
+    fireMPEvent('/api/book-now', 'book_now_click', platform, bookingUrl);
+    ensureGtag();
+    window.dataLayer.push({
+      event:           'hmdg_book_now_click',
+      booking_platform: platform,
+      booking_url:     bookingUrl,
+    });
+  }
+
+  var _completedPlatforms = {};
+  try {
+    var stored = sessionStorage.getItem('hmdg_completed_platforms');
+    if (stored) _completedPlatforms = JSON.parse(stored);
+  } catch (e) {}
+
+  function fireBookingCompleted(platform, bookingUrl) {
+    if (_completedPlatforms[platform]) {
+      log('Booking completed dedup — already fired for', platform);
+      return;
+    }
+    _completedPlatforms[platform] = true;
+    try { sessionStorage.setItem('hmdg_completed_platforms', JSON.stringify(_completedPlatforms)); } catch (e) {}
+
+    fireMPEvent('/api/booking-complete', 'booking_completed', platform, bookingUrl);
+    ensureGtag();
+    window.dataLayer.push({
+      event:            'hmdg_booking_completed',
+      booking_platform: platform,
+      booking_url:      bookingUrl,
+    });
+    log('Booking completed →', platform);
+  }
+
+  // Attach listeners to a booking link
+  function processBookingLink(a) {
+    if (a._hmdgProcessed) return;
+    a._hmdgProcessed = true;
+    var href     = a.getAttribute('href') || '';
+    var platform = isBookingUrl(href);
+    if (!platform) return;
+
+    a.addEventListener('pointerdown', function () {
+      fireBookNowClick(href, platform);
+    });
+    log('Booking link attached:', href, '→', platform);
+  }
+
+  function processAllBookingLinks() {
+    document.querySelectorAll('a[href]').forEach(processBookingLink);
+  }
+
+  function watchForNewBookingLinks() {
+    if (!window.MutationObserver) return;
+    var obs = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.tagName === 'A') { processBookingLink(node); }
+          else node.querySelectorAll && node.querySelectorAll('a[href]').forEach(processBookingLink);
+        });
+      });
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // postMessage listener for booking completions
+  function setupPostMessageListener() {
+    var matchers = CCM.bookingCompletionMatchers;
+    if (!matchers) return;
+
+    window.addEventListener('message', function (e) {
+      if (e.origin === location.origin) return; // ignore same-origin
+      if (e.data && JSON.stringify(e.data).length > 10240) return; // ignore >10KB
+
+      var data = e.data;
+      var platforms = Object.keys(matchers);
+      for (var i = 0; i < platforms.length; i++) {
+        var platform = platforms[i];
+        var testExpr = matchers[platform];
+        try {
+          var matched = new Function('e', 'data', 'try{return(' + testExpr + ');}catch(_){return false;}')(e, data);
+          if (matched) {
+            fireBookingCompleted(platform, '');
+            break;
+          }
+        } catch (err) {
+          // ignore eval errors
+        }
+      }
+    });
+  }
+
+  // Cliniko + redirect-param URL detection
+  function checkReturnUrl() {
+    var pathname = location.pathname;
+    var params   = new URLSearchParams(location.search);
+
+    // Cliniko: check URL patterns
+    if (CCM.clinikoThankYouUrlPatterns) {
+      for (var i = 0; i < CCM.clinikoThankYouUrlPatterns.length; i++) {
+        if (pathname.includes(CCM.clinikoThankYouUrlPatterns[i])) {
+          fireBookingCompleted('cliniko', location.href);
+          return;
+        }
+      }
+    }
+
+    // Generic redirect param (e.g. ?booking_confirmed=1)
+    if (CCM.redirectParam && params.get(CCM.redirectParam)) {
+      // Try to determine platform from referrer
+      var platform = 'unknown';
+      var referrer = document.referrer;
+      if (referrer && CCM.bookingDomains) {
+        for (var j = 0; j < CCM.bookingDomains.length; j++) {
+          if (referrer.includes(CCM.bookingDomains[j])) {
+            platform = CCM.bookingDomains[j].split('.')[0];
+            break;
+          }
+        }
+      }
+      fireBookingCompleted(platform, '');
+      // Clean URL
+      try {
+        params.delete(CCM.redirectParam);
+        var cleanUrl = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+        history.replaceState(null, '', cleanUrl);
+      } catch (e) {}
+    }
+  }
+
+  // ── Wire all button events ───────────────────────────────────────
+  function wireEvents() {
+    // Banner buttons
+    var btnAccept    = el('hmdg-btn-accept');
+    var btnReject    = el('hmdg-btn-reject');
+    var btnCustomise = el('hmdg-btn-customise');
+
+    if (btnAccept)    btnAccept.addEventListener('click', doAcceptAll);
+    if (btnReject)    btnReject.addEventListener('click', doRejectAll);
+    if (btnCustomise) btnCustomise.addEventListener('click', function () {
+      _modalOpener = btnCustomise;
+      hideBanner();
+      openModal();
+    });
+
+    // Modal buttons
+    var modalClose  = el('hmdg-modal-close');
+    var modalReject = el('hmdg-modal-reject');
+    var modalSave   = el('hmdg-modal-save');
+    var modalAccept = el('hmdg-modal-accept');
+    var overlay     = el('hmdg-modal-overlay');
+
+    if (modalClose) modalClose.addEventListener('click', function () {
+      var hasCookie = readCookie();
+      closeModal();
+      if (!hasCookie) showBanner();
+    });
+
+    if (modalReject) modalReject.addEventListener('click', doRejectAll);
+    if (modalSave)   modalSave.addEventListener('click', doSavePreferences);
+    if (modalAccept) modalAccept.addEventListener('click', doAcceptAll);
+
+    // Close on backdrop click
+    if (overlay) overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        var hasCookie = readCookie();
+        closeModal();
+        if (!hasCookie) showBanner();
+      }
+    });
+
+    // Reopen button
+    var reopenBtn = el('hmdg-reopen');
+    if (reopenBtn) reopenBtn.addEventListener('click', function () {
+      _modalOpener = reopenBtn;
+      var hasCookie = readCookie();
+      if (hasCookie) { openModal(); } else { showBanner(); }
+    });
+
+    // Category toggles (accordion expand/collapse)
+    document.querySelectorAll('.hmdg-cat-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        var targetId = btn.getAttribute('aria-controls');
+        var desc     = document.getElementById(targetId);
+        if (desc) desc.hidden = expanded;
+      });
+    });
+
+    // Focus trap + Escape for modal
+    document.addEventListener('keydown', trapFocus);
+
+    // Dev badge click — log state to console
+    var devBadge = el('hmdg-dev-badge');
+    if (devBadge) devBadge.addEventListener('click', function () {
+      var cookie = readCookie();
+      console.group('%c[HMDG CCM] Current state', 'color:#6366f1;font-weight:700');
+      console.log('Cookie:', cookie);
+      console.log('GA4 client_id:', getGA4ClientId());
+      console.log('GA4 session_id:', getGA4SessionId());
+      console.log('GCLID:', getGclid());
+      console.log('UTM params:', getUtmParams());
+      console.groupEnd();
+    });
+  }
+
+  // ── Boot ─────────────────────────────────────────────────────────
+  function boot() {
+    logGroup('Cookie Consent Manager booted');
+    log('Policy version:', CCM.policyVersion);
+    log('Debug mode: ON');
+
+    var stored = readCookie();
+    log('Existing cookie:', stored);
+
+    if (stored && stored.policyVersion === CCM.policyVersion) {
+      log('Consent already given — showing reopen button');
+      showReopen();
+      updateDevBadge(stored);
+    } else {
+      if (stored && stored.policyVersion !== CCM.policyVersion) {
+        log('Policy version changed — clearing old cookie, showing banner');
+      } else {
+        log('No consent cookie — showing banner');
+      }
+      showBanner();
+      updateDevBadge(null);
+    }
+
+    logGroupEnd();
+
+    wireEvents();
+    processAllBookingLinks();
+    watchForNewBookingLinks();
+    setupPostMessageListener();
+    checkReturnUrl();
+    getGclid();    // persist GCLID from URL on page load
+    getUtmParams(); // persist UTM params on page load
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  // Expose public API for debugging
+  window.hmdgCCM = {
+    getState:   readCookie,
+    acceptAll:  doAcceptAll,
+    rejectAll:  doRejectAll,
+    openModal:  openModal,
+    showBanner: showBanner,
+  };
+
+})();
+</script>

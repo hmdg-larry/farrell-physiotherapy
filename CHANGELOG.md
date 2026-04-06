@@ -6,6 +6,55 @@ Format: `[version] — YYYY-MM-DD`
 
 ---
 
+## [1.3.0] — 2026-04-06
+
+### Added — Cookie Consent Manager (Astro port of hmdg-cookie-consent)
+
+**New files:**
+- `src/config/cookie-consent.config.ts` — single marketing config file (GTM ID, GA4 ID, policy version, banner copy, categories, booking platforms)
+- `src/components/CookieConsent.astro` — banner, preferences modal, reopen button, full JS logic
+- `src/pages/api/book-now.ts` — Netlify Function: relays `book_now_click` to GA4 Measurement Protocol
+- `src/pages/api/booking-complete.ts` — Netlify Function: relays `booking_completed` to GA4 Measurement Protocol
+- `CookieConsentReadme.md` — plain-English marketing team setup guide
+- `.claude/memory/cookieconsent.md` — full implementation plan
+
+**Updated files:**
+- `astro.config.mjs` — added `@astrojs/netlify` adapter for Netlify Functions
+- `src/layouts/BaseLayout.astro` — added Google Consent Mode v2 head script (`is:inline`) and `<CookieConsent />` component
+- `.env.example` — added `GA4_API_SECRET`, `GA4_MEASUREMENT_ID`, `SITE_ORIGIN`
+
+**Features:**
+- GDPR/PECR compliant consent banner with full preferences modal
+- Google Consent Mode v2 — all signals default to `denied`, restored from cookie before GTM loads
+- 5 consent categories: Necessary (always on), Functional, Analytics, Performance, Marketing
+- Universal Booking Tracker — 8 platforms (Cliniko, Calendly, Acuity, Phorest, YouCanBook.me, Jane, Timely, SimplyBook.me)
+- postMessage completion detection for 7 platforms; Cliniko uses URL pattern detection
+- GA4 client_id parsed correctly from `_ga` cookie (not a generated UUID)
+- GCLID and UTM parameters persisted to sessionStorage and forwarded with all booking events
+- `hmdg_consent_method` event (accept-all / reject-all / customise) and `hmdg_time_to_consent` event in GA4
+- Booking event deduplication via sessionStorage (survives page navigation)
+- Mobile bottom sheet layout (≤768px) — slides up from bottom
+- `prefers-reduced-motion` respected — all animations disabled
+- Full keyboard accessibility: focus trap in modal, Escape closes, focus returns to opener
+- `role="status"` live region for screen reader announcements
+- Debug console mode (`debug: true` in config) with grouped output and visual dev badge
+- `window.hmdgCCM` public API for debugging (`getState`, `acceptAll`, `rejectAll`, `openModal`)
+- GA4 API secret never exposed to browser — all MP calls made server-side via Netlify Functions
+- Origin validation on API routes — rejects cross-origin requests
+
+**Improvements over the WordPress plugin:**
+- No `!important` in CSS — clean scoped styles
+- Design tokens from global.css (no hardcoded colours)
+- GCLID + UTM forwarding (not in WP plugin)
+- Consent method and time-to-consent events (not in WP plugin)
+- Booking deduplication via sessionStorage (WP plugin uses JS variable, resets on navigation)
+- Correct GA4 client_id from `_ga` cookie (WP plugin generates UUID)
+- Cliniko detection via URL pattern (WP plugin incorrectly used postMessage for Cliniko)
+- Mobile bottom sheet instead of centred modal
+- HMAC-ready architecture (stateless, works on Netlify Functions)
+
+---
+
 ## [1.1.0] — 2026-04-06
 
 ### Session 2 — Agent system, design standards, and project cleanup
