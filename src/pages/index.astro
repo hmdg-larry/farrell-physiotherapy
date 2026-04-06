@@ -53,16 +53,22 @@ const features = [
 ];
 
 const navLinks = [
-  { href: "#colours",    label: "Colours",     num: "01" },
-  { href: "#fonts",      label: "Fonts",       num: "02" },
-  { href: "#typography", label: "Typography",  num: "03" },
-  { href: "#body-text",  label: "Body Text",   num: "04" },
-  { href: "#buttons",    label: "Buttons",     num: "05" },
-  { href: "#forms",      label: "Forms",       num: "06" },
-  { href: "#containers", label: "Containers",  num: "07" },
-  { href: "#flex",       label: "Flex Layout", num: "08" },
-  { href: "#cards",      label: "Cards",       num: "09" },
-  { href: "#combined",   label: "Example",     num: "10" },
+  { href: "#colours",    label: "Colours",        num: "01" },
+  { href: "#fonts",      label: "Fonts",          num: "02" },
+  { href: "#typography", label: "Typography",     num: "03" },
+  { href: "#body-text",  label: "Body Text",      num: "04" },
+  { href: "#buttons",    label: "Buttons",        num: "05" },
+  { href: "#forms",      label: "Forms",          num: "06" },
+  { href: "#containers", label: "Containers",     num: "07" },
+  { href: "#flex",       label: "Flex Layout",    num: "08" },
+  { href: "#cards",      label: "Cards",          num: "09" },
+  { href: "#combined",   label: "Example",        num: "10" },
+  { href: "#utilities",  label: "Utility Classes",num: "11" },
+  { href: "#tokens",     label: "Design Tokens",  num: "12" },
+  { href: "#globalcss",  label: "global.css",     num: "13" },
+  { href: "#images",     label: "Image Rules",    num: "14" },
+  { href: "#security",   label: "Security",       num: "15" },
+  { href: "#agents",     label: "Agent System",   num: "16" },
 ];
 ---
 
@@ -152,12 +158,18 @@ const navLinks = [
             <div class="flex flex-col gap-6">
               <span class="eyebrow">HMDG · Internal Documentation</span>
               <h1 class="text-white m-0">
-                Astro + Tailwind
+                HMDG Base Template
               </h1>
               <p class="text-white/70 m-0 max-w-xl leading-relaxed">
-                The global design system reference for all reusable UK clinic websites.
-                Every colour, font, heading, button, container, and component is documented below.
+                The global design system reference for all HMDG UK clinic websites.
+                Every colour, font, heading, button, container, component, image rule, security standard, and agent workflow is documented here.
               </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Astro v5</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Tailwind v4</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">9 AI Agents</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">v1.0.0</span>
+              </div>
               <p class="text-white/50 text-sm m-0">
                 Started: March 5 2026 &nbsp;·&nbsp;
                 Do not rename any CSS variable or class unless adding new ones.
@@ -789,6 +801,482 @@ const navLinks = [
                 </div>
                 <div class="px-5 pt-4 pb-5">
                   <p class="prompt-text prompt-code">Build a new [SECTION NAME] section for the clinic website. Use the global design system only — no new CSS classes. Structure: &lt;section class="bg-[COLOUR]"&gt; wrapping .container-main wrapping .container-inner. Use .section-header with .eyebrow for the intro. Use .card for features. Use .btn.btn-default for primary CTA and .btn.btn-secondary for secondary. Use existing colour variables only.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               11 — UTILITY CLASSES
+          ─────────────────────────────────────────────────────── -->
+          <article id="utilities" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">11</span>
+                <h5 class="m-0">Utility Classes</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Utils</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              {[
+                { cls: ".eyebrow",       preview: "eyebrow",     desc: "Small uppercase label above section headings. Use inside .section-header or standalone above an h2." },
+                { cls: ".section-lead",  preview: "section-lead", desc: "Large intro paragraph below a heading. 18px, relaxed line-height. Use inside .section-header." },
+                { cls: ".section-header",preview: null,           desc: "Wrapper for eyebrow + heading + section-lead. Centres content and adds bottom margin. Use at the top of every section." },
+                { cls: ".caption-light", preview: "caption-light",desc: "Small secondary label. Uses --color-caption. For prompt box labels, metadata, and non-critical supporting text on light backgrounds." },
+                { cls: ".icon-dot",      preview: null,           desc: "Small primary-coloured decorative bullet. Used inside cards above the title. 10px circle in --color-primary." },
+                { cls: ".code-label",    preview: "code-label",   desc: "Inline code pill. Off-white background with border. For CSS variable names and class names in documentation." },
+                { cls: ".code-hex",      preview: "#DB003E",      desc: "Inline hex/value badge. Muted background. For values, sizes, and short references." },
+                { cls: ".copy-btn",      preview: "Copy",         desc: "Copy to clipboard button. Used in all Claude AI Prompt boxes. Handles active state via JS." },
+              ].map(u => (
+                <div class="flex items-start gap-5 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                  <div class="shrink-0 min-w-[9rem] flex items-center">
+                    {u.preview === "eyebrow"       && <span class="eyebrow">Eyebrow</span>}
+                    {u.preview === "section-lead"  && <p class="section-lead m-0" style="font-size:0.875rem">Lead text sample.</p>}
+                    {u.preview === "caption-light" && <span class="caption-light">Caption text</span>}
+                    {u.preview === "code-label"    && <code class="code-label">.class-name</code>}
+                    {u.preview === "#DB003E"        && <code class="code-hex">#DB003E</code>}
+                    {u.preview === "Copy"           && <button type="button" class="copy-btn">Copy</button>}
+                    {u.preview === null             && <span class="text-xs text-[--color-caption] italic">Layout only</span>}
+                  </div>
+                  <div class="flex flex-col gap-1 flex-1">
+                    <code class="code-label">{u.cls}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{u.desc}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>&lt;div class="section-header"&gt;
+  &lt;span class="eyebrow"&gt;Why Choose Us&lt;/span&gt;
+  &lt;h2&gt;Heading Here&lt;/h2&gt;
+  &lt;p class="section-lead"&gt;Intro paragraph.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Utility Classes</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Use global utility classes for section structure. Every section heading block must use .section-header containing .eyebrow, h2, and .section-lead. Do not create new heading wrapper classes. Use .icon-dot inside cards above the h4/h5. Use .caption-light for prompt labels and metadata. Do not invent new utility classes — extend or reuse existing ones only.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               12 — DESIGN TOKENS
+          ─────────────────────────────────────────────────────── -->
+          <article id="tokens" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">12</span>
+                <h5 class="m-0">Design Tokens — Radius, Shadows, Spacing</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Tokens</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-8">
+
+              <!-- Radius -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Border Radius</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { token: "--radius-card",  val: "12px",   label: ".card, article, prompt boxes" },
+                    { token: "--radius-btn",   val: "10px",   label: ".btn, .input, sidebar links" },
+                    { token: "--radius-badge", val: "999px",  label: ".eyebrow, badges, pills, tags" },
+                  ].map(r => (
+                    <div class="flex flex-col gap-3 p-4 bg-[--color-muted] border border-[--color-border]" style={`border-radius: ${r.val}`}>
+                      <code class="code-label">{r.token}</code>
+                      <code class="code-hex">{r.val}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{r.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Shadows -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Shadows</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { token: "--shadow-card",   label: "Default card shadow",    cls: "shadow-[--shadow-card]"   },
+                    { token: "--shadow-raised",  label: "Card hover raised state", cls: "shadow-[--shadow-raised]"  },
+                    { token: "--shadow-nav",     label: "Sticky nav underline",   cls: "shadow-[--shadow-nav]"    },
+                  ].map(s => (
+                    <div class={`flex flex-col gap-3 p-4 bg-white border border-[--color-border] rounded-[--radius-card] ${s.cls}`}>
+                      <code class="code-label">{s.token}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Spacing -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Spacing Tokens</p>
+                <div class="flex flex-col gap-2">
+                  {[
+                    { token: "--spacing-section-x", val: "30px",  use: "Horizontal padding on footer and full-width elements" },
+                    { token: "--spacing-card-p",    val: "28px",  use: "Internal padding on .card components" },
+                    { token: "--spacing-gap",        val: "15px",  use: "Default flex gap in .flex-layout" },
+                    { token: "--spacing-gap-md",     val: "24px",  use: "Medium gap — cards and grids" },
+                    { token: "--spacing-gap-lg",     val: "32px",  use: "Large gap — section columns" },
+                  ].map(s => (
+                    <div class="flex items-center gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                      <code class="code-label shrink-0">{s.token}</code>
+                      <code class="code-hex shrink-0">{s.val}</code>
+                      <span class="text-sm text-[--color-body]">{s.use}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Tokens</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Use global design tokens for all radius, shadow, and spacing. Border radius: --radius-card (12px) for cards, --radius-btn (10px) for buttons and inputs, --radius-badge (999px) for pills and badges. Shadows: --shadow-card on cards, --shadow-raised on hover states. Spacing: --spacing-card-p (28px) for card padding, --spacing-gap (15px) default flex gap. Do not hardcode pixel values when a token exists.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               13 — GLOBAL.CSS STRUCTURE
+          ─────────────────────────────────────────────────────── -->
+          <article id="globalcss" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">13</span>
+                <h5 class="m-0">global.css Structure</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">CSS</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <p class="m-0 text-[--color-body]">All design tokens and global styles live in <code class="code-label">src/styles/global.css</code>. The file is split into four blocks. Only edit the correct block for your task.</p>
+
+              <div class="flex flex-col gap-3">
+                {[
+                  {
+                    block: "@theme",
+                    file: "src/styles/global.css",
+                    desc: "All CSS custom properties (design tokens). Colours, fonts, radius, shadows, spacing. Change brand colour, fonts, or spacing here. This is the only place tokens should be defined.",
+                    when: "When changing brand colour, font, radius, shadow, or spacing values.",
+                  },
+                  {
+                    block: "@layer base",
+                    file: "src/styles/global.css",
+                    desc: "Global element resets and default styles. Headings, paragraphs, anchors, and form elements. Applied automatically — no class needed. Heading sizes, line-heights, and colours are set here.",
+                    when: "When changing default heading sizes, body text size, or element-level defaults.",
+                  },
+                  {
+                    block: "@layer components",
+                    file: "src/styles/global.css",
+                    desc: "Reusable class-based components. .btn, .card, .input, .eyebrow, .section-header, .flex-layout, .container-main, .container-inner, etc. All reusable UI patterns live here.",
+                    when: "When adding or modifying a reusable class. Never add one-off classes here.",
+                  },
+                  {
+                    block: "@layer utilities",
+                    file: "src/styles/global.css",
+                    desc: "Custom utility classes that extend Tailwind. Use sparingly. Only add here when a Tailwind utility does not exist for the needed pattern.",
+                    when: "Only when Tailwind cannot achieve the pattern with existing utilities.",
+                  },
+                ].map(b => (
+                  <div class="p-5 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-2">
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <code class="code-label">{b.block}</code>
+                      <code class="code-hex">{b.file}</code>
+                    </div>
+                    <p class="m-0 text-sm text-[--color-body]">{b.desc}</p>
+                    <p class="m-0 text-xs text-[--color-caption]"><strong>Edit when:</strong> {b.when}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>/* src/styles/global.css — structure overview */
+
+@theme {
+  /* ── Tokens: colours, fonts, radius, shadows, spacing ── */
+  --color-primary: #DB003E;
+  --font-heading: 'Inter Tight', sans-serif;
+  --radius-card: 12px;
+}
+
+@layer base {
+  /* ── Global element defaults (h1–h6, p, a, input) ── */
+  h1 { font-size: clamp(...); }
+}
+
+@layer components {
+  /* ── Reusable classes (.btn, .card, .input, etc.) ── */
+  .btn { ... }
+  .card { ... }
+}
+
+@layer utilities {
+  /* ── Custom utilities (use sparingly) ── */
+}</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — global.css</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">When adding a new design token, add it to the @theme block in src/styles/global.css. When adding a reusable class, add it to @layer components. When changing a heading default, edit @layer base. Never add one-off styles to global.css. Never add styles to individual page files unless scoped to that page only.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               14 — IMAGE FORMAT RULES
+          ─────────────────────────────────────────────────────── -->
+          <article id="images" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">14</span>
+                <h5 class="m-0">Image Format Rules</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Images</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <div class="flex flex-col gap-3">
+                {[
+                  { badge: "1st",   fmt: ".avif",  label: "Primary format",  desc: "Always use as the primary <source>. Best compression and quality. Assumed to exist for every image." },
+                  { badge: "2nd",   fmt: ".webp",  label: "Fallback format", desc: "Always include as the second <source>. Wider browser support." },
+                  { badge: "Only if needed", fmt: ".jpg / .png", label: "Last resort", desc: "Only use if no modern format is available or there is a clear technical reason. Never as primary." },
+                ].map(f => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <span class="text-xs font-bold text-[--color-primary] bg-[--color-accent] border border-[--color-primary]/20 px-2 py-1 rounded-[--radius-badge] shrink-0 whitespace-nowrap">{f.badge}</span>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-2">
+                        <code class="code-label">{f.fmt}</code>
+                        <span class="text-xs text-[--color-caption]">{f.label}</span>
+                      </div>
+                      <p class="m-0 text-sm text-[--color-body]">{f.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="p-4 bg-[--color-accent] border border-[--color-primary]/20 rounded-[--radius-card] flex gap-3 items-start">
+                <span class="text-[--color-primary] font-bold text-sm shrink-0">⚠</span>
+                <p class="m-0 text-sm text-[--color-body]"><strong>If a developer uploads .jpg or .png:</strong> Show this message — "Fel recommends uploading .avif images. Use this converter: <code class="code-label">https://hmdg-elementor.flywheelsites.com/</code>"</p>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Loading Rules</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { attr: 'loading="eager"',   use: "Hero and above-the-fold images only" },
+                    { attr: 'loading="lazy"',    use: "All below-fold images — default" },
+                    { attr: 'decoding="async"',  use: "Always include on all images" },
+                    { attr: 'width="" height=""',use: "Always set to prevent CLS (layout shift)" },
+                  ].map(a => (
+                    <div class="flex flex-col gap-1 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <code class="code-label">{a.attr}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{a.use}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Required Pattern</p>
+                <pre class="code-block"><code>&lt;picture&gt;
+  &lt;source srcset="/images/hero.avif" type="image/avif" /&gt;
+  &lt;source srcset="/images/hero.webp" type="image/webp" /&gt;
+  &lt;img
+    src="/images/hero.webp"
+    alt="Descriptive alt text"
+    loading="lazy"
+    decoding="async"
+    width="1600"
+    height="900"
+  /&gt;
+&lt;/picture&gt;
+
+/* Use loading="eager" for hero / above-fold images only */</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Images</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add an image to [SECTION]. Use the required picture pattern: &lt;picture&gt; with .avif as the first source, .webp as the second source, and a &lt;img&gt; fallback with loading="lazy" decoding="async" and explicit width and height. Use loading="eager" only for the hero image. Never use &lt;img&gt; alone without the &lt;picture&gt; wrapper when .avif and .webp are available.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               15 — SECURITY REFERENCE
+          ─────────────────────────────────────────────────────── -->
+          <article id="security" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">15</span>
+                <h5 class="m-0">Security Reference</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Security</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              {[
+                { rule: "No secrets in frontend code",      detail: "API keys, tokens, and credentials must never appear in .astro, .ts, or .js files. Use environment variables only." },
+                { rule: "Use .env for all secrets",         detail: "Copy .env.example to .env and fill in values. Never commit .env to git — it is already in .gitignore." },
+                { rule: "External links — rel attribute",   detail: 'All <a> tags with target="_blank" must include rel="noopener noreferrer" to prevent tab-napping attacks.' },
+                { rule: "No unsafe HTML injection",         detail: "Never use set:html or innerHTML with unsanitised user input. Only use with trusted, controlled content." },
+                { rule: "No inline event handlers",         detail: "Never use onclick='', onload='', or similar inline handlers. Use addEventListener in script blocks only." },
+                { rule: "CSP headers are pre-configured",   detail: "Content Security Policy is set in BaseLayout.astro (meta tag), public/_headers (Netlify), and vercel.json (Vercel). Update these when adding new third-party services." },
+                { rule: "Forms need spam prevention",       detail: "All public forms should include a honeypot field or reCAPTCHA. Never rely on client-side validation alone." },
+                { rule: "OWASP Top 10 applies at all times",detail: "Follow secure coding defaults. No SQL injection risk, XSS risk, or data exposure in any frontend output." },
+              ].map(r => (
+                <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                  <div class="icon-dot-offset mt-1"></div>
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm font-semibold text-[--color-headline]">{r.rule}</span>
+                    <p class="m-0 text-sm text-[--color-body]">{r.detail}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>/* Security files in this template */
+public/_headers     → Netlify HTTP security headers (CSP, HSTS, X-Frame-Options)
+vercel.json         → Vercel HTTP security headers (same set)
+.env.example        → Copy to .env — never commit .env
+BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
+
+/* Required pattern for all external links */
+&lt;a href="https://..." target="_blank" rel="noopener noreferrer"&gt;Link&lt;/a&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Security</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Review [PAGE/COMPONENT] for security issues. Check: no secrets in markup, all external links have rel="noopener noreferrer", no unsafe set:html or innerHTML, no inline event handlers, forms include spam prevention, environment variables are used for all sensitive values. Flag any issues with severity level and suggest fixes.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               16 — AGENT SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="agents" class="border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">16</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Agent System</h5>
+                  <p class="text-sm text-[--color-caption] m-0">9 specialist AI agents. Use the review sequence for every important page build.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Agents</span>
+            </header>
+
+            <div class="px-8 py-6 bg-white flex flex-col gap-6">
+
+              <!-- Sequence -->
+              <div class="flex flex-col gap-2">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Review Sequence</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                  {[
+                    "information-architecture-reviewer",
+                    "ui-designer",
+                    "frontend-builder",
+                    "a11y-reviewer",
+                    "performance-reviewer",
+                    "seo-reviewer",
+                    "marketing-reviewer",
+                    "security-reviewer",
+                    "conversion-reviewer",
+                  ].map((agent, i, arr) => (
+                    <div class="flex items-center gap-2">
+                      <code class="code-label text-[0.65rem]">{agent}</code>
+                      {i < arr.length - 1 && <span class="text-[--color-caption] text-xs">→</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Agent cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { num: "01", name: "information-architecture-reviewer", role: "Sitemap, URL hierarchy, parent/child pages, taxonomy — before design begins" },
+                  { num: "02", name: "ui-designer",                        role: "Layout, hierarchy, typography, spacing, interactions. Plans only — does NOT write code" },
+                  { num: "03", name: "frontend-builder",                   role: "Builds clean Astro + Tailwind. No inline styles, reusable components, global header/footer" },
+                  { num: "04", name: "a11y-reviewer",                      role: "Contrast, focus states, heading structure, keyboard navigation, alt text" },
+                  { num: "05", name: "performance-reviewer",               role: "AVIF/WebP images, DOM weight, lazy loading, JS usage, CLS risk" },
+                  { num: "06", name: "seo-reviewer",                       role: "H1, metadata, heading hierarchy, noindex rules, internal linking, structured data" },
+                  { num: "07", name: "marketing-reviewer",                 role: "Value proposition, trust signals, messaging clarity, service positioning" },
+                  { num: "08", name: "security-reviewer",                  role: "Forms, scripts, unsafe HTML, exposed secrets, external links, OWASP Top 10" },
+                  { num: "09", name: "conversion-reviewer",                role: "CTA placement, booking flow, friction points, overall user journey — final gate" },
+                ].map(a => (
+                  <div class="flex flex-col gap-2 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-mono font-bold text-[--color-primary]">{a.num}</span>
+                      <code class="code-label text-[0.65rem] leading-tight">{a.name}</code>
+                    </div>
+                    <p class="m-0 text-xs text-[--color-body] leading-relaxed">{a.role}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            <div class="bg-white px-8 pb-8">
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Agent Workflow</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">Review and build this task using the following agent sequence exactly: information-architecture-reviewer → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer. Task: [describe the page, section, sitemap, or feature here]. Do not skip any agent. Do not rush into code before planning. If something is weak, improve it automatically.</p>
                 </div>
               </div>
             </div>
