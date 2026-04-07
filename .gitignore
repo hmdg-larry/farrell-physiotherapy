@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Claude Code memory (local only — not shipped with repo)
 /memory/
+
+# Local Netlify folder
+.netlify

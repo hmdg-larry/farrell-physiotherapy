@@ -6,6 +6,26 @@ Format: `[version] — YYYY-MM-DD`
 
 ---
 
+## [1.5.0] — 2026-04-07
+
+### Three-Builder Design System — Awwwards + Webflow + Oxygen Builder Synthesis
+
+**`ui-designer.md` additions:**
+- Added "Scroll Storytelling (Webflow Standard)" section — narrative arc planning, progressive reveal, whitespace maximalism, gradient headline accent (one per page rule)
+- Added "Palette Restraint and Spacing Discipline (Oxygen Standard)" section — max 3 active colours, Tailwind spacing scale only, card grid consistency non-negotiable
+- Extended Visual Quality Checklist with Webflow checks (narrative arc, whitespace section, gradient accent) and Oxygen checks (card consistency, palette restraint, spacing scale compliance)
+
+**`frontend-builder.md` additions:**
+- Updated role description to reference all three design schools (Awwwards, Webflow, Oxygen)
+- Added "Webflow Patterns" section: gradient headline accent (`-webkit-background-clip` with fallback), smooth scroll CSS with `prefers-reduced-motion` toggle, scroll storytelling multi-threshold IntersectionObserver
+- Added "Oxygen Builder Patterns" section: token compliance rule, spacing scale discipline, card grid consistency enforcement, palette restraint max 3 colours
+- Updated Output section to include Webflow editorial and Oxygen structural requirements
+
+**`.gitignore`:**
+- Added `.netlify` to gitignore
+
+---
+
 ## [1.3.0] — 2026-04-06
 
 ### Added — Cookie Consent Manager (Astro port of hmdg-cookie-consent)
