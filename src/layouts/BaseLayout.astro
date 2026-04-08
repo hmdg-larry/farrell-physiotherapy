@@ -20,6 +20,8 @@ const {
 } = Astro.props;
 
 import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 import CookieConsent from "../components/CookieConsent.astro";
 import { cookieConsentConfig } from "../config/cookie-consent.config";
 
@@ -134,138 +136,25 @@ const cfg = cookieConsentConfig;
   </head>
   <body class="bg-white text-slate-600 antialiased">
 
-    <!-- ── Header / Nav ─────────────────────────────────── -->
-    <header class="sticky top-0 z-50 bg-white border-b border-[--color-border] shadow-[--shadow-nav]">
-      <div class="container px-[--spacing-section-x] py-4 flex items-center justify-between">
-        <a href="/" class="text-xl font-bold text-[--color-primary]">
-          ClinicName
-        </a>
-        <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-body]">
-          <a href="#services" class="hover:text-[--color-primary] transition-colors">Services</a>
-          <a href="#testimonials" class="hover:text-[--color-primary] transition-colors">Reviews</a>
-          <a href="#team" class="hover:text-[--color-primary] transition-colors">Team</a>
-          <a href="#contact" class="hover:text-[--color-primary] transition-colors">Contact</a>
-        </nav>
-        <a href="#contact" class="btn btn-default">
-          Book Now
-        </a>
-      </div>
-    </header>
+    <!-- ── Header ────────────────────────────────────── -->
+    <Header />
 
     <!-- ── Page Content ──────────────────────────────────── -->
     <main>
       <slot />
     </main>
 
-    <!-- ══════════════════════════════════════════════════
-         FOOTER
-    ══════════════════════════════════════════════════ -->
-    <footer class="bg-[--color-headline]">
-
-      <!-- ── Main columns ──────────────────────────────────── -->
-      <div class="px-[30px] py-16">
-        <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-
-          <!-- Brand -->
-          <div class="flex-layout flex-layout--col gap-5">
-            <a href="/" class="font-heading text-xl font-bold text-white hover:text-[--color-caption] transition-colors">
-              ClinicName
-            </a>
-            <p class="m-0 text-sm text-[--color-caption] leading-relaxed">
-              Your trusted clinic, helping patients recover faster, move better,
-              and live without pain. HCPC-registered and fully insured.
-            </p>
-            <a href="#contact" class="btn btn-white self-start">Book Now</a>
-          </div>
-
-          <!-- Quick Links -->
-          <div class="flex-layout flex-layout--col gap-5">
-            <span class="text-xs font-semibold text-white uppercase tracking-widest">
-              Quick Links
-            </span>
-            <nav class="flex-layout flex-layout--col gap-3" aria-label="Footer navigation">
-              <a href="/"              class="text-sm text-[--color-caption] hover:text-white transition-colors">Home</a>
-              <a href="#services"      class="text-sm text-[--color-caption] hover:text-white transition-colors">Services</a>
-              <a href="#team"          class="text-sm text-[--color-caption] hover:text-white transition-colors">Meet the Team</a>
-              <a href="#testimonials"  class="text-sm text-[--color-caption] hover:text-white transition-colors">Patient Reviews</a>
-              <a href="/contact"       class="text-sm text-[--color-caption] hover:text-white transition-colors">Contact Us</a>
-            </nav>
-          </div>
-
-          <!-- Services -->
-          <div class="flex-layout flex-layout--col gap-5">
-            <span class="text-xs font-semibold text-white uppercase tracking-widest">
-              Our Services
-            </span>
-            <nav class="flex-layout flex-layout--col gap-3" aria-label="Services navigation">
-              <a href="#services" class="text-sm text-[--color-caption] hover:text-white transition-colors">Physiotherapy</a>
-              <a href="#services" class="text-sm text-[--color-caption] hover:text-white transition-colors">Sports Injuries</a>
-              <a href="#services" class="text-sm text-[--color-caption] hover:text-white transition-colors">Back &amp; Neck Pain</a>
-              <a href="#services" class="text-sm text-[--color-caption] hover:text-white transition-colors">Post-Surgery Rehab</a>
-              <a href="#services" class="text-sm text-[--color-caption] hover:text-white transition-colors">Injury Prevention</a>
-            </nav>
-          </div>
-
-          <!-- Contact -->
-          <div class="flex-layout flex-layout--col gap-5">
-            <span class="text-xs font-semibold text-white uppercase tracking-widest">
-              Contact
-            </span>
-            <div class="flex-layout flex-layout--col gap-3">
-              <address class="not-italic flex-layout flex-layout--col gap-1">
-                <span class="text-sm text-[--color-caption]">123 High Street</span>
-                <span class="text-sm text-[--color-caption]">London, UK, EC1A 1BB</span>
-              </address>
-              <a href="tel:02012345678"             class="text-sm text-[--color-caption] hover:text-white transition-colors">020 1234 5678</a>
-              <a href="mailto:hello@clinicname.co.uk" class="text-sm text-[--color-caption] hover:text-white transition-colors">hello@clinicname.co.uk</a>
-            </div>
-            <div class="flex-layout flex-layout--col gap-2">
-              <span class="text-xs font-semibold text-white uppercase tracking-widest">Opening Hours</span>
-              <span class="text-sm text-[--color-caption]">Mon – Fri &nbsp; 8:00am – 7:00pm</span>
-              <span class="text-sm text-[--color-caption]">Saturday &nbsp;&nbsp; 9:00am – 3:00pm</span>
-              <span class="text-sm text-[--color-caption]">Sunday &nbsp;&nbsp;&nbsp;&nbsp; Closed</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ── Bottom bar ─────────────────────────────────────── -->
-      <div class="border-t border-white/10">
-        <div class="px-[30px] py-4 flex-layout flex-layout--between gap-4">
-
-          <!-- Left: copyright + credit -->
-          <div class="flex-layout items-center gap-5 flex-wrap">
-            <span class="text-sm text-white">
-              © Copyright HMDG {new Date().getFullYear()}
-            </span>
-            <span class="text-sm text-white">
-              Designed &amp; Developed by
-              <a
-                href="https://hmdg.co.uk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-white font-semibold hover:text-primary transition-colors"
-              >HMDG</a>
-            </span>
-          </div>
-
-          <!-- Right: policy links -->
-          <nav class="flex-layout items-center gap-5 flex-wrap" aria-label="Legal">
-            <a href="/privacy-policy"   class="text-sm text-white/70 hover:text-white transition-colors">Privacy Policy</a>
-            <a href="/terms-conditions" class="text-sm text-white/70 hover:text-white transition-colors">Terms &amp; Conditions</a>
-            <a href="/cookie-policy"    class="text-sm text-white/70 hover:text-white transition-colors">Cookie Policy</a>
-          </nav>
-
-        </div>
-      </div>
-
-    </footer>
+    <!-- ── Footer ────────────────────────────────────── -->
+    <Footer />
 
     <!-- ── Cookie Consent Manager ──────────────────────────────── -->
     <CookieConsent />
 
-    <!-- ── GTM noscript fallback ─────────────────────────────────── -->
+    <!-- ── GTM noscript fallback ─────────────────────────────────────
+         style="display:none;visibility:hidden" is required by Google's
+         official GTM noscript snippet and cannot be removed.
+         This is the only permitted inline style in the codebase.
+    ──────────────────────────────────────────────────────────────── -->
     {cfg.gtmId && (
       <noscript>
         <iframe

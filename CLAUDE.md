@@ -5,10 +5,16 @@
 ```
 /CLAUDE.md
 /.claude/
-  agents/         ← 10 specialist review and build agents
+  agents/         ← 11 specialist review and build agents
   rules/          ← modular rules (imported below)
-  memory/         ← auto-memory, do not edit manually
+  memory/         ← persistent instruction files, do not edit manually
   settings.json
+/src/
+  components/     ← Header.astro, Footer.astro, CookieConsent.astro
+  layouts/        ← BaseLayout.astro (global wrapper, uses Header + Footer)
+  pages/          ← all client pages + API routes
+  config/         ← cookie-consent.config.ts (marketing team edits this)
+  styles/         ← global.css (design tokens + Tailwind v4)
 ```
 
 ---
@@ -55,7 +61,7 @@ Do not skip planning.
 
 For important page builds and major revisions, use the full agent pipeline:
 
-**information-architecture-reviewer → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
+**information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
 
 Full prompt template: @.claude/rules/agent-workflow.md
 

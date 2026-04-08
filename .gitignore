@@ -28,3 +28,16 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# Analysis/debug artefacts — never commit these
+*.analysis.json
+*-analysis.json
+*_analysis.json
+style-analysis-report.json
+inline-styles-analysis.json
+ANALYSIS_COMPLETE.txt
+QUICK_REFERENCE.txt
+README_ANALYSIS.md
+STYLE_ANALYSIS_SUMMARY.md
+analyze_styles.py
+style_analyzer.py

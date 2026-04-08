@@ -7,7 +7,7 @@ type: project
 For every important page build or major revision, follow this agent sequence exactly. Do not skip steps. Do not rush into code before planning.
 
 **Sequence:**
-information-architecture-reviewer → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 **Why:** User defined this as the mandatory quality pipeline to ensure every page is planned, built, reviewed, and refined across all dimensions before output is considered finished. visual-qa-reviewer was added between frontend-builder and a11y-reviewer to catch visual implementation gaps before accessibility review.
 
@@ -20,7 +20,7 @@ information-architecture-reviewer → ui-designer → frontend-builder → visua
 ```
 Review and build this task using the following agent sequence exactly:
 
-information-architecture-reviewer → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 Task:
 [describe the page, section, sitemap, or feature here]
@@ -30,8 +30,15 @@ Instructions:
    - review sitemap, URL structure, parent child relationships, and taxonomy if relevant
    - suggest improvements before design begins
 
-2. Then use ui-designer
+2. Then use ux-architect
+   - map the user journey (Awareness → Interest → Trust → Intent → Action)
+   - define content priority per section and interaction patterns
+   - identify friction points and conversion pathway
+   - do NOT design visually or write code
+
+3. Then use ui-designer
    - plan the section structure, layout, typography, spacing, interactions, and animation direction
+   - apply UX decisions from ux-architect
    - define section backgrounds using the design token system
    - apply mobile-first thinking
    - keep the design at Awwwards + Webflow + Oxygen Builder standard (three-builder synthesis)

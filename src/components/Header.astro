@@ -1,0 +1,82 @@
+---
+/**
+ * Header.astro
+ * ─────────────────────────────────────────────────────
+ * Global sticky navigation header. Used once in BaseLayout.astro.
+ * Do NOT duplicate this component in individual pages.
+ *
+ * Per-client customisation:
+ *   - Update the logo/clinic name text
+ *   - Update nav links to match the site structure
+ *   - The Book Now CTA href should point to the booking section or URL
+ */
+---
+
+<header class="sticky top-0 z-50 bg-white border-b border-[--color-border] shadow-[--shadow-nav]">
+  <div class="container px-[--spacing-section-x] py-4 flex items-center justify-between">
+
+    <!-- Logo / Clinic Name -->
+    <a href="/" class="text-xl font-bold text-[--color-primary]">
+      ClinicName
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav
+      class="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-body]"
+      aria-label="Main navigation"
+    >
+      <a href="#services"     class="hover:text-[--color-primary] transition-colors">Services</a>
+      <a href="#testimonials" class="hover:text-[--color-primary] transition-colors">Reviews</a>
+      <a href="#team"         class="hover:text-[--color-primary] transition-colors">Team</a>
+      <a href="#contact"      class="hover:text-[--color-primary] transition-colors">Contact</a>
+    </nav>
+
+    <!-- Mobile Hamburger (visible on mobile only) -->
+    <button
+      class="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      id="mobile-menu-toggle"
+    >
+      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
+      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
+      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
+    </button>
+
+    <!-- Book Now CTA -->
+    <a href="#contact" class="btn btn-default hidden md:inline-flex">
+      Book Now
+    </a>
+
+  </div>
+
+  <!-- Mobile Menu Drawer -->
+  <div
+    id="mobile-menu"
+    class="md:hidden hidden border-t border-[--color-border] bg-white"
+    aria-hidden="true"
+  >
+    <nav class="flex flex-col px-[--spacing-section-x] py-4 gap-4 text-sm font-medium text-[--color-body]" aria-label="Mobile navigation">
+      <a href="#services"     class="hover:text-[--color-primary] transition-colors py-2">Services</a>
+      <a href="#testimonials" class="hover:text-[--color-primary] transition-colors py-2">Reviews</a>
+      <a href="#team"         class="hover:text-[--color-primary] transition-colors py-2">Team</a>
+      <a href="#contact"      class="hover:text-[--color-primary] transition-colors py-2">Contact</a>
+      <a href="#contact" class="btn btn-default self-start mt-2">Book Now</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle — progressive enhancement
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu   = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const isOpen = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', isOpen);
+      menu.setAttribute('aria-hidden', String(isOpen));
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+</script>

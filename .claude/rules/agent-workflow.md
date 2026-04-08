@@ -9,7 +9,7 @@ Use this prompt when starting any significant page build or major revision:
 ```
 Review and build this task using the following agent sequence exactly:
 
-information-architecture-reviewer → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 Task:
 [describe the page, section, sitemap, or feature here]
@@ -19,26 +19,29 @@ Instructions:
    - review sitemap, URL structure, parent child relationships, and taxonomy if relevant
    - suggest improvements before design begins
 
-2. Then use ui-designer
+2. Then use ux-architect
+   - map the user journey for this page (Awareness → Interest → Trust → Intent → Action)
+   - define content priority for each section (primary message, supporting evidence, action trigger)
+   - specify interaction patterns (navigation behaviour, CTA behaviour, carousel, forms)
+   - identify friction points and conversion pathway
+   - produce handoff notes for ui-designer and frontend-builder
+   - do NOT design visually or write code
+
+3. Then use ui-designer
    - plan the section structure, layout, typography, spacing, interactions, and animation direction
+   - apply the UX architecture decisions from ux-architect
    - define section backgrounds using the design token system
    - apply mobile-first thinking
    - keep the design at Awwwards + Webflow + Oxygen Builder standard
    - do NOT write code
 
-3. Then use frontend-builder
+4. Then use frontend-builder
    - build the approved design in clean Astro + Tailwind
-   - no inline styles
+   - no inline styles (exception: GTM noscript style is a technical requirement)
    - use the existing global class system (.btn, .card, .container-main, .flex-layout, etc.)
-   - reusable components
-   - global header and footer only
+   - Header and Footer are components — never duplicate them per page
    - all images use the required picture pattern with decoding="async"
-
-4. Then use visual-qa-reviewer
-   - check whether the built page matches the design intent
-   - verify section variety, visual hierarchy, hero quality, CTA visibility, hover states, and mobile layout
-   - fix minor issues directly
-   - flag critical issues before proceeding
+   - implement all component behaviours specified by ux-architect
 
 5. Then use a11y-reviewer
    - check contrast ratios (4.5:1 body, 3:1 large text and UI)
@@ -68,9 +71,9 @@ Instructions:
 
 Output format:
 - Step 1: IA review
-- Step 2: UI plan
-- Step 3: Build
-- Step 4: Visual QA findings and fixes
+- Step 2: UX architecture plan
+- Step 3: UI design plan
+- Step 4: Build
 - Step 5: All review findings and fixes
 - Step 6: Final improved result
 

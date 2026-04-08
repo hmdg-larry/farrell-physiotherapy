@@ -9,6 +9,7 @@
 ### Completed
 
 * v1.3.0 — Cookie Consent Manager fully implemented
+* v1.5.0 — Three-Builder Design System synthesis (Awwwards + Webflow + Oxygen Builder)
 * `src/config/cookie-consent.config.ts` — marketing config file created
 * `src/components/CookieConsent.astro` — full banner + modal + JS created
 * `src/layouts/BaseLayout.astro` — consent head script + CookieConsent component added
@@ -16,10 +17,11 @@
 * `src/pages/api/booking-complete.ts` — Netlify Function created
 * `astro.config.mjs` — Netlify adapter added
 * `.env.example` — GA4 secrets section added
-* `CHANGELOG.md` + `VERSION` updated to v1.3.0
+* `CHANGELOG.md` + `VERSION` updated to v1.5.0
 * `CookieConsentReadme.md` — marketing team guide in project root
-* All agent files strengthened to HMDG UK agency standard (v1.2.0)
-* continuation-protocol.md, cookieconsent.md in .claude/memory/
+* All agent files updated to three-builder standard
+* `.claude/agents/ui-designer.md` — Scroll Storytelling, Palette/Spacing Discipline, expanded checklist
+* `.claude/agents/frontend-builder.md` — Webflow patterns (gradient, smooth scroll, storytelling observer), Oxygen patterns (token discipline, spacing scale, card grid, palette restraint)
 
 ### In Progress
 
@@ -37,9 +39,14 @@
 
 **Project:** Astro Base Template — HMDG UK web design agency, replacing Elementor premium builds
 **Repo:** https://github.com/felmerald-hmdg/astro-base-template
-**Current version:** v1.3.0
+**Current version:** v1.5.0
 **Astro version:** 6.1.3
 **Stack:** Astro + Tailwind CSS v4 + Netlify + @astrojs/netlify adapter
+
+**Three-builder design system:**
+- **Awwwards** — compositional depth, grain texture, choreographed motion, section transitions, restraint discipline
+- **Webflow** — editorial typography, scroll storytelling narrative arc, whitespace maximalism, gradient headline accent (one per page), visual risk-taking
+- **Oxygen Builder** — design token compliance, Tailwind spacing scale only (4px base), palette restraint (max 3 active colours), card grid consistency, shallow DOM
 
 **Cookie consent key files:**
 - `src/config/cookie-consent.config.ts` — ONLY file marketing edits (GTM, GA4, policy version, banner text, categories, booking domains)
@@ -66,7 +73,7 @@ SITE_ORIGIN=           ← https://clientsite.co.uk
 ```
 
 **Design standards:**
-- No inline styles ever (`style=""` is banned)
+- No inline styles ever (`style=""` is banned — only `style="--reveal-delay: Xms"` CSS variable injection is permitted)
 - Class-based styling only (Tailwind utilities or stylesheet classes)
 - All images: `<picture>` with `.avif` primary + `.webp` fallback + `decoding="async"`
 - Header and footer must be global/shared — never duplicated per page
@@ -76,4 +83,8 @@ IA reviewer → UI designer → Frontend builder → Visual QA → a11y → Perf
 
 ### Handoff Note
 
-Cookie consent is complete and committed at v1.3.0. Next session should start with testing (`npm run dev`) and then proceed to any new client page build. When building a client site, the first step is always to fill in `src/config/cookie-consent.config.ts` with the client's GTM ID, GA4 ID, and set `debug: true` temporarily to verify consent signals in the browser console.
+v1.5.0 is committed and pushed. The three-builder synthesis is complete across ui-designer.md and frontend-builder.md. All agent files are at full HMDG standard.
+
+Next session should start with either:
+1. Testing cookie consent (`npm run dev`) and verifying banner + booking tracker
+2. Starting a new client site build using the full agent workflow pipeline
