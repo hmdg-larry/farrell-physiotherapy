@@ -69,11 +69,11 @@ const scriptConfig = {
         <p class="hmdg-banner-title" id="hmdg-banner-title">{cfg.bannerTitle}</p>
         <p class="hmdg-banner-body">{cfg.bannerText}</p>
         <p class="hmdg-banner-links">
-          <a href={cfg.privacyPolicyUrl} class="hmdg-legal-link">Privacy Policy</a>
+          <a href={cfg.privacyPolicyUrl} class="hmdg-legal-link" target="_blank" rel="noopener noreferrer">Privacy Policy<span class="hmdg-sr-only"> (opens in new tab)</span></a>
           <span class="hmdg-legal-sep" aria-hidden="true">·</span>
-          <a href={cfg.termsUrl} class="hmdg-legal-link">Terms &amp; Conditions</a>
+          <a href={cfg.termsUrl} class="hmdg-legal-link" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions<span class="hmdg-sr-only"> (opens in new tab)</span></a>
           <span class="hmdg-legal-sep" aria-hidden="true">·</span>
-          <a href={cfg.cookiePolicyUrl} class="hmdg-legal-link">Cookie Policy</a>
+          <a href={cfg.cookiePolicyUrl} class="hmdg-legal-link" target="_blank" rel="noopener noreferrer">Cookie Policy<span class="hmdg-sr-only"> (opens in new tab)</span></a>
         </p>
       </div>
       <div class="hmdg-banner-actions" role="group" aria-label="Cookie consent options">
@@ -109,7 +109,7 @@ const scriptConfig = {
     aria-modal="true"
     aria-labelledby="hmdg-modal-title"
   >
-    <div class="hmdg-modal" role="document">
+    <div class="hmdg-modal">
 
       <!-- Modal header -->
       <div class="hmdg-modal-head">
@@ -168,7 +168,11 @@ const scriptConfig = {
           <button type="button" id="hmdg-modal-save"   class="hmdg-btn hmdg-btn-outline">{cfg.savePreferencesLabel}</button>
           <button type="button" id="hmdg-modal-accept" class="hmdg-btn hmdg-btn-primary">{cfg.acceptAllLabel}</button>
         </div>
-        <p class="hmdg-powered">Cookie preferences by <strong>HMDG</strong></p>
+        <p class="hmdg-powered">
+          Cookie preferences by <strong>HMDG</strong>
+          <span class="hmdg-legal-sep" aria-hidden="true">·</span>
+          <a href={cfg.cookiePolicyUrl} class="hmdg-modal-policy-link" target="_blank" rel="noopener noreferrer">Cookie Policy<span class="hmdg-sr-only"> (opens in new tab)</span></a>
+        </p>
       </div>
 
     </div>
@@ -277,7 +281,7 @@ const scriptConfig = {
 
   .hmdg-banner-links {
     margin:      6px 0 0;
-    font-size:   12px;
+    font-size:   13px;
     line-height: 1.5;
     display:     flex;
     flex-wrap:   wrap;
@@ -286,14 +290,14 @@ const scriptConfig = {
   }
 
   .hmdg-legal-link {
-    color:           var(--hmdg-primary);
-    text-decoration: underline;
+    color:                 var(--hmdg-primary);
+    text-decoration:       underline;
     text-underline-offset: 2px;
-    transition:      opacity 0.15s ease;
+    transition:            color 0.15s ease;
   }
 
   .hmdg-legal-link:hover {
-    opacity: 0.75;
+    color: var(--hmdg-heading);
   }
 
   .hmdg-legal-link:focus-visible {
@@ -303,8 +307,26 @@ const scriptConfig = {
   }
 
   .hmdg-legal-sep {
-    color:      var(--hmdg-caption);
+    color:       var(--hmdg-caption);
     user-select: none;
+  }
+
+  .hmdg-modal-policy-link {
+    color:                 var(--hmdg-primary);
+    text-decoration:       underline;
+    text-underline-offset: 2px;
+    transition:            color 0.15s ease;
+    font-size:             inherit;
+  }
+
+  .hmdg-modal-policy-link:hover {
+    color: var(--hmdg-heading);
+  }
+
+  .hmdg-modal-policy-link:focus-visible {
+    outline:        2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+    border-radius:  2px;
   }
 
   .hmdg-banner-actions {
@@ -858,14 +880,12 @@ const scriptConfig = {
       var sp    = new URLSearchParams(location.search);
       var keys  = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
       var stored = {};
-      var hasNew = false;
 
       keys.forEach(function (k) {
         var v = sp.get(k);
         if (v) {
           sessionStorage.setItem('hmdg_' + k, v);
           stored[k] = v;
-          hasNew = true;
         } else {
           var sv = sessionStorage.getItem('hmdg_' + k);
           if (sv) stored[k] = sv;
