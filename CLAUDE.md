@@ -88,18 +88,34 @@ Then continue the work using that agent's role, standards, and responsibilities.
 
 ### Agent routing
 
-| Task type | Agent |
-|---|---|
-| Sitemap, page hierarchy, URL structure, taxonomy | `information-architecture-reviewer` |
-| User journey, content flow, section planning, layout decisions | `ux-architect` |
-| Visual design, spacing, typography, premium look and feel | `ui-designer` |
-| Astro/Tailwind code, components, layout building, refactoring | `frontend-builder` |
-| Accessibility, semantics, keyboard support, contrast | `a11y-reviewer` |
-| Speed, images, Core Web Vitals, script reduction | `performance-reviewer` |
-| Metadata, headings, schema, crawlability, search visibility | `seo-reviewer` |
-| Messaging, trust signals, positioning, clarity | `marketing-reviewer` |
-| Form safety, sanitisation, security hardening | `security-reviewer` |
-| CTAs, booking flow, friction reduction, lead generation | `conversion-reviewer` |
+| Task type | Primary agent | Also involve |
+|---|---|---|
+| Sitemap, page hierarchy, URL structure, taxonomy | `information-architecture-reviewer` | — |
+| User journey, content flow, section planning, layout decisions | `ux-architect` | — |
+| Visual design, spacing, typography, premium look and feel | `ui-designer` | `frontend-builder` to implement |
+| Any component, banner, modal, section, or UI element with visual output | `ui-designer` | `frontend-builder` to implement |
+| Astro/Tailwind code, components, layout building, refactoring | `frontend-builder` | `ui-designer` if visual changes are involved |
+| Any HTML/CSS/Tailwind change that affects how something looks | `ui-designer` → `frontend-builder` | — |
+| Accessibility, semantics, keyboard support, contrast | `a11y-reviewer` | — |
+| Speed, images, Core Web Vitals, script reduction | `performance-reviewer` | — |
+| Metadata, headings, schema, crawlability, search visibility | `seo-reviewer` | — |
+| Messaging, trust signals, positioning, clarity | `marketing-reviewer` | — |
+| Form safety, sanitisation, security risks | `security-reviewer` | `ui-designer` + `frontend-builder` if UI changes are needed |
+| CTAs, booking flow, friction reduction, lead generation | `conversion-reviewer` | `ui-designer` + `frontend-builder` if UI changes are needed |
+| Cookie consent, banners, modals, legal components | `security-reviewer` | `ui-designer` → `frontend-builder` always |
+
+### The ui-designer + frontend-builder rule
+
+**These two agents are always paired when any visual output is involved.**
+
+`ui-designer` plans the design. `frontend-builder` implements it. This applies to:
+- Full pages and sections
+- Any component that has visual output (banners, modals, cards, CTAs, forms, headers, footers)
+- Any task that changes how something looks, even if the change is small
+- Adding links, labels, or text to an existing UI element
+- Styling fixes, spacing adjustments, or layout changes
+
+Never skip `ui-designer` and jump straight to `frontend-builder` for anything visible. Even a small link addition needs a design decision (colour, size, placement, hover state) before implementation.
 
 ### Major task rule
 
