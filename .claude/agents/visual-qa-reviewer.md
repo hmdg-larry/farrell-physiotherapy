@@ -1,6 +1,7 @@
 ---
 name: visual-qa-reviewer
 description: Use this agent to review the visual quality of a built page before accessibility and other reviews. Invoke after frontend-builder to check whether the built result matches the design intent and meets Awwwards-level visual standards. Catches implementation gaps between design plan and built output.
+model: claude-sonnet-4-6
 tools:
   - Read
   - Glob

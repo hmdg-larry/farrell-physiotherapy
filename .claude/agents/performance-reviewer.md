@@ -1,6 +1,7 @@
 ---
 name: performance-reviewer
 description: Use this agent to review and improve frontend performance. Invoke after building pages to check Core Web Vitals, image optimisation, JavaScript usage, layout shift risk, font loading, and Lighthouse readiness.
+model: claude-haiku-4-5-20251001
 tools:
   - Read
   - Glob

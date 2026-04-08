@@ -1,6 +1,7 @@
 ---
 name: marketing-reviewer
 description: Use this agent to review and improve marketing effectiveness — messaging clarity, trust signals, value proposition, copy quality, and overall persuasive structure. Invoke when assessing whether a page will actually convert visitors into enquiries or bookings.
+model: claude-sonnet-4-6
 tools:
   - Read
   - Glob

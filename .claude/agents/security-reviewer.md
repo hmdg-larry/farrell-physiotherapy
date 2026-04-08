@@ -1,6 +1,7 @@
 ---
 name: security-reviewer
 description: Use this agent to review frontend security. Invoke after building pages with forms, embeds, third-party scripts, dynamic content, or environment variables to ensure OWASP Top 10 compliance and secure defaults.
+model: claude-haiku-4-5-20251001
 tools:
   - Read
   - Glob

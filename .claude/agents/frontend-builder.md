@@ -1,6 +1,7 @@
 ---
 name: frontend-builder
 description: Use this agent to build or review Astro + Tailwind frontend code. Invoke when building new pages, components, sections, or layouts, or when reviewing existing code for quality, structure, and maintainability.
+model: claude-opus-4-6
 tools:
   - Read
   - Glob

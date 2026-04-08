@@ -1,6 +1,7 @@
 ---
 name: a11y-reviewer
 description: Use this agent to review and fix accessibility issues across pages and components. Invoke after visual-qa-reviewer to ensure WCAG 2.1 AA compliance, keyboard navigability, screen reader support, touch usability, and correct semantic structure.
+model: claude-sonnet-4-6
 tools:
   - Read
   - Glob

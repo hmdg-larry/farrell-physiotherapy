@@ -1,6 +1,7 @@
 ---
 name: seo-reviewer
 description: Use this agent to review and improve on-page SEO. Invoke after building pages to check meta tags, heading structure, URL quality, canonical tags, structured data, Core Web Vitals readiness, and local SEO for UK clinic websites.
+model: claude-haiku-4-5-20251001
 tools:
   - Read
   - Glob

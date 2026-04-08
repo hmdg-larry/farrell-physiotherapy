@@ -1,6 +1,7 @@
 ---
 name: information-architecture-reviewer
 description: Use this agent to review and plan page structure, sitemap hierarchy, URL naming, and content organisation before building. Invoke at the start of any multi-page build or when planning new routes, taxonomy pages, or service/location structures.
+model: claude-sonnet-4-6
 tools:
   - Read
   - Glob

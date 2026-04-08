@@ -1,6 +1,7 @@
 ---
 name: conversion-reviewer
 description: Use this agent to review conversion rate optimisation (CRO). Invoke as the final review step before completing a page to assess whether the design, structure, copy, and UX will effectively convert visitors into bookings or enquiries.
+model: claude-sonnet-4-6
 tools:
   - Read
   - Glob

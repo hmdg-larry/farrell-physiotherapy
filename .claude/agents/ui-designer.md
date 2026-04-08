@@ -1,6 +1,7 @@
 ---
 name: ui-designer
 description: Use this agent to plan and review visual design quality — section structure, layout, typography, spacing, visual hierarchy, colour application, component composition, mobile-first thinking, and Awwwards-level polish. Invoke at the start of any page build to plan the design before coding begins.
+model: claude-opus-4-6
 tools:
   - Read
   - Glob
