@@ -41,6 +41,14 @@ export const cookieConsentConfig = {
   savePreferencesLabel: 'Save Preferences',
 
   /**
+   * Legal page URLs shown as links in the cookie banner.
+   * Update these if the client uses different URL slugs.
+   */
+  privacyPolicyUrl:  '/privacy-policy',
+  termsUrl:          '/terms-conditions',
+  cookiePolicyUrl:   '/cookie-policy',
+
+  /**
    * Cookie categories shown in the preferences modal.
    * Set enabled: false to hide a category completely.
    * Necessary is always on and cannot be toggled.

@@ -68,6 +68,13 @@ const scriptConfig = {
       <div class="hmdg-banner-text">
         <p class="hmdg-banner-title" id="hmdg-banner-title">{cfg.bannerTitle}</p>
         <p class="hmdg-banner-body">{cfg.bannerText}</p>
+        <p class="hmdg-banner-links">
+          <a href={cfg.privacyPolicyUrl} class="hmdg-legal-link">Privacy Policy</a>
+          <span class="hmdg-legal-sep" aria-hidden="true">·</span>
+          <a href={cfg.termsUrl} class="hmdg-legal-link">Terms &amp; Conditions</a>
+          <span class="hmdg-legal-sep" aria-hidden="true">·</span>
+          <a href={cfg.cookiePolicyUrl} class="hmdg-legal-link">Cookie Policy</a>
+        </p>
       </div>
       <div class="hmdg-banner-actions" role="group" aria-label="Cookie consent options">
         <button type="button" id="hmdg-btn-reject"    class="hmdg-btn hmdg-btn-ghost">{cfg.rejectAllLabel}</button>
@@ -266,6 +273,38 @@ const scriptConfig = {
     font-size:   13px;
     color:       var(--hmdg-caption);
     line-height: 1.5;
+  }
+
+  .hmdg-banner-links {
+    margin:      6px 0 0;
+    font-size:   12px;
+    line-height: 1.5;
+    display:     flex;
+    flex-wrap:   wrap;
+    align-items: center;
+    gap:         4px;
+  }
+
+  .hmdg-legal-link {
+    color:           var(--hmdg-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition:      opacity 0.15s ease;
+  }
+
+  .hmdg-legal-link:hover {
+    opacity: 0.75;
+  }
+
+  .hmdg-legal-link:focus-visible {
+    outline:        2px solid var(--hmdg-primary);
+    outline-offset: 2px;
+    border-radius:  2px;
+  }
+
+  .hmdg-legal-sep {
+    color:      var(--hmdg-caption);
+    user-select: none;
   }
 
   .hmdg-banner-actions {
