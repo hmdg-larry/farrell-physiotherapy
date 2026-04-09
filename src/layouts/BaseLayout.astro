@@ -8,15 +8,18 @@
  * Props:
  *   title       — <title> tag content
  *   description — meta description for SEO
+ *   noindex    — set true on thank-you and confirmation pages
  */
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
   description = "Professional clinic providing expert care in the UK.",
+  noindex = false,
 } = Astro.props;
 
 import "../styles/global.css";
@@ -56,6 +59,7 @@ const cfg = cookieConsentConfig;
       rel="stylesheet"
     />
     <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- ── Security meta tags ────────────────────────────────────
          These provide baseline security on any host.

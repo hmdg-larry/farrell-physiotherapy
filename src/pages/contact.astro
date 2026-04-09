@@ -13,7 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 >
 
   <!-- ── Page Hero ─────────────────────────────────────── -->
-  <section class="bg-slate-900">
+  <section class="hero-dark">
     <div class="container-main">
       <div class="container-inner contact-inner">
         <span class="eyebrow">Get in Touch</span>
@@ -38,6 +38,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style>
+  .hero-dark {
+    background-color: var(--color-hero-dark);
+  }
   .container-inner {
     padding-top: 4rem;
     padding-bottom: 4rem;

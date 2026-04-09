@@ -533,7 +533,7 @@ const sections = [
   .tc-hero {
     position: relative;
     overflow: hidden;
-    background: #0a0f1a;
+    background: var(--color-hero-dark);
   }
 
   .tc-hero-img {
@@ -567,9 +567,9 @@ const sections = [
   }
 
   .tc-hero-h1 {
-    color: white;
+    color: var(--color-white);
     margin: 0.75rem 0 0;
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: var(--text-h1);
     letter-spacing: -0.02em;
     line-height: 1.08;
   }
@@ -586,7 +586,7 @@ const sections = [
     display: inline-flex;
     align-items: center;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: 0.05em;
     color: var(--color-primary);
     background: rgba(219, 0, 62, 0.12);
@@ -620,7 +620,7 @@ const sections = [
 
   .tc-mobile-pill {
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: rgba(255, 255, 255, 0.7);
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -633,12 +633,12 @@ const sections = [
   .tc-mobile-pill:hover {
     background: rgba(219, 0, 62, 0.15);
     border-color: rgba(219, 0, 62, 0.35);
-    color: white;
+    color: var(--color-white);
   }
 
   /* ── Body layout ────────────────────────────────────────────── */
   .tc-body {
-    background: white;
+    background: var(--color-white);
     padding-top: 5rem;
     padding-bottom: 8rem;
   }
@@ -691,7 +691,7 @@ const sections = [
 
   .tc-sidebar-title {
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-headline);
@@ -699,7 +699,7 @@ const sections = [
 
   .tc-sidebar-count {
     font-size: 0.6875rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: var(--color-caption);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -733,7 +733,7 @@ const sections = [
   .tc-nav-num {
     font-family: var(--font-heading);
     font-size: 0.625rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.06em;
     color: var(--color-border);
     min-width: 1.5rem;
@@ -754,7 +754,7 @@ const sections = [
     color: var(--color-primary);
     background: var(--color-accent);
     border-left-color: var(--color-primary);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   .tc-nav-link.is-active .tc-nav-num {
@@ -792,7 +792,7 @@ const sections = [
 
   .tc-sidebar-cta {
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-primary);
     text-decoration: none;
     transition: opacity 0.15s;
@@ -840,7 +840,7 @@ const sections = [
   .tc-section-num {
     font-family: var(--font-heading);
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.1em;
     color: var(--color-primary);
     background: var(--color-accent);
@@ -853,7 +853,7 @@ const sections = [
 
   .tc-section-header h2 {
     font-size: clamp(1.25rem, 2.5vw, 1.625rem);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--color-headline);
     margin: 0;
     line-height: 1.2;
@@ -861,7 +861,7 @@ const sections = [
   }
 
   .tc-section-body p {
-    font-size: 0.9375rem;
+    font-size: var(--text-sm);
     line-height: 1.85;
     color: var(--color-body);
     margin: 0 0 1rem;
@@ -881,7 +881,7 @@ const sections = [
   }
 
   .tc-section-body li {
-    font-size: 0.9375rem;
+    font-size: var(--text-sm);
     line-height: 1.75;
     color: var(--color-body);
     padding-left: 1.25rem;
@@ -922,7 +922,7 @@ const sections = [
   }
 
   .tc-notice p {
-    font-size: 0.875rem;
+    font-size: var(--text-xs);
     color: var(--color-caption);
     margin: 0;
     line-height: 1.8;

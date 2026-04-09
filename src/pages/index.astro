@@ -22,6 +22,7 @@ const colours = [
   { label: "--color-border",        hex: "#E2E8F0", desc: "Subtle border and divider colour.",                                             group: "Surface" },
   { label: "--color-white",         hex: "#FFFFFF", desc: "Pure white — card surfaces, nav, modals.",                                      group: "Surface" },
   { label: "--color-black",         hex: "#000000", desc: "Pure black — use sparingly.",                                                   group: "Surface" },
+  { label: "--color-hero-dark",     hex: "#0a0f1a", desc: "Deep navy-black — hero and dark footer backgrounds on legal and index pages.", group: "Surface" },
 ];
 
 const buttons = [
@@ -70,6 +71,10 @@ const navLinks = [
   { href: "#images",     label: "Image Rules",    num: "14" },
   { href: "#security",   label: "Security",       num: "15" },
   { href: "#agents",     label: "Agent System",   num: "16" },
+  { href: "#baselayout", label: "BaseLayout",     num: "17" },
+  { href: "#cookiecfg",  label: "Cookie Config",  num: "18" },
+  { href: "#carousel",   label: "Carousels",      num: "19" },
+  { href: "#setup",      label: "Client Setup",   num: "20" },
 ];
 ---
 
@@ -89,9 +94,9 @@ const navLinks = [
       h1, h2, h3, h4, h5, h6 { font-weight: 400; }
 
       /* Typography specimen — restore natural weights inside preview wrapper */
-      .type-preview h1, .type-preview h2 { font-weight: 800; }
-      .type-preview h3, .type-preview h4 { font-weight: 700; }
-      .type-preview h5, .type-preview h6 { font-weight: 600; }
+      .type-preview h1, .type-preview h2 { font-weight: var(--font-weight-extrabold); }
+      .type-preview h3, .type-preview h4 { font-weight: var(--font-weight-bold); }
+      .type-preview h5, .type-preview h6 { font-weight: var(--font-weight-semibold); }
 
       /* Design token radius demos — border-radius set via JS CSS variable */
       .radius-demo {
@@ -102,10 +107,15 @@ const navLinks = [
       .sidebar-link.is-active {
         color: var(--color-headline);
         background-color: var(--color-accent);
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
       }
       .sidebar-link.is-active .sidebar-num {
         color: var(--color-headline);
+      }
+
+      /* Dark sections — hero and footer use deep navy-black token */
+      .ds-dark {
+        background-color: var(--color-hero-dark);
       }
     </style>
   </head>
@@ -158,7 +168,7 @@ const navLinks = [
 
 
         <!-- HERO -->
-        <section class="bg-slate-900">
+        <section class="ds-dark">
           <div class="px-8 md:px-10 xl:px-14 py-16 max-w-4xl">
 
             <div class="flex flex-col gap-6">
@@ -173,7 +183,7 @@ const navLinks = [
               <div class="flex flex-wrap gap-2">
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Astro v5</span>
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Tailwind v4</span>
-                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">10 AI Agents</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">11 AI Agents</span>
                 <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">v1.0.0</span>
               </div>
               <p class="text-white/50 text-sm m-0">
@@ -431,7 +441,7 @@ const navLinks = [
               <!-- Dark zone -->
               <div class="flex flex-col gap-3">
                 <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">On Dark Backgrounds</p>
-                <div class="bg-slate-900 rounded-xl p-6 flex flex-col gap-5">
+                <div class="ds-dark rounded-xl p-6 flex flex-col gap-5">
                   {buttons.filter(b => b.dark).map(b => (
                     <div class="flex items-start gap-5 flex-wrap">
                       <div class="shrink-0 min-w-[10rem]">
@@ -619,10 +629,12 @@ const navLinks = [
 
               <div class="flex flex-col gap-4">
                 {[
-                  { cls: ".flex-layout",                    desc: "Default · 15px gap · wraps",               items: ["Item A", "Item B", "Item C", "Item D"],  mod: "flex-layout" },
-                  { cls: ".flex-layout.flex-layout--center", desc: "Centre-aligned · trust badges, CTA rows", items: ["Trust A", "Trust B", "Trust C"],          mod: "flex-layout flex-layout--center" },
-                  { cls: ".flex-layout.flex-layout--between",desc: "Space-between · nav, header bars",        items: ["Logo", "Nav Links", "CTA Button"],        mod: "flex-layout flex-layout--between" },
-                  { cls: ".flex-layout.flex-layout--col",   desc: "Vertical stack · form fields, sidebar",    items: ["Stack 1", "Stack 2", "Stack 3"],           mod: "flex-layout flex-layout--col" },
+                  { cls: ".flex-layout",                     desc: "Default · 15px gap · wraps on small screens",     items: ["Item A", "Item B", "Item C", "Item D"], mod: "flex-layout" },
+                  { cls: ".flex-layout.flex-layout--row",    desc: "Explicit horizontal row · same as default but declared clearly", items: ["Left", "Centre", "Right"], mod: "flex-layout flex-layout--row" },
+                  { cls: ".flex-layout.flex-layout--center", desc: "Centre-aligned · trust badges, CTA rows",         items: ["Trust A", "Trust B", "Trust C"],        mod: "flex-layout flex-layout--center" },
+                  { cls: ".flex-layout.flex-layout--between",desc: "Space-between · nav bars, header rows",           items: ["Logo", "Nav Links", "CTA Button"],      mod: "flex-layout flex-layout--between" },
+                  { cls: ".flex-layout.flex-layout--col",    desc: "Vertical stack · form fields, info blocks",       items: ["Stack 1", "Stack 2", "Stack 3"],         mod: "flex-layout flex-layout--col" },
+                  { cls: ".flex-layout.flex-layout--start",  desc: "Top-align items · text+image rows, card columns", items: ["Top A", "Top B", "Top C"],              mod: "flex-layout flex-layout--start" },
                 ].map(demo => (
                   <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-3 flex-wrap">
@@ -699,7 +711,7 @@ const navLinks = [
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { prop: "background",    val: "#ffffff" },
+                  { prop: "background",    val: "var(--color-white)" },
                   { prop: "border",        val: "1px solid var(--color-border)" },
                   { prop: "border-radius", val: "var(--radius-card) · 12px" },
                   { prop: "padding",       val: "var(--spacing-card-p) · 28px" },
@@ -1293,23 +1305,424 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
           </article>
 
 
+
+          <!-- ───────────────────────────────────────────────────
+               17 — BASELAYOUT
+          ─────────────────────────────────────────────────────── -->
+          <article id="baselayout" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">17</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">BaseLayout.astro</h5>
+                  <p class="text-sm text-[--color-caption] m-0">The single shared wrapper for every client-facing page.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Layout</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- Props -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Props</p>
+                {[
+                  { prop: "title",       type: "string",   required: true,  desc: "Page title tag content. Required on every page." },
+                  { prop: "description", type: "string?",  required: false, desc: "Meta description for SEO. Defaults to a generic clinic description if omitted." },
+                  { prop: "noindex",     type: "boolean?", required: false, desc: "Set true on thank-you and booking confirmation pages. Injects a noindex, nofollow robots meta tag in the page head." },
+                ].map(p => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{p.prop}</code>
+                    <code class="code-hex shrink-0">{p.type}</code>
+                    {p.required && <span class="text-xs font-bold text-[--color-primary] bg-[--color-accent] border border-[--color-primary]/20 px-2 py-0.5 rounded-[--radius-badge] shrink-0">required</span>}
+                    <p class="m-0 text-sm text-[--color-body]">{p.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- What BaseLayout includes automatically -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Included Automatically — Do Not Re-Import</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { item: "global.css",          note: "Once globally — never import again per-page" },
+                    { item: "Google Fonts",         note: "Inter + Inter Tight, weights 400–800" },
+                    { item: "Security meta tags",   note: "CSP, X-Frame, referrer — plus _headers / vercel.json" },
+                    { item: "Consent Mode v2",      note: "Fires before GTM — required for GDPR compliance" },
+                    { item: "GTM noscript",         note: "Fallback tag — only active when gtmId is set in config" },
+                    { item: "Header component",     note: "Global — never add Header inside a page" },
+                    { item: "Footer component",     note: "Global — never add Footer inside a page" },
+                    { item: "CookieConsent",        note: "Global — never add CookieConsent inside a page" },
+                  ].map(i => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <div class="icon-dot-offset mt-0.5"></div>
+                      <div class="flex flex-col gap-0.5">
+                        <code class="code-label">{i.item}</code>
+                        <p class="m-0 text-xs text-[--color-caption]">{i.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Usage pattern -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Usage Pattern</p>
+                <pre class="code-block"><code>---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+&lt;BaseLayout
+  title="Services — ClinicName"
+  description="Expert physiotherapy in London. Book online today."
+&gt;
+  &lt;section class="bg-[--color-muted]"&gt;
+    &lt;div class="container-main"&gt;
+      &lt;div class="container-inner"&gt;
+        ...page content...
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/BaseLayout&gt;
+
+/* For thank-you and booking confirmation pages — add noindex */
+&lt;BaseLayout title="Thank You" description="..." noindex=&lbrace;true&rbrace;&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — BaseLayout</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Build a new page at [URL]. Use BaseLayout from src/layouts/BaseLayout.astro. Pass title and description props. Never import global.css, Header, Footer, or CookieConsent separately — BaseLayout handles all of these. Content goes directly inside the BaseLayout tags. If this is a thank-you or confirmation page, add noindex prop set to true on the BaseLayout.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               18 — COOKIE CONSENT CONFIG
+          ─────────────────────────────────────────────────────── -->
+          <article id="cookiecfg" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">18</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Cookie Consent Config</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Marketing team editable fields in <code class="code-label">src/config/cookie-consent.config.ts</code></p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Config</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- Marketing team fields -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Marketing Team — Edit These Fields</p>
+                {[
+                  { field: "gtmId",            example: "'GTM-XXXXXXX'",    desc: "Google Tag Manager container ID. Find in GTM → Admin → Container Settings." },
+                  { field: "gtagId",           example: "'G-XXXXXXXXXX'",   desc: "GA4 Measurement ID. Find in GA4 → Admin → Data Streams → Web stream → Measurement ID." },
+                  { field: "policyVersion",    example: "'1.0'",             desc: "Start every new site at '1.0'. Bumping this forces ALL existing visitors to re-consent. Only change when the cookie policy content actually changes." },
+                  { field: "bannerTitle",      example: "'We use cookies'",  desc: "Heading shown in the cookie consent banner." },
+                  { field: "bannerText",       example: "'We use...'",       desc: "Body text in the banner. Keep to 1–2 sentences. Must match the live cookie policy page." },
+                  { field: "acceptAllLabel",   example: "'Accept All'",      desc: "Primary accept button label. UK English spelling required." },
+                  { field: "rejectAllLabel",   example: "'Reject All'",      desc: "Reject button label. UK English spelling required." },
+                  { field: "customiseLabel",   example: "'Customise'",       desc: "Settings button label. Note UK spelling — Customise not Customize." },
+                ].map(f => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{f.field}</code>
+                    <code class="code-hex shrink-0">{f.example}</code>
+                    <p class="m-0 text-sm text-[--color-body] flex-1">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Rules -->
+              <div class="p-4 bg-[--color-accent] border border-[--color-primary]/20 rounded-[--radius-card] flex gap-3 items-start">
+                <span class="text-[--color-primary] font-bold text-sm shrink-0">⚠</span>
+                <div class="flex flex-col gap-1">
+                  <p class="m-0 text-sm font-semibold text-[--color-headline]">Important rules</p>
+                  <ul class="m-0 text-sm text-[--color-body] flex flex-col gap-1 pl-4">
+                    <li>Never store live GTM or GA4 IDs in version control — use environment variables for production deployments.</li>
+                    <li>Only bump <code class="code-label">policyVersion</code> when the cookie policy text actually changes — not on every deploy.</li>
+                    <li>All button labels must use UK English spelling (Customise, not Customize).</li>
+                    <li>The <code class="code-label">bannerText</code> must reflect what the live <a href="/cookie-policy" class="text-[--color-primary]">/cookie-policy</a> page says.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>// src/config/cookie-consent.config.ts
+export const cookieConsentConfig = &lbrace;
+  gtmId:          'GTM-XXXXXXX',   // ← replace per client
+  gtagId:         'G-XXXXXXXXXX',  // ← replace per client
+  policyVersion:  '1.0',           // ← bump only when policy changes
+  bannerTitle:    'We use cookies',
+  bannerText:     'We use cookies to improve your experience...',
+  acceptAllLabel: 'Accept All',
+  rejectAllLabel: 'Reject All',
+  customiseLabel: 'Customise',
+&rbrace;;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Cookie Config</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Update the cookie consent configuration for [CLIENT NAME]. File: src/config/cookie-consent.config.ts. Set gtmId to [GTM ID], gtagId to [GA4 ID], bannerText to match their cookie policy, and policyVersion to '1.0'. Use UK English spelling on all button labels. Do not change any developer settings below the marketing team section.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               19 — SWIPER CAROUSELS
+          ─────────────────────────────────────────────────────── -->
+          <article id="carousel" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">19</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Swiper Carousels</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Swiper v11 via CDN. Brand colours overridden in global.css.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Carousel</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- TestimonialSlider component -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Prebuilt Component — TestimonialSlider</p>
+                <div class="p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-3">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <code class="code-label">src/components/TestimonialSlider.astro</code>
+                  </div>
+                  <p class="m-0 text-sm text-[--color-body]">Ready-made Swiper carousel for patient reviews and testimonials. Accepts a <code class="code-label">testimonials</code> array. Includes navigation arrows, pagination dots, responsive breakpoints, and optional autoplay.</p>
+                  <pre class="code-block"><code>---
+import TestimonialSlider from '../components/TestimonialSlider.astro';
+
+const reviews = [
+  &lbrace; name: "Sarah M.", role: "Physiotherapy patient", body: "Excellent care...", rating: 5 &rbrace;,
+  &lbrace; name: "James K.", role: "Sports massage client",  body: "Fast recovery...", rating: 5 &rbrace;,
+];
+---
+
+&lt;TestimonialSlider testimonials=&lbrace;reviews&rbrace; /&gt;</code></pre>
+                </div>
+              </div>
+
+              <!-- Testimonial object shape -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Testimonial Object Shape</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { field: "name",   type: "string",    desc: "Patient or client full name" },
+                    { field: "role",   type: "string",    desc: "Treatment type or patient context" },
+                    { field: "body",   type: "string",    desc: "Review text (1–3 sentences)" },
+                    { field: "rating", type: "number 1–5",desc: "Star rating — renders filled/empty stars" },
+                  ].map(f => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <code class="code-label shrink-0">{f.field}</code>
+                      <code class="code-hex shrink-0">{f.type}</code>
+                      <p class="m-0 text-xs text-[--color-body]">{f.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Brand overrides -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Brand Colour Overrides — Already in global.css</p>
+                <pre class="code-block"><code>/* global.css — Swiper brand overrides — do not remove */
+.swiper-button-next,
+.swiper-button-prev &lbrace;
+  color: var(--color-primary) !important;
+&rbrace;
+.swiper-pagination-bullet-active &lbrace;
+  background: var(--color-primary) !important;
+&rbrace;</code></pre>
+                <p class="m-0 text-sm text-[--color-body]">Swiper arrows and active pagination dots automatically use the client's brand colour. These overrides are global — they apply to every Swiper instance on the site.</p>
+              </div>
+
+              <!-- Breakpoint pattern -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Standard Breakpoints Used in TestimonialSlider</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { bp: "< 768px",   slides: "1" },
+                    { bp: "768px+",    slides: "2" },
+                    { bp: "1024px+",   slides: "3" },
+                  ].map(b => (
+                    <div class="flex flex-col gap-1 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] text-center">
+                      <code class="code-hex">{b.bp}</code>
+                      <p class="m-0 text-sm font-semibold text-[--color-headline]">{b.slides} slide{b.slides !== "1" ? "s" : ""}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Carousels</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add a [testimonial / service / team] carousel to [SECTION]. Import TestimonialSlider from src/components/TestimonialSlider.astro and pass a testimonials array matching the shape: name (string), role (string), body (string), rating (number 1–5). Do not import Swiper CSS or JS manually — the component handles this. Do not override Swiper colours — they are set globally in global.css.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               20 — CLIENT SETUP CHECKLIST
+          ─────────────────────────────────────────────────────── -->
+          <article id="setup" class="border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">20</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Client Setup Checklist</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Everything to do when starting a new clinic site from this template.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Setup</span>
+            </header>
+
+            <div class="px-8 py-6 bg-white flex flex-col gap-6">
+
+              <!-- 4-step brand setup -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 1 — Brand Colours &amp; Fonts · <code class="code-hex normal-case">src/styles/global.css @theme</code></p>
+                {[
+                  { token: "--color-primary",        action: "Change to client brand colour (hex). This updates every button, link, and accent automatically." },
+                  { token: "--color-primary-hover",  action: "Set to a slightly darker or lighter shade of --color-primary for hover states." },
+                  { token: "--color-accent",         action: "Set to a very light tint of the brand colour. Used for section backgrounds and secondary fills." },
+                  { token: "--font-heading",         action: "Change if the client uses a different heading font. Inter Tight is the default." },
+                  { token: "--font-body",            action: "Change if the client uses a different body font. Inter is the default." },
+                ].map(s => (
+                  <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <code class="code-label shrink-0">{s.token}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{s.action}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Step 2 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 2 — Cookie Consent · <code class="code-hex normal-case">src/config/cookie-consent.config.ts</code></p>
+                <div class="p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-2">
+                  <p class="m-0 text-sm text-[--color-body]">Set <code class="code-label">gtmId</code>, <code class="code-label">gtagId</code>, <code class="code-label">bannerText</code>, and <code class="code-label">policyVersion</code>. See section 18 for full field reference.</p>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 3 — Global Components</p>
+                {[
+                  { file: "src/components/Header.astro",  action: "Update clinic name, logo, navigation links, phone number, and booking CTA." },
+                  { file: "src/components/Footer.astro",  action: "Update clinic name, address, map embed, social links, and legal page links." },
+                  { file: "public/favicon.svg",           action: "Replace with the client's favicon. Keep .svg format for sharpness at all sizes." },
+                ].map(s => (
+                  <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{s.file}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{s.action}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Step 4 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 4 — Legal Pages &amp; noindex Rules</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { page: "/privacy-policy",      rule: "Add client content. Must be indexable." },
+                    { page: "/terms-conditions",    rule: "Add client content. Must be indexable." },
+                    { page: "/cookie-policy",       rule: "Add client content. Must match bannerText in cookie config." },
+                    { page: "/thank-you",           rule: "noindex prop is true — already set in template." },
+                    { page: "/thank-you-booking",   rule: "noindex prop is true — already set in template." },
+                    { page: "/contact",             rule: "Update form endpoint and contact details." },
+                  ].map(p => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <div class="icon-dot-offset mt-0.5"></div>
+                      <div class="flex flex-col gap-0.5">
+                        <code class="code-label">{p.page}</code>
+                        <p class="m-0 text-xs text-[--color-body]">{p.rule}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Page/URL map -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">API Routes Included in Template</p>
+                <div class="flex flex-col gap-2">
+                  {[
+                    { route: "/api/book-now",        file: "src/pages/api/book-now.ts",        desc: "Handles booking form submissions." },
+                    { route: "/api/booking-complete", file: "src/pages/api/booking-complete.ts", desc: "Handles post-booking confirmation flow." },
+                  ].map(r => (
+                    <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                      <code class="code-label shrink-0">{r.route}</code>
+                      <code class="code-hex shrink-0">{r.file}</code>
+                      <p class="m-0 text-sm text-[--color-body]">{r.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="bg-white px-8 pb-8">
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Client Setup</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">Set up this template for a new client: [CLIENT NAME]. 1. Update --color-primary, --color-primary-hover, and --color-accent in src/styles/global.css @theme to match their brand. 2. Set gtmId and gtagId in src/config/cookie-consent.config.ts. 3. Update the clinic name, logo, nav links, phone, and CTA in Header.astro and Footer.astro. 4. Replace public/favicon.svg with the client's favicon. 5. Add content to privacy-policy, terms-conditions, and cookie-policy pages. 6. Update contact form endpoint in contact.astro and /api/book-now.ts.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
         </main><!-- end articles -->
 
 
         <!-- FOOTER -->
-        <footer class="bg-slate-900">
+        <footer class="ds-dark">
 
           <div class="px-[30px] py-8 flex-layout flex-layout--between gap-4">
-            <span class="text-sm font-semibold text-white">HMDG Base Template</span>
+            <span class="text-sm font-semibold text-white/70">HMDG Base Template</span>
           </div>
 
           <div class="border-t border-white/10">
             <div class="px-[30px] py-4 flex-layout flex-layout--between gap-4">
               <div class="flex-layout items-center gap-5 flex-wrap">
-                <span class="text-sm text-white">© Copyright HMDG {new Date().getFullYear()}</span>
-                <span class="text-sm text-white">
+                <span class="text-sm text-white/60">© Copyright HMDG {new Date().getFullYear()}</span>
+                <span class="text-sm text-white/60">
                   Designed &amp; Developed by
-                  <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:text-white/70 transition-colors">HMDG</a>
+                  <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer" class="font-semibold text-white/70 hover:text-white transition-colors">HMDG</a>
                 </span>
               </div>
               <nav class="flex-layout items-center gap-5 flex-wrap" aria-label="Legal">

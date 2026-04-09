@@ -49,6 +49,7 @@
   --color-border:   #e2e8f0;   /* subtle borders and dividers                  */
   --color-white:    #ffffff;   /* pure white — card backgrounds, nav           */
   --color-black:    #000000;   /* pure black — use sparingly                   */
+  --color-hero-dark: #0a0f1a;  /* deep navy-black — legal page hero backgrounds */
 
   /* ──────────────────────────────────────────────────────────
      TYPOGRAPHY — FONT FAMILIES
@@ -231,14 +232,14 @@
     box-sizing: border-box;
     /* Firefox — apply thin custom scrollbar to every scroll container */
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: var(--color-border) transparent;
   }
 
   html {
     font-family:              var(--font-body);
     font-size:                1rem;
     color:                    var(--color-body);
-    background-color:         #ffffff;
+    background-color:         var(--color-white);
     scroll-behavior:          smooth;
     -webkit-font-smoothing:   antialiased;
     -moz-osx-font-smoothing:  grayscale;
@@ -262,13 +263,13 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: var(--color-border);
     border-radius:    999px;
     transition:       background-color 0.2s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #94a3b8;
+    background-color: var(--color-caption);
   }
 
   ::-webkit-scrollbar-thumb:active {

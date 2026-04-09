@@ -11,6 +11,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout
   title="Thank You — ClinicName"
   description="Thank you for getting in touch with ClinicName. We will be in contact shortly."
+  noindex={true}
 >
 
   <section class="ty-page">
@@ -87,7 +88,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     align-items: center;
     justify-content: center;
     padding: 6rem 1.5rem;
-    background: white;
+    background: var(--color-white);
     position: relative;
     overflow: hidden;
   }
@@ -130,7 +131,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--color-white);
     border-radius: 50%;
     color: var(--color-primary);
     box-shadow:
@@ -163,7 +164,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   /* ── Typography ─────────────────────────────────────────────── */
   .ty-heading {
     font-size: clamp(2rem, 5vw, 2.875rem);
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
     color: var(--color-headline);
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -171,7 +172,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .ty-body {
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     color: var(--color-caption);
     line-height: 1.75;
     margin: 0;

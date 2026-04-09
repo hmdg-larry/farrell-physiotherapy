@@ -29,6 +29,7 @@ const nextSteps = [
 <BaseLayout
   title="Booking Confirmed — ClinicName"
   description="Thank you for booking with ClinicName. Your appointment request has been received and a confirmation is on its way."
+  noindex={true}
 >
 
   <section class="ty-page">
@@ -116,7 +117,7 @@ const nextSteps = [
     align-items: center;
     justify-content: center;
     padding: 6rem 1.5rem;
-    background: white;
+    background: var(--color-white);
     position: relative;
     overflow: hidden;
   }
@@ -159,7 +160,7 @@ const nextSteps = [
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--color-white);
     border-radius: 50%;
     color: var(--color-primary);
     box-shadow:
@@ -192,7 +193,7 @@ const nextSteps = [
   /* ── Typography ─────────────────────────────────────────────── */
   .ty-heading {
     font-size: clamp(2rem, 5vw, 2.875rem);
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
     color: var(--color-headline);
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -200,7 +201,7 @@ const nextSteps = [
   }
 
   .ty-body {
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     color: var(--color-caption);
     line-height: 1.75;
     margin: 0;
@@ -217,7 +218,7 @@ const nextSteps = [
 
   .ty-next-label {
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-caption);
@@ -250,21 +251,21 @@ const nextSteps = [
   .ty-step-num {
     font-family: var(--font-heading);
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.08em;
     color: var(--color-primary);
   }
 
   .ty-step-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
     color: var(--color-headline);
     margin: 0;
     line-height: 1.3;
   }
 
   .ty-step-desc {
-    font-size: 0.875rem;
+    font-size: var(--text-xs);
     color: var(--color-caption);
     line-height: 1.65;
     margin: 0;
