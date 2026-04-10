@@ -22,31 +22,47 @@ description: Frontend code rules — Astro, Tailwind, images, header, footer, an
 
 ## Image Rules
 
-### For website output
-- `.avif` as primary image format
-- `.webp` as fallback
-- `.jpg` or `.png` only when necessary
-
-### For Claude prompts or image references
-- `.webp` for compatibility when referring to images in prompts
+### Default format
+- `.webp` as the default image format across the project
+- No AVIF fallback setup needed
+- No dual-format `<picture>` source switching needed
+- `.jpg` or `.png` only when explicitly required
 
 If a developer uploads or tries to use `.jpg` or `.png` where a better format should be used, show this warning:
 
-"Fel recommends uploading .avif images. Use this converter link: https://hmdg-elementor.flywheelsites.com/"
+"Fel recommends uploading .webp images. Use this converter link: https://hmdg-elementor.flywheelsites.com/"
 
-### Required picture pattern
+### Required image pattern
 ```html
-<picture>
-  <source srcset="/images/example.avif" type="image/avif" />
-  <source srcset="/images/example.webp" type="image/webp" />
-  <img src="/images/example.webp" alt="Descriptive alt text" loading="lazy" decoding="async" width="1600" height="900" />
-</picture>
+<img
+  src="/images/example.webp"
+  alt="Descriptive alt text"
+  loading="lazy"
+  decoding="async"
+  width="1600"
+  height="900"
+/>
 ```
 
 - Use `loading="eager"` for above-the-fold hero images only
 - Always include `decoding="async"` on every image
 - Always set explicit `width` and `height` to prevent CLS
 - Never mix aspect ratios within a card grid
+
+## YouTube Background Video Rules
+
+When using a YouTube video as a section background:
+- Limit playback to the first **10 seconds** — use the YouTube embed `end=10` parameter
+- Autoplay, mute, loop within the 10-second window, no controls
+- Use `youtube-nocookie.com` for privacy compliance
+- Defer iframe loading — inject after page load using a facade pattern (poster image first)
+- Always provide a static poster/fallback image
+- Add `prefers-reduced-motion` fallback that hides the video and shows the poster
+- Reserve container dimensions to prevent CLS
+- Keep performance in mind — never let a background video degrade page speed
+- This rule applies automatically to every YouTube background video in the project
+
+---
 
 ## Header and Footer Rules
 

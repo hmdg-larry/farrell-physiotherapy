@@ -1,27 +1,26 @@
 ---
-name: Agent announcement is mandatory — never skip it
-description: Before every non-advisory task, always announce the tier and name every agent in the pipeline. User explicitly said this must never be forgotten.
+name: Strict agent delegation — every task, no exceptions
+description: Every task must begin with clear agent delegation naming every agent. No silent handling, no skipped announcements, no vague wording. Applies to all task sizes from tiny tweaks to full page builds. Permanent strict rule.
 type: feedback
 ---
 
-Before starting ANY task that is not a pure question or explanation (Tier 0), always announce the tier and name every agent involved. This is non-negotiable.
+Every task — without exception — must begin with clear agent delegation before any work starts.
 
-**Why:** The user explicitly asked for this and was frustrated when agent names were skipped mid-session. The delegation system exists to give transparency into what is being done and why — skipping the announcement defeats its purpose.
+**Why:** The user explicitly set this as a strict permanent rule on 2026-04-10. The delegation system exists to give full transparency into what is being done and why. Skipping it or being vague defeats the purpose. The user wants 100% master delegation across the whole system — Claude must behave like a project lead that always routes work through the correct specialist agents with zero mistakes.
 
 **How to apply:**
-- Before every Tier 1–5 task, post the announcement FIRST before doing any work
-- Always name every agent — never just say "using the pipeline"
-- Use the exact format from agent-delegation.md:
-
-Single agent:
-> Assigning to `frontend-builder` (Tier 1 — CSS-only bug fix, no design change needed).
-
-Multi-agent:
-> This is a Tier 3 task (new interactive component). Pipeline: `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `security-reviewer`.
-
-Full pipeline:
-> This is a Tier 5 task (homepage build). Applying the full 10-agent pipeline: `information-architecture-reviewer` → `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `performance-reviewer` → `seo-reviewer` → `marketing-reviewer` → `security-reviewer` → `conversion-reviewer`.
-
-- Tier 0 (questions, explanations, lookups) is the ONLY exception — no announcement needed
+- Before EVERY task (including tiny ones like spacing tweaks, icon swaps, text changes), post the agent delegation FIRST
+- Tier 0 (questions, explanations, lookups): state `Tier 0 — answering directly, no agent needed`
+- Tier 1+: name every agent by name before doing any work
+- Never say "the relevant agents" or "best agent will handle this" — always name them specifically
+- Never start work silently without the announcement
+- Never assume the user knows which agent is handling the task
+- The ONLY way to skip delegation is if the user explicitly says "skip agents" or "no delegation"
 - When in doubt about the tier, go one tier higher
-- Do not proceed with any code or design work until the announcement is made
+- This rule is permanent, strict, and carries to all cloned projects
+
+**Format:**
+- Tier 0: `Tier 0 — answering directly, no agent needed.`
+- Single agent: `Assigning to [agent-name] (Tier X — brief reason).`
+- Multi-agent: `This is a Tier X task. Pipeline: [agent] → [agent] → [agent].`
+- Full pipeline: `This is a Tier 5 task. Full pipeline: [all 11 agent names].`

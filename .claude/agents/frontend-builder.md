@@ -78,27 +78,24 @@ Never recreate these with ad-hoc Tailwind classes. Use the existing system.
 
 ## Images
 
-Always use the `<picture>` pattern. Never use `<img>` alone when AVIF and WebP are available.
+Use `.webp` as the default image format. No dual-format `<picture>` source switching is needed.
 
 ```html
-<picture>
-  <source srcset="/images/example.avif" type="image/avif" />
-  <source srcset="/images/example.webp" type="image/webp" />
-  <img
-    src="/images/example.webp"
-    alt="Descriptive alt text"
-    loading="lazy"
-    decoding="async"
-    width="1600"
-    height="900"
-  />
-</picture>
+<img
+  src="/images/example.webp"
+  alt="Descriptive alt text"
+  loading="lazy"
+  decoding="async"
+  width="1600"
+  height="900"
+/>
 ```
 
 - Use `loading="eager"` for hero and above-fold images only
 - Always include `decoding="async"` on every image
 - Always set explicit `width` and `height` to prevent CLS
 - Never mix aspect ratios within a card grid — enforce with a fixed aspect-ratio class
+- Do not add AVIF or fallback logic unless explicitly requested
 
 ---
 
@@ -558,6 +555,82 @@ Only use `--color-primary`, `--color-headline` / `--color-body`, and `--color-wh
 
 ---
 
+## YouTube Background Videos
+
+When a YouTube video is used as a section background (Elementor-style background video pattern):
+
+- **Limit playback to the first 10 seconds** — use the YouTube embed API `end` parameter or the IFrame API `endSeconds` option
+- The video must autoplay, mute, loop within the 10-second window, and have no controls
+- Use the `enablejsapi=1` parameter for API control
+- Reserve explicit dimensions on the container to prevent CLS
+- Use a static poster/fallback image for users with slow connections or reduced motion preference
+- Defer the iframe load — use a facade pattern (show poster image, load iframe on viewport entry or after page load) to protect LCP and initial render performance
+- Add `loading="lazy"` if the video section is below the fold
+- Always include a `prefers-reduced-motion` fallback that shows the poster image instead of the video
+- Keep the implementation smooth and intentional — the video should feel like a premium design element, not a performance liability
+- This is a **default rule** — apply it automatically whenever a YouTube background video is requested
+
+```html
+<!-- YouTube background video — 10-second loop, Elementor-style -->
+<div class="yt-bg-video" data-yt-id="VIDEO_ID">
+  <!-- Poster fallback shown until iframe loads + reduced-motion -->
+  <img src="/images/hero-poster.webp" alt="" loading="eager" decoding="async"
+       width="1600" height="900" class="yt-bg-poster" />
+  <!-- iframe injected by JS after page load -->
+</div>
+```
+
+```js
+// Inject YouTube iframe after page is interactive
+function initYTBackground(container) {
+  const videoId = container.dataset.ytId;
+  if (!videoId) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const iframe = document.createElement('iframe');
+  iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&modestbranding=1&start=0&end=10&enablejsapi=1`;
+  iframe.allow = 'autoplay; encrypted-media';
+  iframe.setAttribute('loading', 'lazy');
+  iframe.setAttribute('title', 'Background video');
+  iframe.classList.add('yt-bg-iframe');
+  container.appendChild(iframe);
+}
+
+// Defer until after page load
+window.addEventListener('load', () => {
+  document.querySelectorAll('[data-yt-id]').forEach(initYTBackground);
+});
+```
+
+```css
+.yt-bg-video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+.yt-bg-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.yt-bg-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  object-fit: cover;
+}
+@media (prefers-reduced-motion: reduce) {
+  .yt-bg-iframe { display: none; }
+}
+```
+
+---
+
 ## Transitions and Animations
 
 Use Tailwind transition utilities for all interactive states:
@@ -596,7 +669,7 @@ Touch targets must be minimum **44×44px** on mobile for all interactive element
 - fully responsive, mobile-first code
 - no inline styles (CSS custom property delays via `style` attribute are the only exception)
 - uses existing global class system before inventing new classes
-- all images use the required `<picture>` pattern with explicit dimensions
+- all images use `.webp` format with explicit dimensions
 - all animations respect `prefers-reduced-motion`
 - staggered entrance animations on all section content
 - Awwwards-level interaction patterns implemented as specified by ui-designer

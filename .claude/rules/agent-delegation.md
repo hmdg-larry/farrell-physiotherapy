@@ -2,10 +2,12 @@
 description: Comprehensive automatic agent delegation rules — task tiers, routing, handoffs, escalation, and parallel execution
 ---
 
-# Automatic Agent Delegation
+# Strict Agent Delegation (Mandatory)
+
+**Every task — without exception — must begin with clear agent delegation.**
 
 For every user request, first classify the task tier, then select the correct agent pipeline.
-State the chosen pipeline before beginning work.
+State the chosen pipeline before beginning work. No task may proceed without naming the responsible agent or agents. This applies to small tasks, large tasks, and everything in between.
 
 ---
 
@@ -31,7 +33,7 @@ Is it a single-domain specialist fix (SEO, a11y, security, performance)?
 
 ## Task Complexity Tiers
 
-### Tier 0 — Advisory (no agent)
+### Tier 0 — Advisory (direct answer)
 
 Use when: the request is a question, explanation, debugging help, or a read-only investigation with no output.
 
@@ -41,7 +43,7 @@ Examples:
 - "Explain how Consent Mode v2 works"
 - "Why is this component not showing up?"
 
-Action: answer directly. No agent announcement needed.
+Action: answer directly. **Still announce the tier:** state `Tier 0 — answering directly, no agent needed` before responding.
 
 ---
 
@@ -54,6 +56,8 @@ Examples:
 - "Check if my CSP allows Google Analytics" → `security-reviewer`
 - "Add missing alt text to images" → `a11y-reviewer`
 - "Optimise image loading on the services page" → `performance-reviewer`
+- "Run a full speed audit on the site" → `performance-optimisation`
+- "Check if this page would pass PageSpeed Insights" → `performance-optimisation`
 - "Is the messaging on this page strong enough?" → `marketing-reviewer`
 - "Are the CTAs in the right place?" → `conversion-reviewer`
 
@@ -98,6 +102,7 @@ Common Tier 3 patterns:
 | Cookie consent or legal component | security-reviewer (audit) → ui-designer → frontend-builder → a11y-reviewer |
 | New booking CTA or flow | ux-architect → ui-designer → frontend-builder → conversion-reviewer |
 | Performance + image optimisation only | performance-reviewer → frontend-builder (fixes) |
+| Full speed audit or Lighthouse review | performance-optimisation → frontend-builder (fixes) |
 | Security audit with code fixes | security-reviewer → frontend-builder (fixes) |
 | Component with complex keyboard behaviour | a11y-reviewer (spec) → ui-designer → frontend-builder → a11y-reviewer (verify) |
 
@@ -114,18 +119,18 @@ Common Tier 4 patterns:
 | Task | Pipeline |
 |---|---|
 | New service or location page | IA → ux-architect → ui-designer → frontend-builder → a11y → seo → conversion |
-| Landing page (non-homepage) | ux-architect → ui-designer → frontend-builder → a11y → performance → marketing → conversion |
+| Landing page (non-homepage) | ux-architect → ui-designer → frontend-builder → a11y → performance → performance-optimisation → marketing → conversion |
 | Policy or legal page | IA → ui-designer → frontend-builder → a11y → seo |
-| Multi-page template (e.g. all service pages) | IA → ux-architect → ui-designer → frontend-builder → a11y → performance → seo → conversion |
-| Existing page redesign | ux-architect → ui-designer → frontend-builder → a11y → performance → seo → marketing → conversion |
+| Multi-page template (e.g. all service pages) | IA → ux-architect → ui-designer → frontend-builder → a11y → performance → performance-optimisation → seo → conversion |
+| Existing page redesign | ux-architect → ui-designer → frontend-builder → a11y → performance → performance-optimisation → seo → marketing → conversion |
 
 ---
 
-### Tier 5 — Full Pipeline (all 10 agents)
+### Tier 5 — Full Pipeline (all 11 agents)
 
 Use when: the task is a homepage, structural template, major release, or anything that must meet the highest standard across every dimension.
 
-Pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
+Pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
 
 Use for:
 - Homepage builds or rebuilds
@@ -188,6 +193,19 @@ Delivers:
 - Complete, buildable Astro + Tailwind code
 - All components extracted and named
 - Implementation notes (any constraints, deviations from design plan, browser quirks)
+
+### performance-reviewer → performance-optimisation
+Delivers:
+- Quick-check findings (image, font, JS, CLS issues)
+- Flags for deeper investigation
+
+### performance-optimisation → next stage
+Delivers:
+- Full Core Web Vitals risk assessment
+- Third-party script audit with weight impact
+- Estimated PageSpeed Insights mobile score range
+- Prioritised fix recommendations with file paths
+- Architectural recommendations (hydration strategy, library choices)
 
 ### a11y/performance/seo/marketing/security → next stage
 Delivers:
@@ -252,6 +270,8 @@ These reviewers assess the same built output independently:
 
 **Wave 1 (parallel):** a11y-reviewer + performance-reviewer + seo-reviewer
 
+**Wave 1.5 (sequential after Wave 1):** performance-optimisation (needs performance-reviewer findings first — runs deep audit)
+
 **Wave 2 (parallel):** marketing-reviewer + security-reviewer
 
 **Wave 3 (sequential):** conversion-reviewer (needs all other reviews complete — assesses the final state)
@@ -283,17 +303,31 @@ Step 6 — final result
 
 ---
 
-## Agent Announcement Format
+## Agent Announcement Format (Strict — Never Skip)
 
-Before every task, state clearly:
+**Every task must begin with a clear agent delegation announcement. No exceptions.**
 
-**Single agent:**
-> Assigning to `ui-designer` (Tier 2 — visual change with no UX planning needed).
+This applies to all task sizes — from a single spacing tweak to a full homepage build. No work may begin before the announcement is made. No silent handling. No assumed delegation. No vague wording.
 
-**Multi-agent:**
-> This is a Tier 3 task (new interactive component). Pipeline: ux-architect → ui-designer → frontend-builder → a11y-reviewer → security-reviewer.
+**Tier 0 (questions, lookups, explanations):**
+> Tier 0 — answering directly, no agent needed.
+
+**Single agent (small task):**
+> Assigning to `frontend-builder` (Tier 1 — spacing fix on the hero section).
+
+**Two agents (visual task):**
+> This is a Tier 2 task. Pipeline: `ui-designer` → `frontend-builder`.
+
+**Multi-agent (feature or component):**
+> This is a Tier 3 task (new interactive component). Pipeline: `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `security-reviewer`.
 
 **Full pipeline:**
-> This is a Tier 5 task (homepage build). Applying the full 10-agent pipeline.
+> This is a Tier 5 task (homepage build). Full pipeline: `information-architecture-reviewer` → `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `performance-reviewer` → `performance-optimisation` → `seo-reviewer` → `marketing-reviewer` → `security-reviewer` → `conversion-reviewer`.
 
-Never skip this announcement. It helps the user understand what is being done and why.
+### Rules
+
+- **Never skip the announcement** — it is the first thing in every response
+- **Always name every agent by name** — never say "the relevant agents" or "best agent"
+- **Even tiny tasks must be delegated** — icon swaps, text changes, padding tweaks, responsive fixes, image updates
+- **The only override is the user explicitly saying to skip delegation**
+- This rule is permanent, strict, and must carry to all cloned projects

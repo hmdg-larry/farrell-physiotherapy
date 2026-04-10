@@ -35,11 +35,11 @@ Flag any risk to these thresholds as **critical**. Every page must score 90+ on 
 
 ### Images
 
-- All images use `<picture>` with `.avif` primary source and `.webp` fallback
+- All images use `.webp` format — no dual-format `<picture>` switching needed
 - Hero and above-fold images use `loading="eager"` — all others `loading="lazy"`
 - Every `<img>` has explicit `width` and `height` — missing dimensions cause CLS
 - Every `<img>` has `decoding="async"`
-- No unoptimised `.jpg` or `.png` where AVIF/WebP would serve
+- No unoptimised `.jpg` or `.png` where WebP would serve
 - Images are appropriately sized — not serving 2000px images at 400px display size
 - Hero image uses `<link rel="preload">` in `<head>` to improve LCP
 

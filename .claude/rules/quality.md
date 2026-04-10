@@ -14,7 +14,7 @@ description: Accessibility, performance, security, SEO, marketing, and conversio
 - Touch targets minimum 44×44px on mobile
 
 ## Performance
-- Use optimised images — `.avif` with `.webp` fallback
+- Use optimised images — `.webp` as the default format
 - Lazy load all images below the fold
 - Avoid bloated or unnecessary JavaScript
 - Avoid unnecessary DOM depth — keep the tree lean

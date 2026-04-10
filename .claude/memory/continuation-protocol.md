@@ -75,7 +75,7 @@ SITE_ORIGIN=           ← https://clientsite.co.uk
 **Design standards:**
 - No inline styles ever (`style=""` is banned — only `style="--reveal-delay: Xms"` CSS variable injection is permitted)
 - Class-based styling only (Tailwind utilities or stylesheet classes)
-- All images: `<picture>` with `.avif` primary + `.webp` fallback + `decoding="async"`
+- All images: `.webp` format with `decoding="async"`, explicit `width`/`height`, and proper `loading` attribute
 - Header and footer must be global/shared — never duplicated per page
 
 **Agent workflow (mandatory for important builds):**

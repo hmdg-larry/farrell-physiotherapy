@@ -9,7 +9,7 @@ Use this prompt when starting any significant page build or major revision:
 ```
 Review and build this task using the following agent sequence exactly:
 
-information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 Task:
 [describe the page, section, sitemap, or feature here]
@@ -52,6 +52,15 @@ Instructions:
 6. Then use performance-reviewer
    - check image formats, DOM weight, lazy loading, JS usage, and CLS risks
    - optimise where needed
+
+6.5. Then use performance-optimisation
+   - run deep speed audit across all page components
+   - assess Core Web Vitals risk (LCP, CLS, INP)
+   - audit every third-party script for weight and necessity
+   - check hydration strategy and Astro-first patterns
+   - verify the page would score 90+ on PageSpeed Insights (mobile)
+   - provide prioritised fix recommendations with specific file paths
+   - do NOT accept general advice — review actual code
 
 7. Then use seo-reviewer
    - check H1, metadata, heading hierarchy, internal linking, noindex rules, and content structure

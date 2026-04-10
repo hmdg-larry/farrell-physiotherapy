@@ -70,7 +70,7 @@ Schema helps Google understand the page and can generate rich results in search.
 - Canonical tags correct and consistent
 - Clean URLs — no query strings, no underscores, lowercase with hyphens
 - 404 handling — broken internal links flagged
-- Image filenames are descriptive (`physiotherapy-london.avif` not `IMG_001.avif`)
+- Image filenames are descriptive (`physiotherapy-london.webp` not `IMG_001.webp`)
 
 ### Core Web Vitals as SEO Signal
 
