@@ -56,6 +56,19 @@ Default page structure unless the page clearly requires otherwise:
 - At least one trust signal in the hero composition
 - Text must be fully readable on mobile without pinching
 
+### Hero Height Rules (Permanent)
+- **Never use blind `h-screen`** — do not stretch a hero to fill the entire viewport without control
+- Use controlled adaptive height: `min-height` with responsive values
+- **Homepage hero:** full viewport height on mobile (`min-h-svh`), capped on large screens with `max-h-[900px]` or similar to prevent empty space on 4K and ultrawide displays
+- **Secondary page heroes:** content-driven height with min-height floor, no full viewport stretch
+- Add a `max-height` cap on very large screens (2xl+) to prevent over-stretching
+- Position hero content with intention — content should feel visually connected and balanced, not sitting too low
+- Constrain headline width so typography feels designed, not auto-stretched across the full width
+- Ensure CTA and supporting content remain visually grouped with the heading
+- Check all hero sections on mobile, tablet, desktop, ultrawide, and 4K screens
+- Maintain strong spacing and intentional composition at every breakpoint
+- Avoid awkward empty space above or below the main content on any screen size
+
 ## UI and UX Rules
 - Text must always be readable — maintain strong contrast
 - No text on busy images without protection

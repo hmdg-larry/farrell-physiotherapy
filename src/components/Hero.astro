@@ -1,0 +1,114 @@
+---
+/**
+ * Hero.astro
+ * ─────────────────────────────────────────────────────
+ * Reusable homepage hero with controlled adaptive height.
+ *
+ * Height strategy:
+ *   Mobile  — full viewport height (min-h-svh) so the hero
+ *             feels immersive on small screens
+ *   Tablet  — min-h floor of 600px
+ *   Desktop — min-h floor of 640px
+ *   4K/UW   — max-h cap of 900px to prevent empty void
+ *
+ * Content sits in the lower-third (flex justify-end) so
+ * headings feel grounded and intentional, not floating.
+ *
+ * Per-client customisation:
+ *   - Pass image, alt, headline, body, ctaText, ctaHref
+ *   - Optional: eyebrow, trustItems, secondaryCta
+ */
+
+interface Props {
+  /** Path to .webp hero background image */
+  image: string;
+  /** Alt text for the background image (empty if purely decorative) */
+  imageAlt?: string;
+  /** Eyebrow label above the headline */
+  eyebrow?: string;
+  /** H1 headline text — supports HTML via Fragment */
+  headline: string;
+  /** Supporting paragraph below the headline */
+  body?: string;
+  /** Primary CTA button text */
+  ctaText?: string;
+  /** Primary CTA button href */
+  ctaHref?: string;
+  /** Secondary CTA button text */
+  secondaryCtaText?: string;
+  /** Secondary CTA button href */
+  secondaryCtaHref?: string;
+  /** Trust bar items — array of short strings like "4.9 Google Rating" */
+  trustItems?: string[];
+}
+
+const {
+  image,
+  imageAlt = '',
+  eyebrow,
+  headline,
+  body,
+  ctaText = 'Book Now',
+  ctaHref = '#contact',
+  secondaryCtaText,
+  secondaryCtaHref,
+  trustItems,
+} = Astro.props;
+---
+
+<section class="hero-section relative overflow-hidden bg-[--color-hero-dark] min-h-svh md:min-h-[600px] lg:min-h-[640px] 2xl:max-h-[900px] flex flex-col justify-end">
+
+  <!-- Background image -->
+  <img
+    src={image}
+    alt={imageAlt}
+    class="absolute inset-0 w-full h-full object-cover object-center"
+    loading="eager"
+    decoding="async"
+    width="1920"
+    height="1080"
+    aria-hidden={imageAlt ? undefined : 'true'}
+  />
+
+  <!-- Dark overlay for text readability -->
+  <div class="absolute inset-0 bg-gradient-to-t from-[--color-hero-dark]/90 via-[--color-hero-dark]/50 to-[--color-hero-dark]/30" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 px-[--spacing-section-x] pb-16 pt-32 md:pb-20 md:pt-40 lg:pb-24 lg:pt-48">
+    <div class="max-w-[--spacing-container-max] mx-auto">
+
+      {eyebrow && (
+        <span class="eyebrow">{eyebrow}</span>
+      )}
+
+      <h1 class="text-white m-0 mt-3 max-w-3xl" set:html={headline} />
+
+      {body && (
+        <p class="m-0 mt-5 text-white/65 max-w-xl text-lg leading-relaxed">
+          {body}
+        </p>
+      )}
+
+      {(ctaText || secondaryCtaText) && (
+        <div class="flex flex-wrap items-center gap-4 mt-8">
+          {ctaText && (
+            <a href={ctaHref} class="btn btn-default">{ctaText}</a>
+          )}
+          {secondaryCtaText && secondaryCtaHref && (
+            <a href={secondaryCtaHref} class="btn btn-transparent">{secondaryCtaText}</a>
+          )}
+        </div>
+      )}
+
+      {trustItems && trustItems.length > 0 && (
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-10 pt-8 border-t border-white/10">
+          {trustItems.map((item) => (
+            <span class="text-sm font-medium text-white/50">{item}</span>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+
+</section>
