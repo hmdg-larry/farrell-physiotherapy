@@ -111,6 +111,151 @@ Use `.webp` as the default image format. No dual-format `<picture>` source switc
 
 ---
 
+## Hero Section — Full Height with 4K Cap
+
+Full viewport height hero on all normal screens. Height cap only activates on 4K+ displays (viewport height >= 2160px) to prevent excessive empty space. This is the standard hero implementation for all HMDG homepage builds.
+
+### HTML structure
+
+```html
+<section class="relative min-h-[600px] md:h-screen hero-4k-cap overflow-hidden">
+
+  <!-- Background image (absolute, covers full section) -->
+  <img
+    src="/images/herovideofallback.webp"
+    alt=""
+    role="presentation"
+    loading="eager"
+    decoding="async"
+    width="1920"
+    height="1080"
+    class="absolute inset-0 w-full h-full object-cover"
+  />
+
+  <!-- YouTube background video (desktop only — hidden on mobile) -->
+  <div class="absolute inset-0 overflow-hidden hidden md:block" aria-hidden="true">
+    <iframe
+      class="yt-bg-iframe"
+      src="YOUTUBE_EMBED_URL"
+      title="Background video"
+      allow="autoplay; encrypted-media"
+      loading="eager"
+    ></iframe>
+  </div>
+
+  <!-- Gradient overlay -->
+  <div class="hero-overlay absolute inset-0"></div>
+
+  <!-- Content wrapper
+       Mobile:  relative (in-flow) so section grows to fit content
+       Desktop: absolute + justify-end anchors content to the bottom -->
+  <div class="relative md:absolute md:inset-0 flex flex-col pt-32 md:pt-0 md:justify-end">
+    <div class="container px-(--spacing-section-x) pb-20 md:pb-16 lg:pb-20">
+
+      <!-- Hero content here: H1, description, CTA, trust signals -->
+
+    </div>
+  </div>
+
+</section>
+```
+
+### CSS — 4K height cap (global.css, OUTSIDE @layer blocks)
+
+```css
+/* ── Hero 4K height cap ────────────────────────────────────────
+   Full viewport height on all screens up to 2160px.
+   On 4K+ (viewport height >= 2160px), cap at 85vh to prevent
+   massive empty space. Only applies to very tall displays.
+   ─────────────────────────────────────────────────────────────── */
+@media (min-height: 2160px) {
+  .hero-4k-cap {
+    height: 85vh;
+    max-height: 1200px;
+  }
+}
+```
+
+### CSS — YouTube background iframe (global.css)
+
+```css
+/* ── YouTube background iframe ─────────────────────────────────
+   Covers the parent container at any viewport size, maintaining
+   16:9 aspect ratio. Requires overflow:hidden on the parent. */
+.yt-bg-iframe {
+  position:       absolute;
+  top:            50%;
+  left:           50%;
+  transform:      translate(-50%, -50%);
+  width:          max(100%, calc(100vh * 16 / 9));
+  height:         max(100%, calc(100vw * 9 / 16));
+  pointer-events: none;
+  border:         0;
+}
+```
+
+### CSS — Hero gradient overlay (global.css)
+
+```css
+/* ── Hero overlay gradient ─────────────────────────────────────
+   Matches Elementor reference: transparent navy at 0% -> solid at 78% */
+.hero-overlay {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primary) 10%, transparent) 0%,
+    var(--color-primary) 78%
+  );
+}
+```
+
+### Height behaviour per device
+
+| Screen | Viewport Height | Hero Height |
+|---|---|---|
+| iPhone SE | 667px | 600px (min-h floor) |
+| iPhone 14 | 844px | Content-driven (relative wrapper) |
+| iPad | 1024px | 1024px (full screen) |
+| Laptop | 1152px | 1152px (full screen) |
+| Desktop 1080p | 1080px | 1080px (full screen) |
+| Desktop 1440p | 1440px | 1440px (full screen) |
+| 4K (2160px) | 2160px | 1200px (capped) |
+| 4K Vertical (3840px) | 3840px | 1200px (capped) |
+
+### Key design decisions
+
+| Feature | Implementation |
+|---|---|
+| Mobile height | `min-h-[600px]` floor + content is `relative` (in-flow) so section grows if content exceeds 600px |
+| Desktop height | `md:h-screen` — full viewport height |
+| 4K cap | `@media (min-height: 2160px)` applies `85vh` + `max-height: 1200px` — only on 4K+ |
+| Content position | Mobile: `relative` + `pt-32` (top-down). Desktop: `md:absolute md:inset-0 md:justify-end` (anchored to bottom) |
+| YouTube video | `hidden md:block` — desktop only. iOS won't autoplay, black loading state covers fallback |
+| Fallback image | Always visible, `loading="eager"`, covers full section via `absolute inset-0 object-cover` |
+| Gradient overlay | Navy gradient: transparent at top -> solid at 78%. Protects text readability |
+| Overflow | `overflow-hidden` on section prevents video iframe extending beyond bounds |
+
+### Rules
+
+- Never use `h-screen` without the `hero-4k-cap` class
+- Never use a fixed `max-h` below 2160px — the hero must be full height on all normal screens
+- Mobile content wrapper must be `relative` (not `absolute`) so the section grows to fit content
+- Desktop content wrapper uses `md:absolute md:inset-0 md:justify-end` to anchor content to the bottom
+- YouTube iframe must be `hidden md:block` — no video on mobile
+- The `hero-4k-cap` media query must be **OUTSIDE** any `@layer` block in global.css
+- Always include `<link rel="preload">` for the hero fallback image using the BaseLayout `preloadImage` prop
+
+### LCP preload (BaseLayout)
+
+The hero fallback image must be preloaded in the page that uses it:
+
+```astro
+<BaseLayout preloadImage="/images/herovideofallback.webp">
+  <Hero />
+</BaseLayout>
+```
+
+---
+
 ## Mobile Menu — Full-Screen White Overlay System
 
 This is the standard mobile navigation pattern for all HMDG builds. Use this exactly — do not reinvent mobile navigation.
