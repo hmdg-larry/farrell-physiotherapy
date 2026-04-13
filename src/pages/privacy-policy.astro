@@ -29,20 +29,17 @@ const sections = [
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
   <section class="pp-hero">
-    <picture>
-      <source srcset="/images/privacypolicy.avif" type="image/avif" />
-      <source srcset="/images/privacypolicy.webp" type="image/webp" />
-      <img
-        src="/images/privacypolicy.webp"
-        alt=""
-        class="pp-hero-img"
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-        width="1600"
-        height="900"
-      />
-    </picture>
+    <img
+      src="/images/privacypolicy.webp"
+      alt=""
+      class="pp-hero-img"
+      aria-hidden="true"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1600"
+      height="900"
+    />
     <div class="pp-hero-overlay" aria-hidden="true"></div>
     <div class="container-main pp-hero-content">
       <div class="container-inner">

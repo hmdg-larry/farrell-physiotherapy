@@ -32,20 +32,17 @@ const sections = [
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
   <section class="cp-hero">
-    <picture>
-      <source srcset="/images/cookiepolicy.avif" type="image/avif" />
-      <source srcset="/images/cookiepolicy.webp" type="image/webp" />
-      <img
-        src="/images/cookiepolicy.webp"
-        alt=""
-        class="cp-hero-img"
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-        width="1600"
-        height="900"
-      />
-    </picture>
+    <img
+      src="/images/cookiepolicy.webp"
+      alt=""
+      class="cp-hero-img"
+      aria-hidden="true"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1600"
+      height="900"
+    />
     <div class="cp-hero-overlay" aria-hidden="true"></div>
     <div class="container-main cp-hero-content">
       <div class="container-inner">
