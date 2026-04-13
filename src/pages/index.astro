@@ -495,24 +495,37 @@ const navLinks = [
 
               <p class="m-0 text-[--color-body]">All form inputs use the <code class="code-label">.input</code> class. Radius matches buttons (10px). Focus ring uses <code class="code-hex">--color-primary</code> with a 3px offset ring.</p>
 
-              <div class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5">
+              <form
+                name="contact"
+                method="POST"
+                data-netlify="true"
+                data-netlify-honeypot="bot-field"
+                action="/thank-you"
+                class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
+              >
+                <input type="hidden" name="form-name" value="contact" />
+                <input type="hidden" name="subject" value="HMDG Base Template - Contact Form" />
+                <p class="hidden" aria-hidden="true">
+                  <label>Leave this field empty: <input name="bot-field" /></label>
+                </p>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div class="flex flex-col gap-2">
-                    <label class="text-sm font-semibold text-[--color-headline]">Full Name</label>
-                    <input type="text" class="input" placeholder="Jane Smith" />
+                    <label for="docs-full-name" class="text-sm font-semibold text-[--color-headline]">Full Name</label>
+                    <input id="docs-full-name" type="text" name="full_name" class="input" placeholder="Jane Smith" required />
                   </div>
                   <div class="flex flex-col gap-2">
-                    <label class="text-sm font-semibold text-[--color-headline]">Email Address</label>
-                    <input type="email" class="input" placeholder="jane@example.com" />
+                    <label for="docs-email" class="text-sm font-semibold text-[--color-headline]">Email Address</label>
+                    <input id="docs-email" type="email" name="email" class="input" placeholder="jane@example.com" required />
                   </div>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <label class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
-                  <input type="tel" class="input" placeholder="+44 7700 000000" />
+                  <label for="docs-phone" class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+                  <input id="docs-phone" type="tel" name="phone" class="input" placeholder="+44 7700 000000" />
                 </div>
                 <div class="flex flex-col gap-2">
-                  <label class="text-sm font-semibold text-[--color-headline]">Select a Service</label>
-                  <select class="input">
+                  <label for="docs-service" class="text-sm font-semibold text-[--color-headline]">Select a Service</label>
+                  <select id="docs-service" name="service" class="input">
                     <option value="">Choose a service...</option>
                     <option>Physiotherapy</option>
                     <option>Sports Massage</option>
@@ -520,13 +533,13 @@ const navLinks = [
                   </select>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <label class="text-sm font-semibold text-[--color-headline]">Your Message</label>
-                  <textarea class="input" rows="3" placeholder="Tell us about your condition..."></textarea>
+                  <label for="docs-message" class="text-sm font-semibold text-[--color-headline]">Your Message</label>
+                  <textarea id="docs-message" name="message" class="input" rows="3" placeholder="Tell us about your condition..." required></textarea>
                 </div>
                 <div>
-                  <button type="button" class="btn btn-default">Send Enquiry</button>
+                  <button type="submit" class="btn btn-default">Send Enquiry</button>
                 </div>
-              </div>
+              </form>
 
               <div class="border-t border-[--color-border] pt-5">
                 <pre class="code-block"><code>&lt;label class="text-sm font-semibold text-[--color-headline]"&gt;Label&lt;/label&gt;
@@ -1817,6 +1830,21 @@ const reviews = [
       );
       sections.forEach(s => observer.observe(s));
     }
+
+    // Netlify Forms — set email subject to "HMDG Base Template - {Full Name}"
+    // before submission. Netlify uses the value of the "subject" input as the
+    // notification email subject when present.
+    document.querySelectorAll('form[name="contact"]').forEach((form) => {
+      form.addEventListener('submit', () => {
+        const nameInput = form.querySelector('[name="full_name"]');
+        const subjectInput = form.querySelector('[name="subject"]');
+        if (!subjectInput) return;
+        const fullName = ((nameInput && nameInput.value) || '').trim();
+        subjectInput.value = fullName
+          ? 'HMDG Base Template - ' + fullName
+          : 'HMDG Base Template - Contact Form';
+      });
+    });
   </script>
 
   <!-- ── Cookie Consent ────────────────────────────────────────── -->

@@ -1,9 +1,18 @@
 ---
-/**
- * contact.astro
- * ─────────────────────────────────────────────────────────
- * Contact page — content to be added.
- */
+//
+// contact.astro
+// ─────────────────────────────────────────────────────────
+// Public contact page with a Netlify Forms-backed enquiry form.
+//
+// How submissions flow:
+//   1. Form posts to Netlify (detected at build time via data-netlify).
+//   2. Honeypot + Netlify Akismet filter spam automatically.
+//   3. Successful submissions redirect to /thank-you.
+//   4. Email notifications (recipients) are configured in the
+//      Netlify dashboard → Forms → contact → Notifications.
+//   5. Subject line is set dynamically by the client-side script
+//      below to "HMDG Base Template - {Full Name}".
+//
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
@@ -12,7 +21,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   description="Get in touch with ClinicName. We are here to help."
 >
 
-  <!-- ── Page Hero ─────────────────────────────────────── -->
   <section class="hero-dark">
     <div class="container-main">
       <div class="container-inner contact-inner">
@@ -26,16 +34,87 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </section>
 
-  <!-- ── Placeholder content ───────────────────────────── -->
   <section class="bg-white">
     <div class="container-main">
-      <div class="container-inner">
-        <p class="text-[--color-caption]">Contact form and details will be added here.</p>
+      <div class="container-inner max-w-2xl mx-auto">
+
+        <form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+          action="/thank-you"
+          class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
+        >
+          {/* Netlify requires a hidden form-name matching the form's name attr */}
+          <input type="hidden" name="form-name" value="contact" />
+
+          {/* Email subject — JS below updates this to "HMDG Base Template - {Full Name}" on submit */}
+          <input type="hidden" name="subject" value="HMDG Base Template - Contact Form" />
+
+          {/* Honeypot — real users never see this; bots autofill it and get filtered */}
+          <p class="hidden" aria-hidden="true">
+            <label>Leave this field empty: <input name="bot-field" /></label>
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="flex flex-col gap-2">
+              <label for="contact-full-name" class="text-sm font-semibold text-[--color-headline]">Full Name</label>
+              <input id="contact-full-name" type="text" name="full_name" class="input" placeholder="Jane Smith" required />
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="contact-email" class="text-sm font-semibold text-[--color-headline]">Email Address</label>
+              <input id="contact-email" type="email" name="email" class="input" placeholder="jane@example.com" required />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contact-phone" class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+            <input id="contact-phone" type="tel" name="phone" class="input" placeholder="+44 7700 000000" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contact-service" class="text-sm font-semibold text-[--color-headline]">Select a Service</label>
+            <select id="contact-service" name="service" class="input">
+              <option value="">Choose a service...</option>
+              <option>Physiotherapy</option>
+              <option>Sports Massage</option>
+              <option>Pilates</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contact-message" class="text-sm font-semibold text-[--color-headline]">Your Message</label>
+            <textarea id="contact-message" name="message" class="input" rows="4" placeholder="Tell us about your condition..." required></textarea>
+          </div>
+
+          <div>
+            <button type="submit" class="btn btn-default">Send Enquiry</button>
+          </div>
+        </form>
+
       </div>
     </div>
   </section>
 
 </BaseLayout>
+
+<script>
+  // Dynamically set the email subject to "HMDG Base Template - {Full Name}"
+  // before submission. Applies to every form with name="contact" on the page,
+  // so the same logic works on both contact.astro and the docs page form.
+  document.querySelectorAll<HTMLFormElement>('form[name="contact"]').forEach((form) => {
+    form.addEventListener('submit', () => {
+      const nameInput = form.querySelector<HTMLInputElement>('[name="full_name"]');
+      const subjectInput = form.querySelector<HTMLInputElement>('[name="subject"]');
+      if (!subjectInput) return;
+      const fullName = (nameInput?.value ?? '').trim();
+      subjectInput.value = fullName
+        ? `HMDG Base Template - ${fullName}`
+        : 'HMDG Base Template - Contact Form';
+    });
+  });
+</script>
 
 <style>
   .hero-dark {
