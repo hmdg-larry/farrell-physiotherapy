@@ -7,7 +7,6 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "dev:docs": "astro dev --open=/_dev/design-system",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

@@ -1,98 +1,1829 @@
 ---
-//
-// index.astro — Public homepage
-// ─────────────────────────────────────────────────────
-// Clean scaffold for client sites. Replace the placeholder
-// content below with real client-specific copy, hero image,
-// services, testimonials, and booking CTA.
-//
-// The internal design system reference lives at:
-//   src/pages/_dev/design-system.astro  (run `npm run dev:docs`)
-//
-// Rules in force on this page:
-//   - Only global CSS classes + Tailwind tokens (no page-specific styles)
-//   - All images: .webp with explicit width/height + decoding="async"
-//   - Above-the-fold image: loading="eager" + fetchpriority="high"
-//   - No HTML comments in the template — use JSX-style comments so nothing
-//     leaks into production view-source.
-//
-import BaseLayout from '../layouts/BaseLayout.astro';
+/**
+ * index.astro — HMDG Base Template Design System Reference
+ * ─────────────────────────────────────────────────────────
+ * Internal documentation only. Not a client-facing page.
+ * Every design token, component, and pattern is documented here.
+ *
+ * RULE: Only global CSS classes and Tailwind tokens — no new styles on this page.
+ */
+import "../styles/global.css";
+import CookieConsent from "../components/CookieConsent.astro";
 
-const title = 'Your Clinic Name — Expert Care in [City]';
-const description =
-  'Professional clinic services delivered with care and precision. Book your appointment today.';
+const colours = [
+  { label: "--color-primary",       hex: "#DB003E", desc: "Main brand colour — buttons, links, accents. Change per client.",              group: "Brand"   },
+  { label: "--color-primary-hover", hex: "#DD0D48", desc: "Hover state for all primary interactive elements.",                             group: "Brand"   },
+  { label: "--color-accent",        hex: "#FDF2F5", desc: "Light brand tint — section backgrounds and secondary fills.",                   group: "Brand"   },
+  { label: "--color-headline",      hex: "#040303", desc: "Near-black — applied to h1–h6 automatically via @layer base.",                  group: "Content" },
+  { label: "--color-body",          hex: "#151515", desc: "Near-black — paragraphs and all body text.",                                    group: "Content" },
+  { label: "--color-caption",       hex: "#94A3B8", desc: "Slate grey — captions, labels, meta text, secondary copy.",                    group: "Content" },
+  { label: "--color-muted",         hex: "#F2F2F2", desc: "Light grey — alternating section backgrounds.",                                 group: "Surface" },
+  { label: "--color-surface",       hex: "#F8FAFC", desc: "Off-white — card and form backgrounds.",                                        group: "Surface" },
+  { label: "--color-border",        hex: "#E2E8F0", desc: "Subtle border and divider colour.",                                             group: "Surface" },
+  { label: "--color-white",         hex: "#FFFFFF", desc: "Pure white — card surfaces, nav, modals.",                                      group: "Surface" },
+  { label: "--color-black",         hex: "#000000", desc: "Pure black — use sparingly.",                                                   group: "Surface" },
+  { label: "--color-hero-dark",     hex: "#0a0f1a", desc: "Deep navy-black — hero and dark footer backgrounds on legal and index pages.", group: "Surface" },
+];
+
+const buttons = [
+  { cls: "btn-default",     dark: false, desc: "Primary filled. Main CTAs, hero sections, form submits. Always on a light background." },
+  { cls: "btn-secondary",   dark: false, desc: "Outlined primary. Secondary actions next to btn-default. Light backgrounds only." },
+  { cls: "btn-white",       dark: true,  desc: "White filled. Use on dark or brand-coloured backgrounds only." },
+  { cls: "btn-transparent", dark: true,  desc: "Ghost white outline. Use on image overlays or dark sections only." },
+];
+
+const headings = [
+  { tag: "h1", label: "H1", size: "clamp(2.5rem → 4.5rem)",     weight: "800", lh: "1.08", use: "Hero headlines, page titles"      },
+  { tag: "h2", label: "H2", size: "clamp(2rem → 3.5rem)",       weight: "800", lh: "1.12", use: "Section headings"                 },
+  { tag: "h3", label: "H3", size: "clamp(1.5rem → 2.5rem)",     weight: "700", lh: "1.2",  use: "Sub-sections, card titles"       },
+  { tag: "h4", label: "H4", size: "clamp(1.25rem → 1.75rem)",   weight: "700", lh: "1.3",  use: "Feature names, labels"           },
+  { tag: "h5", label: "H5", size: "clamp(1.125rem → 1.375rem)", weight: "600", lh: "1.35", use: "Eyebrow labels, small headings"  },
+  { tag: "h6", label: "H6", size: "clamp(1rem → 1.125rem)",     weight: "600", lh: "1.4",  use: "Fine labels, footnote headings"  },
+];
+
+const textStyles = [
+  { token: "--text-base", px: "16px", lh: "1.75", cls: "",        label: "Base",  desc: "Default body text",              sample: "This is standard body text at 16px. Line-height 1.75 for comfortable reading. Clinic websites serve patients of all ages including older adults, so readability is always the priority. Never reduce body text below 16px." },
+  { token: "--text-lg",   px: "18px", lh: "1.8",  cls: "text-lg", label: "Large", desc: "Lead paragraphs, intros",       sample: "This is a lead paragraph at 18px. Use for the first paragraph in a section or anywhere you need more visual weight without a heading. Apply class .section-lead or text-lg." },
+  { token: "--text-sm",   px: "15px", lh: "1.6",  cls: "text-sm", label: "Small", desc: "Captions, labels, metadata",   sample: "Small text at 15px for captions, metadata, certifications, and supporting information. Use for dates, addresses, and non-critical copy." },
+];
+
+const features = [
+  { title: "HCPC Registered",   desc: "All clinicians are fully registered and hold current professional indemnity insurance." },
+  { title: "4.9 Google Rating", desc: "Over 500 verified patient reviews. Trusted by the local community for over a decade." },
+  { title: "Fast Results",      desc: "Most patients see measurable improvement within 2–3 sessions. No long waiting lists." },
+  { title: "Personal Approach", desc: "Every treatment plan is built around your specific goals, lifestyle, and recovery needs." },
+];
+
+const navLinks = [
+  { href: "#colours",    label: "Colours",        num: "01" },
+  { href: "#fonts",      label: "Fonts",          num: "02" },
+  { href: "#typography", label: "Typography",     num: "03" },
+  { href: "#body-text",  label: "Body Text",      num: "04" },
+  { href: "#buttons",    label: "Buttons",        num: "05" },
+  { href: "#forms",      label: "Forms",          num: "06" },
+  { href: "#containers", label: "Containers",     num: "07" },
+  { href: "#flex",       label: "Flex Layout",    num: "08" },
+  { href: "#cards",      label: "Cards",          num: "09" },
+  { href: "#combined",   label: "Example",        num: "10" },
+  { href: "#utilities",  label: "Utility Classes",num: "11" },
+  { href: "#tokens",     label: "Design Tokens",  num: "12" },
+  { href: "#globalcss",  label: "global.css",     num: "13" },
+  { href: "#images",     label: "Image Rules",    num: "14" },
+  { href: "#security",   label: "Security",       num: "15" },
+  { href: "#agents",     label: "Agent System",   num: "16" },
+  { href: "#baselayout", label: "BaseLayout",     num: "17" },
+  { href: "#cookiecfg",  label: "Cookie Config",  num: "18" },
+  { href: "#carousel",   label: "Carousels",      num: "19" },
+  { href: "#setup",      label: "Client Setup",   num: "20" },
+];
 ---
 
-<BaseLayout title={title} description={description}>
-  {/* ── Hero ──────────────────────────────────────────────
-      Placeholder hero — no image required.
-      When the client image is ready, swap to:
-        <Hero image="/images/hero.webp" heroImage prop on BaseLayout, etc. */}
-  <section
-    class="relative flex flex-col justify-center bg-[--color-hero-dark] text-white min-h-svh md:min-h-[600px] lg:min-h-[640px] 2xl:max-h-[900px] overflow-hidden"
-  >
-    <div class="container-main relative z-10 py-24 md:py-32 lg:py-40">
-      <div class="max-w-3xl">
-        <span class="eyebrow text-white/70">HMDG Astro Base Template</span>
-        <h1 class="mt-4 text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
-          Replace with the client's value proposition.
-        </h1>
-        <p class="mt-6 text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl">
-          This is the starting scaffold. Update the copy, add a hero image,
-          and build out the services, testimonials, and booking sections.
-        </p>
-        <div class="mt-10 flex flex-wrap gap-4">
-          <a href="#book" class="btn-default">Book Now</a>
-          <a href="#services" class="btn-secondary">Our Services</a>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>Design System — HMDG Base Template</title>
+    <style>
+      /* Docs page — headings render at editorial weight 400, not landing page weight */
+      h1, h2, h3, h4, h5, h6 { font-weight: 400; }
+
+      /* Typography specimen — restore natural weights inside preview wrapper */
+      .type-preview h1, .type-preview h2 { font-weight: var(--font-weight-extrabold); }
+      .type-preview h3, .type-preview h4 { font-weight: var(--font-weight-bold); }
+      .type-preview h5, .type-preview h6 { font-weight: var(--font-weight-semibold); }
+
+      /* Design token radius demos — border-radius set via JS CSS variable */
+      .radius-demo {
+        border-radius: var(--demo-radius, 0px);
+      }
+
+      /* Sidebar active link state — toggled by IntersectionObserver */
+      .sidebar-link.is-active {
+        color: var(--color-headline);
+        background-color: var(--color-accent);
+        font-weight: var(--font-weight-semibold);
+      }
+      .sidebar-link.is-active .sidebar-num {
+        color: var(--color-headline);
+      }
+
+      /* Dark sections — hero and footer use deep navy-black token */
+      .ds-dark {
+        background-color: var(--color-hero-dark);
+      }
+    </style>
+  </head>
+
+  <body class="bg-[--color-muted] text-[--color-body]">
+
+
+    <!-- ══════════════════════════════════════════════════════
+         STICKY HEADER
+    ══════════════════════════════════════════════════════ -->
+
+
+    <!-- ══════════════════════════════════════════════════════
+         TWO-COLUMN LAYOUT: Sidebar + Main
+    ══════════════════════════════════════════════════════ -->
+    <div class="lg:flex">
+
+
+      <!-- ── LEFT SIDEBAR ──────────────────────────────────── -->
+      <aside class="hidden lg:flex flex-col w-64 xl:w-72 shrink-0 sticky top-0 h-screen bg-white border-r border-[--color-border] overflow-y-auto">
+
+        <nav class="px-4 py-6 flex-1" aria-label="Design system sections">
+          <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest px-3 mb-4">Sections</p>
+          <ul class="flex flex-col gap-0.5 list-none p-0 m-0">
+            {navLinks.map(link => (
+              <li>
+                <a
+                  href={link.href}
+                  data-nav={link.href.slice(1)}
+                  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-[--radius-btn] text-sm text-[--color-body] hover:text-[--color-headline] hover:bg-[--color-accent] transition-all group"
+                >
+                  <span class="sidebar-num text-xs font-mono font-bold text-[--color-caption] group-hover:text-[--color-headline] transition-colors w-5 shrink-0">{link.num}</span>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div class="px-4 py-5 border-t border-[--color-border]">
+          <p class="text-xs text-[--color-caption] m-0">Internal use only</p>
+          <p class="text-xs text-[--color-caption] m-0 mt-0.5">Do not distribute</p>
         </div>
-      </div>
-    </div>
-  </section>
 
-  {/* ── Services teaser ───────────────────────────────── */}
-  <section id="services" class="py-20 md:py-28 bg-[--color-white]">
-    <div class="container-main">
-      <div class="max-w-2xl mb-12 md:mb-16">
-        <span class="eyebrow">Services</span>
-        <h2 class="mt-3 text-3xl md:text-4xl font-semibold tracking-tight">
-          What we do
-        </h2>
-        <p class="mt-4 text-[--color-body] leading-relaxed">
-          Replace these cards with the client's real services. Each card
-          should link to a dedicated service page under <code>/services/*</code>.
-        </p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        {[1, 2, 3].map((n) => (
-          <article class="p-8 bg-[--color-surface] rounded-[--radius-card] border border-[--color-border]">
-            <h3 class="text-xl font-semibold tracking-tight">Service {n}</h3>
-            <p class="mt-3 text-[--color-body] leading-relaxed">
-              Short description of what this service does and who it helps.
-              Two short sentences works best here.
-            </p>
-            <a href={`/services/service-${n}`} class="mt-5 inline-block text-[--color-primary] font-medium">
-              Learn more →
-            </a>
+      </aside>
+
+
+      <!-- ── RIGHT: MAIN CONTENT ───────────────────────────── -->
+      <div class="flex-1 min-w-0">
+
+
+        <!-- HERO -->
+        <section class="ds-dark">
+          <div class="px-8 md:px-10 xl:px-14 py-16 max-w-4xl">
+
+            <div class="flex flex-col gap-6">
+              <span class="eyebrow">HMDG · Internal Documentation</span>
+              <h1 class="text-white m-0">
+                HMDG Base Template
+              </h1>
+              <p class="text-white/70 m-0 max-w-xl leading-relaxed">
+                The global design system reference for all HMDG UK clinic websites.
+                Every colour, font, heading, button, container, component, image rule, security standard, and agent workflow is documented here.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Astro v5</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">Tailwind v4</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">11 AI Agents</span>
+                <span class="text-xs font-semibold text-white/50 bg-white/10 border border-white/10 px-3 py-1 rounded-full">v1.0.0</span>
+              </div>
+              <p class="text-white/50 text-sm m-0">
+                Started: March 5 2026 &nbsp;·&nbsp;
+                Do not rename any CSS variable or class unless adding new ones.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <a href="#colours" class="btn btn-default">View Design System</a>
+                <a href="#combined" class="btn btn-transparent">See Example</a>
+              </div>
+            </div>
+
+            <!-- Mobile section nav pills -->
+            <nav aria-label="Jump to section" class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-white/10 lg:hidden">
+              {navLinks.map(link => (
+                <a
+                  href={link.href}
+                  class="text-xs font-semibold text-[--color-caption] bg-white/10 hover:bg-white/20 hover:text-[--color-caption] border border-white/10 px-3 py-1.5 rounded-[--radius-badge] transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+          </div>
+        </section>
+
+
+        <!-- ARTICLES -->
+        <main class="px-6 md:px-8 xl:px-12 py-8 flex flex-col gap-5 w-full">
+
+
+          <!-- ───────────────────────────────────────────────────
+               01 — GLOBAL COLOUR VARIABLES
+          ─────────────────────────────────────────────────────── -->
+          <article id="colours" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">01</span>
+                <h5 class="m-0">Global Colour Variables</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Colors</span>
+            </header>
+
+            <div class="px-8 py-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {colours.map(c => (
+                <div class="flex flex-col gap-3 p-5 rounded-[--radius-card] bg-[--color-muted] border border-[--color-border]">
+                  <div class="h-14 rounded-[--radius-btn]" data-hex={c.hex}></div>
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <code class="code-label">{c.label}</code>
+                      <code class="code-hex">{c.hex}</code>
+                    </div>
+                    <span class="text-xs font-semibold text-[--color-caption] uppercase tracking-wider">{c.group}</span>
+                    <p class="text-xs text-[--color-body] m-0 mt-1 leading-snug">{c.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Colours</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Update the primary brand colour to [HEX]. Change --color-primary, --color-primary-hover (slightly darker), and --color-accent (very light tint of primary). These three variables are in src/styles/global.css inside the @theme block. Do not change any other colour variables.</p>
+              </div>
+            </div>
+
           </article>
-        ))}
-      </div>
-    </div>
-  </section>
 
-  {/* ── Booking CTA ───────────────────────────────────── */}
-  <section id="book" class="py-20 md:py-28 bg-[--color-accent]">
-    <div class="container-main text-center max-w-2xl mx-auto">
-      <span class="eyebrow">Book an appointment</span>
-      <h2 class="mt-3 text-3xl md:text-4xl font-semibold tracking-tight">
-        Ready to get started?
-      </h2>
-      <p class="mt-4 text-[--color-body] leading-relaxed">
-        Replace with a clear conversion-focused message. One sentence is
-        usually enough here — the CTA should do the work.
-      </p>
-      <a href="/contact" class="btn-default mt-8 inline-block">
-        Book Your Appointment
-      </a>
-    </div>
-  </section>
-</BaseLayout>
+
+          <!-- ───────────────────────────────────────────────────
+               02 — FONT VARIABLES
+          ─────────────────────────────────────────────────────── -->
+          <article id="fonts" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">02</span>
+                <h5 class="m-0">Font Variables</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Fonts</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              <div class="p-6 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-4">
+                <div class="flex items-start justify-between flex-wrap gap-3">
+                  <div class="flex flex-col gap-1">
+                    <code class="code-label">--font-heading</code>
+                    <p class="text-sm text-[--color-body] m-0">Inter Tight · Condensed display variant · Used on all headings h1–h6</p>
+                  </div>
+                  <span class="text-xs font-semibold text-[--color-caption] bg-white border border-[--color-border] px-3 py-1 rounded-[--radius-badge] shrink-0">Heading Font</span>
+                </div>
+                <p class="font-heading text-5xl text-[--color-headline] m-0 leading-none tracking-tight">
+                  Aa Bb Cc Dd — The quick brown fox
+                </p>
+                <p class="text-xs text-[--color-caption] m-0 font-mono">font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif</p>
+              </div>
+
+              <div class="p-6 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-4">
+                <div class="flex items-start justify-between flex-wrap gap-3">
+                  <div class="flex flex-col gap-1">
+                    <code class="code-label">--font-body</code>
+                    <p class="text-sm text-[--color-body] m-0">Inter · Standard reading variant · Used on all body text, inputs, and buttons</p>
+                  </div>
+                  <span class="text-xs font-semibold text-[--color-caption] bg-white border border-[--color-border] px-3 py-1 rounded-[--radius-badge] shrink-0">Body Font</span>
+                </div>
+                <p class="font-body text-2xl text-[--color-headline] m-0 leading-relaxed">
+                  Aa Bb Cc Dd — The quick brown fox jumps over the lazy dog. 1234567890
+                </p>
+                <p class="text-xs text-[--color-caption] m-0 font-mono">font-family: 'Inter', ui-sans-serif, system-ui, sans-serif</p>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Fonts</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Update the heading font to [FONT NAME]. Change --font-heading in the @theme block of src/styles/global.css. Also update the Google Fonts import link in BaseLayout.astro and src/pages/index.astro to load the new font. Keep --font-body as Inter unless asked to change it.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               03 — TYPOGRAPHY SCALE
+          ─────────────────────────────────────────────────────── -->
+          <article id="typography" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">03</span>
+                <h5 class="m-0">Typography Scale — H1 to H6</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Type</span>
+            </header>
+
+            <div class="px-8 pt-6">
+              <pre class="code-block"><code>{"/* Applied globally via @layer base — no class needed */\nh1 { font-size: clamp(2.5rem,  3vw + 1.8rem,    4.5rem);  line-height: 1.08; letter-spacing: -0.03em;  font-weight: 800; }\nh2 { font-size: clamp(2rem,    2.25vw + 1.47rem, 3.5rem);  line-height: 1.12; letter-spacing: -0.025em; font-weight: 800; }\nh3 { font-size: clamp(1.5rem,  1.5vw + 1.15rem,  2.5rem);  line-height: 1.2;  letter-spacing: -0.02em;  font-weight: 700; }\nh4 { font-size: clamp(1.25rem, 0.75vw + 1.07rem, 1.75rem); line-height: 1.3;  letter-spacing: -0.015em; font-weight: 700; }\nh5 { font-size: clamp(1.125rem, 0.375vw + 1.04rem, 1.375rem); line-height: 1.35; font-weight: 600; }\nh6 { font-size: clamp(1rem, 0.19vw + 0.96rem, 1.125rem);    line-height: 1.4;  font-weight: 600; }\n/* Font: Inter Tight · Colour: --color-headline · Applied automatically */"}</code></pre>
+            </div>
+
+            <div class="type-preview px-8 py-2 overflow-x-hidden">
+              {headings.map((h, i) => (
+                <div class={`py-6 flex flex-col gap-2${i < headings.length - 1 ? ' border-b border-[--color-border]' : ''}`}>
+                  <div class="flex items-center gap-4 flex-wrap">
+                    <span class="text-xs font-bold font-mono text-[--color-caption] uppercase tracking-widest w-6 shrink-0">{h.label}</span>
+                    <code class="code-hex">{h.size}</code>
+                    <span class="text-xs text-[--color-caption]">weight {h.weight}</span>
+                    <span class="text-xs text-[--color-caption]">lh {h.lh}</span>
+                    <span class="text-xs text-[--color-caption] hidden sm:block ml-auto">{h.use}</span>
+                  </div>
+                  {h.tag === "h1" && <h1 class="m-0 overflow-hidden text-ellipsis">{h.label} — Expert Clinic Care</h1>}
+                  {h.tag === "h2" && <h2 class="m-0">{h.label} — Expert Clinic Care</h2>}
+                  {h.tag === "h3" && <h3 class="m-0">{h.label} — Expert Clinic Care</h3>}
+                  {h.tag === "h4" && <h4 class="m-0">{h.label} — Expert Clinic Care</h4>}
+                  {h.tag === "h5" && <h5 class="m-0">{h.label} — Expert Clinic Care</h5>}
+                  {h.tag === "h6" && <h6 class="m-0">{h.label} — Expert Clinic Care</h6>}
+                </div>
+              ))}
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Headings</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Update the H1 heading size. Change --text-h1 in the @theme block of src/styles/global.css. Use the clamp() format: clamp(min, preferred, max). Also update --text-h1--line-height and --text-h1--letter-spacing if needed. Do not change any other heading variables unless asked.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               04 — BODY TEXT SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="body-text" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">04</span>
+                <h5 class="m-0">Body Text System</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Body</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-0">
+              {textStyles.map((t, i) => (
+                <div class={`flex flex-col gap-3 py-6${i < textStyles.length - 1 ? ' border-b border-[--color-border]' : ''}`}>
+                  <div class="flex items-center gap-3 flex-wrap">
+                    <code class="code-label">{t.token}</code>
+                    <span class="text-xs text-[--color-caption]">{t.px} · lh {t.lh}</span>
+                    <span class="text-xs font-medium text-[--color-caption]">{t.label} — {t.desc}</span>
+                  </div>
+                  <p class={`m-0 text-[--color-body] ${t.cls}`}>{t.sample}</p>
+                </div>
+              ))}
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Body Text</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">The body text uses --text-base (16px) and --color-body (#151515) set globally in src/styles/global.css. Paragraphs inherit these automatically via @layer base. To change colour update --color-body. To change size update --text-base. Do not go below 16px. Line-height is --text-base--line-height (1.75).</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               05 — BUTTON SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="buttons" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">05</span>
+                <h5 class="m-0">Button System</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Buttons</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- Light zone -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">On Light Backgrounds</p>
+                <div class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5">
+                  {buttons.filter(b => !b.dark).map(b => (
+                    <div class="flex items-start gap-5 flex-wrap">
+                      <div class="shrink-0 min-w-[10rem]">
+                        <a href="#" class={`btn ${b.cls}`}>.{b.cls}</a>
+                      </div>
+                      <div class="flex flex-col gap-1 flex-1">
+                        <code class="code-label">.btn .{b.cls}</code>
+                        <p class="m-0 text-sm text-[--color-body]">{b.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Dark zone -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">On Dark Backgrounds</p>
+                <div class="ds-dark rounded-xl p-6 flex flex-col gap-5">
+                  {buttons.filter(b => b.dark).map(b => (
+                    <div class="flex items-start gap-5 flex-wrap">
+                      <div class="shrink-0 min-w-[10rem]">
+                        <a href="#" class={`btn ${b.cls}`}>.{b.cls}</a>
+                      </div>
+                      <div class="flex flex-col gap-1 flex-1">
+                        <code class="code-label">.btn .{b.cls}</code>
+                        <p class="m-0 text-sm text-white/60">{b.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Usage -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Usage</p>
+                <pre class="code-block"><code>&lt;a href="#" class="btn btn-default"&gt;Book Appointment&lt;/a&gt;       /* light bg */
+&lt;a href="#" class="btn btn-secondary"&gt;Learn More&lt;/a&gt;          /* light bg */
+&lt;a href="#" class="btn btn-white"&gt;View Services&lt;/a&gt;           /* dark bg  */
+&lt;a href="#" class="btn btn-transparent"&gt;Read More&lt;/a&gt;         /* dark bg  */
+&lt;button type="submit" class="btn btn-default w-full"&gt;Send&lt;/button&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Buttons</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add a [BUTTON TYPE] button to [SECTION NAME]. Always use both .btn base and a variant class (btn-default, btn-secondary, btn-white, or btn-transparent). Never create new button styles. Buttons are in src/styles/global.css @layer components. Height is 48px and radius is 10px — do not change these.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               06 — FORM ELEMENTS
+          ─────────────────────────────────────────────────────── -->
+          <article id="forms" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">06</span>
+                <h5 class="m-0">Form Elements</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Forms</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <p class="m-0 text-[--color-body]">All form inputs use the <code class="code-label">.input</code> class. Radius matches buttons (10px). Focus ring uses <code class="code-hex">--color-primary</code> with a 3px offset ring.</p>
+
+              <div class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-semibold text-[--color-headline]">Full Name</label>
+                    <input type="text" class="input" placeholder="Jane Smith" />
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-semibold text-[--color-headline]">Email Address</label>
+                    <input type="email" class="input" placeholder="jane@example.com" />
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+                  <input type="tel" class="input" placeholder="+44 7700 000000" />
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label class="text-sm font-semibold text-[--color-headline]">Select a Service</label>
+                  <select class="input">
+                    <option value="">Choose a service...</option>
+                    <option>Physiotherapy</option>
+                    <option>Sports Massage</option>
+                    <option>Pilates</option>
+                  </select>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label class="text-sm font-semibold text-[--color-headline]">Your Message</label>
+                  <textarea class="input" rows="3" placeholder="Tell us about your condition..."></textarea>
+                </div>
+                <div>
+                  <button type="button" class="btn btn-default">Send Enquiry</button>
+                </div>
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>&lt;label class="text-sm font-semibold text-[--color-headline]"&gt;Label&lt;/label&gt;
+&lt;input  type="text"  class="input" placeholder="..." /&gt;
+&lt;select              class="input"&gt;...&lt;/select&gt;
+&lt;textarea            class="input" rows="4"&gt;&lt;/textarea&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Forms</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add a [FORM NAME] form with fields for [FIELDS]. Use the .input class on all inputs, selects, and textareas. Labels use class="text-sm font-semibold text-[--color-headline]". Wrap each label + input in a flex flex-col gap-2 div. Submit uses .btn.btn-default. Do not create new form styles.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               07 — CONTAINER SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="containers" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">07</span>
+                <h5 class="m-0">Container System</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Layout</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <div class="border-2 border-dashed border-[--color-caption]/40 rounded-[--radius-card] p-4">
+                <p class="text-xs font-mono text-[--color-caption] m-0 mb-3">&lt;section&gt; — Full page width · background colour lives here</p>
+                <div class="border-2 border-dashed border-[--color-primary]/50 rounded-[--radius-card] p-4">
+                  <p class="text-xs font-mono text-[--color-primary] m-0 mb-3">.container-main — max-width 1340px · padding: 90px/30px desktop · 70px/30px mobile</p>
+                  <div class="bg-[--color-muted] border-2 border-dashed border-[--color-headline]/40 rounded-[--radius-card] p-4">
+                    <p class="text-xs font-mono text-[--color-headline] m-0">.container-inner — no padding · content sits flush</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                {[
+                  { cls: ".container-main",  desc: "Primary section wrapper. Max-width 1340px, centred. Padding: 90px 30px desktop, 70px 30px mobile." },
+                  { cls: ".container-inner", desc: "Inner content wrapper. No padding. Always nest inside .container-main." },
+                  { cls: ".section",         desc: "Alias for .container-main. Use on semantic <section> elements." },
+                  { cls: ".container",       desc: "Max-width 1340px, centred, no padding. Use in nav, footer, and already-padded wrappers." },
+                ].map(item => (
+                  <div class="flex items-start gap-3 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="icon-dot-offset"></div>
+                    <div class="flex flex-col gap-1">
+                      <code class="code-label">{item.cls}</code>
+                      <p class="m-0 text-sm text-[--color-body]">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Containers</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Build a new [SECTION NAME] section using the global container system. Wrap in &lt;section class="bg-[COLOUR]"&gt;. Inside use &lt;div class="container-main"&gt; for padding and max-width. Inside that use &lt;div class="container-inner"&gt; for content. Max-width 1340px. Do not add custom padding — use the container system only.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               08 — FLEX LAYOUT SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="flex" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">08</span>
+                <h5 class="m-0">Flex Layout System</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Flex</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <p class="m-0 text-[--color-body]">Flexbox is the default layout system. Use <code class="code-label">.flex-layout</code> for all rows. Default gap is 15px (<code class="code-hex">--spacing-gap</code>). Override only when needed.</p>
+
+              <div class="flex flex-col gap-4">
+                {[
+                  { cls: ".flex-layout",                     desc: "Default · 15px gap · wraps on small screens",     items: ["Item A", "Item B", "Item C", "Item D"], mod: "flex-layout" },
+                  { cls: ".flex-layout.flex-layout--row",    desc: "Explicit horizontal row · same as default but declared clearly", items: ["Left", "Centre", "Right"], mod: "flex-layout flex-layout--row" },
+                  { cls: ".flex-layout.flex-layout--center", desc: "Centre-aligned · trust badges, CTA rows",         items: ["Trust A", "Trust B", "Trust C"],        mod: "flex-layout flex-layout--center" },
+                  { cls: ".flex-layout.flex-layout--between",desc: "Space-between · nav bars, header rows",           items: ["Logo", "Nav Links", "CTA Button"],      mod: "flex-layout flex-layout--between" },
+                  { cls: ".flex-layout.flex-layout--col",    desc: "Vertical stack · form fields, info blocks",       items: ["Stack 1", "Stack 2", "Stack 3"],         mod: "flex-layout flex-layout--col" },
+                  { cls: ".flex-layout.flex-layout--start",  desc: "Top-align items · text+image rows, card columns", items: ["Top A", "Top B", "Top C"],              mod: "flex-layout flex-layout--start" },
+                ].map(demo => (
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <code class="code-label">{demo.cls}</code>
+                      <span class="text-xs text-[--color-caption]">{demo.desc}</span>
+                    </div>
+                    <div class={`${demo.mod} p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]`}>
+                      {demo.items.map(item => (
+                        <div class="bg-[--color-accent] text-[--color-primary] text-xs font-semibold px-3 py-2 rounded border border-[--color-primary]/20">{item}</div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-4">Gap Scale</p>
+                <div class="flex flex-col gap-2">
+                  {[
+                    { token: "--spacing-gap",    px: "15px", use: "Default (set automatically)" },
+                    { token: "--spacing-gap-md", px: "24px", use: "Cards, grids — override: gap-[--spacing-gap-md]" },
+                    { token: "--spacing-gap-lg", px: "32px", use: "Section columns — override: gap-[--spacing-gap-lg]" },
+                  ].map(g => (
+                    <div class="flex items-center gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                      <code class="code-label">{g.token}</code>
+                      <code class="code-hex">{g.px}</code>
+                      <span class="text-sm text-[--color-body]">{g.use}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Flex Layout</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Build a [DESCRIPTION] layout inside [SECTION]. Use &lt;div class="flex-layout"&gt; for the container. Default gap is 15px. Override with gap-[--spacing-gap-md] for 24px or gap-[--spacing-gap-lg] for 32px. Add .flex-layout--center, --between, --col, or --start modifiers as needed. Do not create new flex classes.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               09 — CARD COMPONENT
+          ─────────────────────────────────────────────────────── -->
+          <article id="cards" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">09</span>
+                <h5 class="m-0">Card Component</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Cards</span>
+            </header>
+
+            <div class="bg-[--color-accent] px-8 py-8 border-b border-[--color-border]">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {features.map(f => (
+                  <div class="card">
+                    <div class="icon-dot mb-4"></div>
+                    <h5 class="mt-0 mb-2">{f.title}</h5>
+                    <p class="m-0 text-sm text-[--color-body]">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { prop: "background",    val: "var(--color-white)" },
+                  { prop: "border",        val: "1px solid var(--color-border)" },
+                  { prop: "border-radius", val: "var(--radius-card) · 12px" },
+                  { prop: "padding",       val: "var(--spacing-card-p) · 28px" },
+                  { prop: "box-shadow",    val: "var(--shadow-card)" },
+                  { prop: "hover",         val: "translateY(-2px) + shadow-raised + border-primary" },
+                ].map(p => (
+                  <div class="flex items-center gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <code class="code-label shrink-0">{p.prop}</code>
+                    <span class="text-xs text-[--color-caption]">{p.val}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>&lt;div class="card"&gt;
+  &lt;h4&gt;Card Title&lt;/h4&gt;
+  &lt;p&gt;Card description.&lt;/p&gt;
+&lt;/div&gt;
+/* Always place .card on a muted/accent background — never on white */
+/* Hover animation is built in — no extra classes needed            */</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Cards</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add a [N]-card grid to [SECTION]. Use &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"&gt; as the wrapper. Each card uses &lt;div class="card"&gt;. Place the grid inside a muted or accent background section. Do not add custom card styles — .card handles all styling and hover.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               10 — COMBINED EXAMPLE
+          ─────────────────────────────────────────────────────── -->
+          <article id="combined" class="border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">10</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Combined Example — Real Clinic Section</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Every part of the design system working together.</p>
+                </div>
+              </div>
+            </header>
+
+            <section class="bg-[--color-accent]">
+              <div class="container-main">
+                <div class="container-inner">
+                  <div class="section-header">
+                    <span class="eyebrow">Why Choose Us</span>
+                    <h2>Expert Care You Can Trust</h2>
+                    <p class="section-lead">Our team of HCPC-registered physiotherapists bring decades of combined experience helping patients recover faster, move better, and live without pain.</p>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+                    {features.map(f => (
+                      <div class="card">
+                        <div class="icon-dot mb-3"></div>
+                        <h4 class="mt-0 mb-2">{f.title}</h4>
+                        <p class="m-0 text-sm">{f.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="flex-layout flex-layout--center gap-4">
+                    <a href="#" class="btn btn-default">Book Your Appointment</a>
+                    <a href="#" class="btn btn-secondary">View All Services</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="bg-white border-t border-[--color-border] px-8 py-6">
+              <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Source Structure</p>
+              <pre class="code-block"><code>&lt;section class="bg-[--color-accent]"&gt;
+  &lt;div class="container-main"&gt;
+    &lt;div class="container-inner"&gt;
+      &lt;div class="section-header"&gt;
+        &lt;span class="eyebrow"&gt;Why Choose Us&lt;/span&gt;
+        &lt;h2&gt;Expert Care You Can Trust&lt;/h2&gt;
+        &lt;p class="section-lead"&gt;...&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"&gt;
+        &lt;div class="card"&gt;...&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="flex-layout flex-layout--center gap-4"&gt;
+        &lt;a class="btn btn-default"&gt;Book&lt;/a&gt;
+        &lt;a class="btn btn-secondary"&gt;Learn More&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+            </div>
+
+            <div class="bg-white px-8 pb-8">
+              <div class="rounded-[--radius-card] overflow-hidden">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — New Section</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">Build a new [SECTION NAME] section for the clinic website. Use the global design system only — no new CSS classes. Structure: &lt;section class="bg-[COLOUR]"&gt; wrapping .container-main wrapping .container-inner. Use .section-header with .eyebrow for the intro. Use .card for features. Use .btn.btn-default for primary CTA and .btn.btn-secondary for secondary. Use existing colour variables only.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               11 — UTILITY CLASSES
+          ─────────────────────────────────────────────────────── -->
+          <article id="utilities" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">11</span>
+                <h5 class="m-0">Utility Classes</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Utils</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              {[
+                { cls: ".eyebrow",       preview: "eyebrow",     desc: "Small uppercase label above section headings. Use inside .section-header or standalone above an h2." },
+                { cls: ".section-lead",  preview: "section-lead", desc: "Large intro paragraph below a heading. 18px, relaxed line-height. Use inside .section-header." },
+                { cls: ".section-header",preview: null,           desc: "Wrapper for eyebrow + heading + section-lead. Centres content and adds bottom margin. Use at the top of every section." },
+                { cls: ".caption-light", preview: "caption-light",desc: "Small secondary label. Uses --color-caption. For prompt box labels, metadata, and non-critical supporting text on light backgrounds." },
+                { cls: ".icon-dot",      preview: null,           desc: "Small primary-coloured decorative bullet. Used inside cards above the title. 10px circle in --color-primary." },
+                { cls: ".code-label",    preview: "code-label",   desc: "Inline code pill. Off-white background with border. For CSS variable names and class names in documentation." },
+                { cls: ".code-hex",      preview: "#DB003E",      desc: "Inline hex/value badge. Muted background. For values, sizes, and short references." },
+                { cls: ".copy-btn",      preview: "Copy",         desc: "Copy to clipboard button. Used in all Claude AI Prompt boxes. Handles active state via JS." },
+              ].map(u => (
+                <div class="flex items-start gap-5 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                  <div class="shrink-0 min-w-[9rem] flex items-center">
+                    {u.preview === "eyebrow"       && <span class="eyebrow">Eyebrow</span>}
+                    {u.preview === "section-lead"  && <p class="section-lead text-sm m-0">Lead text sample.</p>}
+                    {u.preview === "caption-light" && <span class="caption-light">Caption text</span>}
+                    {u.preview === "code-label"    && <code class="code-label">.class-name</code>}
+                    {u.preview === "#DB003E"        && <code class="code-hex">#DB003E</code>}
+                    {u.preview === "Copy"           && <button type="button" class="copy-btn">Copy</button>}
+                    {u.preview === null             && <span class="text-xs text-[--color-caption] italic">Layout only</span>}
+                  </div>
+                  <div class="flex flex-col gap-1 flex-1">
+                    <code class="code-label">{u.cls}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{u.desc}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>&lt;div class="section-header"&gt;
+  &lt;span class="eyebrow"&gt;Why Choose Us&lt;/span&gt;
+  &lt;h2&gt;Heading Here&lt;/h2&gt;
+  &lt;p class="section-lead"&gt;Intro paragraph.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Utility Classes</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Use global utility classes for section structure. Every section heading block must use .section-header containing .eyebrow, h2, and .section-lead. Do not create new heading wrapper classes. Use .icon-dot inside cards above the h4/h5. Use .caption-light for prompt labels and metadata. Do not invent new utility classes — extend or reuse existing ones only.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               12 — DESIGN TOKENS
+          ─────────────────────────────────────────────────────── -->
+          <article id="tokens" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">12</span>
+                <h5 class="m-0">Design Tokens — Radius, Shadows, Spacing</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Tokens</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-8">
+
+              <!-- Radius -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Border Radius</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { token: "--radius-card",  val: "12px",   label: ".card, article, prompt boxes" },
+                    { token: "--radius-btn",   val: "10px",   label: ".btn, .input, sidebar links" },
+                    { token: "--radius-badge", val: "999px",  label: ".eyebrow, badges, pills, tags" },
+                  ].map(r => (
+                    <div class="radius-demo flex flex-col gap-3 p-4 bg-[--color-muted] border border-[--color-border]" data-radius={r.val}>
+                      <code class="code-label">{r.token}</code>
+                      <code class="code-hex">{r.val}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{r.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Shadows -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Shadows</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { token: "--shadow-card",   label: "Default card shadow",    cls: "shadow-[--shadow-card]"   },
+                    { token: "--shadow-raised",  label: "Card hover raised state", cls: "shadow-[--shadow-raised]"  },
+                    { token: "--shadow-nav",     label: "Sticky nav underline",   cls: "shadow-[--shadow-nav]"    },
+                  ].map(s => (
+                    <div class={`flex flex-col gap-3 p-4 bg-white border border-[--color-border] rounded-[--radius-card] ${s.cls}`}>
+                      <code class="code-label">{s.token}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Spacing -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Spacing Tokens</p>
+                <div class="flex flex-col gap-2">
+                  {[
+                    { token: "--spacing-section-x", val: "30px",  use: "Horizontal padding on footer and full-width elements" },
+                    { token: "--spacing-card-p",    val: "28px",  use: "Internal padding on .card components" },
+                    { token: "--spacing-gap",        val: "15px",  use: "Default flex gap in .flex-layout" },
+                    { token: "--spacing-gap-md",     val: "24px",  use: "Medium gap — cards and grids" },
+                    { token: "--spacing-gap-lg",     val: "32px",  use: "Large gap — section columns" },
+                  ].map(s => (
+                    <div class="flex items-center gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                      <code class="code-label shrink-0">{s.token}</code>
+                      <code class="code-hex shrink-0">{s.val}</code>
+                      <span class="text-sm text-[--color-body]">{s.use}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Tokens</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Use global design tokens for all radius, shadow, and spacing. Border radius: --radius-card (12px) for cards, --radius-btn (10px) for buttons and inputs, --radius-badge (999px) for pills and badges. Shadows: --shadow-card on cards, --shadow-raised on hover states. Spacing: --spacing-card-p (28px) for card padding, --spacing-gap (15px) default flex gap. Do not hardcode pixel values when a token exists.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               13 — GLOBAL.CSS STRUCTURE
+          ─────────────────────────────────────────────────────── -->
+          <article id="globalcss" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">13</span>
+                <h5 class="m-0">global.css Structure</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">CSS</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <p class="m-0 text-[--color-body]">All design tokens and global styles live in <code class="code-label">src/styles/global.css</code>. The file is split into four blocks. Only edit the correct block for your task.</p>
+
+              <div class="flex flex-col gap-3">
+                {[
+                  {
+                    block: "@theme",
+                    file: "src/styles/global.css",
+                    desc: "All CSS custom properties (design tokens). Colours, fonts, radius, shadows, spacing. Change brand colour, fonts, or spacing here. This is the only place tokens should be defined.",
+                    when: "When changing brand colour, font, radius, shadow, or spacing values.",
+                  },
+                  {
+                    block: "@layer base",
+                    file: "src/styles/global.css",
+                    desc: "Global element resets and default styles. Headings, paragraphs, anchors, and form elements. Applied automatically — no class needed. Heading sizes, line-heights, and colours are set here.",
+                    when: "When changing default heading sizes, body text size, or element-level defaults.",
+                  },
+                  {
+                    block: "@layer components",
+                    file: "src/styles/global.css",
+                    desc: "Reusable class-based components. .btn, .card, .input, .eyebrow, .section-header, .flex-layout, .container-main, .container-inner, etc. All reusable UI patterns live here.",
+                    when: "When adding or modifying a reusable class. Never add one-off classes here.",
+                  },
+                  {
+                    block: "@layer utilities",
+                    file: "src/styles/global.css",
+                    desc: "Custom utility classes that extend Tailwind. Use sparingly. Only add here when a Tailwind utility does not exist for the needed pattern.",
+                    when: "Only when Tailwind cannot achieve the pattern with existing utilities.",
+                  },
+                ].map(b => (
+                  <div class="p-5 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-2">
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <code class="code-label">{b.block}</code>
+                      <code class="code-hex">{b.file}</code>
+                    </div>
+                    <p class="m-0 text-sm text-[--color-body]">{b.desc}</p>
+                    <p class="m-0 text-xs text-[--color-caption]"><strong>Edit when:</strong> {b.when}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>/* src/styles/global.css — structure overview */
+
+@theme &lbrace;
+  /* ── Tokens: colours, fonts, radius, shadows, spacing ── */
+  --color-primary: #DB003E;
+  --font-heading: 'Inter Tight', sans-serif;
+  --radius-card: 12px;
+&rbrace;
+
+@layer base &lbrace;
+  /* ── Global element defaults (h1–h6, p, a, input) ── */
+  h1 &lbrace; font-size: clamp(...); &rbrace;
+&rbrace;
+
+@layer components &lbrace;
+  /* ── Reusable classes (.btn, .card, .input, etc.) ── */
+  .btn &lbrace; ... &rbrace;
+  .card &lbrace; ... &rbrace;
+&rbrace;
+
+@layer utilities &lbrace;
+  /* ── Custom utilities (use sparingly) ── */
+&rbrace;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — global.css</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">When adding a new design token, add it to the @theme block in src/styles/global.css. When adding a reusable class, add it to @layer components. When changing a heading default, edit @layer base. Never add one-off styles to global.css. Never add styles to individual page files unless scoped to that page only.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               14 — IMAGE FORMAT RULES
+          ─────────────────────────────────────────────────────── -->
+          <article id="images" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">14</span>
+                <h5 class="m-0">Image Format Rules</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Images</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <div class="flex flex-col gap-3">
+                {[
+                  { badge: "1st",   fmt: ".avif",  label: "Primary format",  desc: "Always use as the primary <source>. Best compression and quality. Assumed to exist for every image." },
+                  { badge: "2nd",   fmt: ".webp",  label: "Fallback format", desc: "Always include as the second <source>. Wider browser support." },
+                  { badge: "Only if needed", fmt: ".jpg / .png", label: "Last resort", desc: "Only use if no modern format is available or there is a clear technical reason. Never as primary." },
+                ].map(f => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <span class="text-xs font-bold text-[--color-primary] bg-[--color-accent] border border-[--color-primary]/20 px-2 py-1 rounded-[--radius-badge] shrink-0 whitespace-nowrap">{f.badge}</span>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-2">
+                        <code class="code-label">{f.fmt}</code>
+                        <span class="text-xs text-[--color-caption]">{f.label}</span>
+                      </div>
+                      <p class="m-0 text-sm text-[--color-body]">{f.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="p-4 bg-[--color-accent] border border-[--color-primary]/20 rounded-[--radius-card] flex gap-3 items-start">
+                <span class="text-[--color-primary] font-bold text-sm shrink-0">⚠</span>
+                <p class="m-0 text-sm text-[--color-body]"><strong>If a developer uploads .jpg or .png:</strong> Show this message — "Fel recommends uploading .avif images. Use this converter: <code class="code-label">https://hmdg-elementor.flywheelsites.com/</code>"</p>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Loading Rules</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { attr: 'loading="eager"',   use: "Hero and above-the-fold images only" },
+                    { attr: 'loading="lazy"',    use: "All below-fold images — default" },
+                    { attr: 'decoding="async"',  use: "Always include on all images" },
+                    { attr: 'width="" height=""',use: "Always set to prevent CLS (layout shift)" },
+                  ].map(a => (
+                    <div class="flex flex-col gap-1 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <code class="code-label">{a.attr}</code>
+                      <p class="text-xs text-[--color-caption] m-0">{a.use}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Required Pattern</p>
+                <pre class="code-block"><code>&lt;picture&gt;
+  &lt;source srcset="/images/hero.avif" type="image/avif" /&gt;
+  &lt;source srcset="/images/hero.webp" type="image/webp" /&gt;
+  &lt;img
+    src="/images/hero.webp"
+    alt="Descriptive alt text"
+    loading="lazy"
+    decoding="async"
+    width="1600"
+    height="900"
+  /&gt;
+&lt;/picture&gt;
+
+/* Use loading="eager" for hero / above-fold images only */</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Images</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add an image to [SECTION]. Use the required picture pattern: &lt;picture&gt; with .avif as the first source, .webp as the second source, and a &lt;img&gt; fallback with loading="lazy" decoding="async" and explicit width and height. Use loading="eager" only for the hero image. Never use &lt;img&gt; alone without the &lt;picture&gt; wrapper when .avif and .webp are available.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               15 — SECURITY REFERENCE
+          ─────────────────────────────────────────────────────── -->
+          <article id="security" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">15</span>
+                <h5 class="m-0">Security Reference</h5>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Security</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-5">
+
+              {[
+                { rule: "No secrets in frontend code",      detail: "API keys, tokens, and credentials must never appear in .astro, .ts, or .js files. Use environment variables only." },
+                { rule: "Use .env for all secrets",         detail: "Copy .env.example to .env and fill in values. Never commit .env to git — it is already in .gitignore." },
+                { rule: "External links — rel attribute",   detail: 'All <a> tags with target="_blank" must include rel="noopener noreferrer" to prevent tab-napping attacks.' },
+                { rule: "No unsafe HTML injection",         detail: "Never use set:html or innerHTML with unsanitised user input. Only use with trusted, controlled content." },
+                { rule: "No inline event handlers",         detail: "Never use onclick='', onload='', or similar inline handlers. Use addEventListener in script blocks only." },
+                { rule: "CSP headers are pre-configured",   detail: "Content Security Policy is set in BaseLayout.astro (meta tag), public/_headers (Netlify), and vercel.json (Vercel). Update these when adding new third-party services." },
+                { rule: "Forms need spam prevention",       detail: "All public forms should include a honeypot field or reCAPTCHA. Never rely on client-side validation alone." },
+                { rule: "OWASP Top 10 applies at all times",detail: "Follow secure coding defaults. No SQL injection risk, XSS risk, or data exposure in any frontend output." },
+              ].map(r => (
+                <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                  <div class="icon-dot-offset mt-1"></div>
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm font-semibold text-[--color-headline]">{r.rule}</span>
+                    <p class="m-0 text-sm text-[--color-body]">{r.detail}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>/* Security files in this template */
+public/_headers     → Netlify HTTP security headers (CSP, HSTS, X-Frame-Options)
+vercel.json         → Vercel HTTP security headers (same set)
+.env.example        → Copy to .env — never commit .env
+BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
+
+/* Required pattern for all external links */
+&lt;a href="https://..." target="_blank" rel="noopener noreferrer"&gt;Link&lt;/a&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Security</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Review [PAGE/COMPONENT] for security issues. Check: no secrets in markup, all external links have rel="noopener noreferrer", no unsafe set:html or innerHTML, no inline event handlers, forms include spam prevention, environment variables are used for all sensitive values. Flag any issues with severity level and suggest fixes.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               16 — AGENT SYSTEM
+          ─────────────────────────────────────────────────────── -->
+          <article id="agents" class="border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">16</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Agent System</h5>
+                  <p class="text-sm text-[--color-caption] m-0">11 specialist AI agents. Use the review sequence for every important page build.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Agents</span>
+            </header>
+
+            <div class="px-8 py-6 bg-white flex flex-col gap-6">
+
+              <!-- Sequence -->
+              <div class="flex flex-col gap-2">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Review Sequence</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                  {[
+                    "information-architecture-reviewer",
+                    "ux-architect",
+                    "ui-designer",
+                    "frontend-builder",
+                    "a11y-reviewer",
+                    "performance-reviewer",
+                    "seo-reviewer",
+                    "marketing-reviewer",
+                    "security-reviewer",
+                    "conversion-reviewer",
+                  ].map((agent, i, arr) => (
+                    <div class="flex items-center gap-2">
+                      <code class="code-label text-[0.65rem]">{agent}</code>
+                      {i < arr.length - 1 && <span class="text-[--color-caption] text-xs">→</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Agent cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { num: "01", name: "information-architecture-reviewer", role: "Sitemap, URL hierarchy, parent/child pages, taxonomy — before design begins" },
+                  { num: "02", name: "ux-architect",                       role: "User journey mapping, content priority per section, interaction patterns, conversion pathway — translates IA into UX decisions before visual design" },
+                  { num: "03", name: "ui-designer",                        role: "Section anatomy, layout, token-based colour planning, mobile-first, interactions. Plans only — does NOT write code" },
+                  { num: "04", name: "frontend-builder",                   role: "Builds clean Astro + Tailwind. Uses existing class system, no inline styles, reusable components, Swiper carousels" },
+                  { num: "05", name: "a11y-reviewer",                      role: "WCAG 2.1 AA — 4.5:1 contrast, focus states, heading structure, keyboard nav, form labels, touch targets, reduced-motion" },
+                  { num: "06", name: "performance-reviewer",               role: "AVIF/WebP images, DOM weight, lazy loading, JS usage, CLS risk" },
+                  { num: "07", name: "seo-reviewer",                       role: "H1, metadata, heading hierarchy, noindex rules, internal linking, structured data" },
+                  { num: "08", name: "marketing-reviewer",                 role: "Value proposition, trust signals, messaging clarity, service positioning" },
+                  { num: "09", name: "security-reviewer",                  role: "Forms, scripts, unsafe HTML, exposed secrets, external links, OWASP Top 10" },
+                  { num: "10", name: "conversion-reviewer",                role: "CTA clarity, CTA placement, booking flow, friction points, overall user journey — final gate" },
+                  { num: "11", name: "visual-qa-reviewer",                 role: "Supplementary — checks built output matches design intent. Use ad-hoc after frontend-builder when visual QA is needed" },
+                ].map(a => (
+                  <div class="flex flex-col gap-2 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-mono font-bold text-[--color-primary]">{a.num}</span>
+                      <code class="code-label text-[0.65rem] leading-tight">{a.name}</code>
+                    </div>
+                    <p class="m-0 text-xs text-[--color-body] leading-relaxed">{a.role}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            <div class="bg-white px-8 pb-8">
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Agent Workflow</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">Review and build this task using the following agent sequence exactly: information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer. Task: [describe the page, section, sitemap, or feature here]. Do not skip any agent. Do not rush into code before planning. If something is weak, improve it automatically.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
+
+          <!-- ───────────────────────────────────────────────────
+               17 — BASELAYOUT
+          ─────────────────────────────────────────────────────── -->
+          <article id="baselayout" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">17</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">BaseLayout.astro</h5>
+                  <p class="text-sm text-[--color-caption] m-0">The single shared wrapper for every client-facing page.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Layout</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- Props -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Props</p>
+                {[
+                  { prop: "title",       type: "string",   required: true,  desc: "Page title tag content. Required on every page." },
+                  { prop: "description", type: "string?",  required: false, desc: "Meta description for SEO. Defaults to a generic clinic description if omitted." },
+                  { prop: "noindex",     type: "boolean?", required: false, desc: "Set true on thank-you and booking confirmation pages. Injects a noindex, nofollow robots meta tag in the page head." },
+                ].map(p => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{p.prop}</code>
+                    <code class="code-hex shrink-0">{p.type}</code>
+                    {p.required && <span class="text-xs font-bold text-[--color-primary] bg-[--color-accent] border border-[--color-primary]/20 px-2 py-0.5 rounded-[--radius-badge] shrink-0">required</span>}
+                    <p class="m-0 text-sm text-[--color-body]">{p.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- What BaseLayout includes automatically -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Included Automatically — Do Not Re-Import</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { item: "global.css",          note: "Once globally — never import again per-page" },
+                    { item: "Google Fonts",         note: "Inter + Inter Tight, weights 400–800" },
+                    { item: "Security meta tags",   note: "CSP, X-Frame, referrer — plus _headers / vercel.json" },
+                    { item: "Consent Mode v2",      note: "Fires before GTM — required for GDPR compliance" },
+                    { item: "GTM noscript",         note: "Fallback tag — only active when gtmId is set in config" },
+                    { item: "Header component",     note: "Global — never add Header inside a page" },
+                    { item: "Footer component",     note: "Global — never add Footer inside a page" },
+                    { item: "CookieConsent",        note: "Global — never add CookieConsent inside a page" },
+                  ].map(i => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <div class="icon-dot-offset mt-0.5"></div>
+                      <div class="flex flex-col gap-0.5">
+                        <code class="code-label">{i.item}</code>
+                        <p class="m-0 text-xs text-[--color-caption]">{i.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Usage pattern -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Usage Pattern</p>
+                <pre class="code-block"><code>---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+&lt;BaseLayout
+  title="Services — ClinicName"
+  description="Expert physiotherapy in London. Book online today."
+&gt;
+  &lt;section class="bg-[--color-muted]"&gt;
+    &lt;div class="container-main"&gt;
+      &lt;div class="container-inner"&gt;
+        ...page content...
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/BaseLayout&gt;
+
+/* For thank-you and booking confirmation pages — add noindex */
+&lt;BaseLayout title="Thank You" description="..." noindex=&lbrace;true&rbrace;&gt;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — BaseLayout</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Build a new page at [URL]. Use BaseLayout from src/layouts/BaseLayout.astro. Pass title and description props. Never import global.css, Header, Footer, or CookieConsent separately — BaseLayout handles all of these. Content goes directly inside the BaseLayout tags. If this is a thank-you or confirmation page, add noindex prop set to true on the BaseLayout.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               18 — COOKIE CONSENT CONFIG
+          ─────────────────────────────────────────────────────── -->
+          <article id="cookiecfg" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">18</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Cookie Consent Config</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Marketing team editable fields in <code class="code-label">src/config/cookie-consent.config.ts</code></p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Config</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- Marketing team fields -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Marketing Team — Edit These Fields</p>
+                {[
+                  { field: "gtmId",            example: "'GTM-XXXXXXX'",    desc: "Google Tag Manager container ID. Find in GTM → Admin → Container Settings." },
+                  { field: "gtagId",           example: "'G-XXXXXXXXXX'",   desc: "GA4 Measurement ID. Find in GA4 → Admin → Data Streams → Web stream → Measurement ID." },
+                  { field: "policyVersion",    example: "'1.0'",             desc: "Start every new site at '1.0'. Bumping this forces ALL existing visitors to re-consent. Only change when the cookie policy content actually changes." },
+                  { field: "bannerTitle",      example: "'We use cookies'",  desc: "Heading shown in the cookie consent banner." },
+                  { field: "bannerText",       example: "'We use...'",       desc: "Body text in the banner. Keep to 1–2 sentences. Must match the live cookie policy page." },
+                  { field: "acceptAllLabel",   example: "'Accept All'",      desc: "Primary accept button label. UK English spelling required." },
+                  { field: "rejectAllLabel",   example: "'Reject All'",      desc: "Reject button label. UK English spelling required." },
+                  { field: "customiseLabel",   example: "'Customise'",       desc: "Settings button label. Note UK spelling — Customise not Customize." },
+                ].map(f => (
+                  <div class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{f.field}</code>
+                    <code class="code-hex shrink-0">{f.example}</code>
+                    <p class="m-0 text-sm text-[--color-body] flex-1">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Rules -->
+              <div class="p-4 bg-[--color-accent] border border-[--color-primary]/20 rounded-[--radius-card] flex gap-3 items-start">
+                <span class="text-[--color-primary] font-bold text-sm shrink-0">⚠</span>
+                <div class="flex flex-col gap-1">
+                  <p class="m-0 text-sm font-semibold text-[--color-headline]">Important rules</p>
+                  <ul class="m-0 text-sm text-[--color-body] flex flex-col gap-1 pl-4">
+                    <li>Never store live GTM or GA4 IDs in version control — use environment variables for production deployments.</li>
+                    <li>Only bump <code class="code-label">policyVersion</code> when the cookie policy text actually changes — not on every deploy.</li>
+                    <li>All button labels must use UK English spelling (Customise, not Customize).</li>
+                    <li>The <code class="code-label">bannerText</code> must reflect what the live <a href="/cookie-policy" class="text-[--color-primary]">/cookie-policy</a> page says.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="border-t border-[--color-border] pt-5">
+                <pre class="code-block"><code>// src/config/cookie-consent.config.ts
+export const cookieConsentConfig = &lbrace;
+  gtmId:          'GTM-XXXXXXX',   // ← replace per client
+  gtagId:         'G-XXXXXXXXXX',  // ← replace per client
+  policyVersion:  '1.0',           // ← bump only when policy changes
+  bannerTitle:    'We use cookies',
+  bannerText:     'We use cookies to improve your experience...',
+  acceptAllLabel: 'Accept All',
+  rejectAllLabel: 'Reject All',
+  customiseLabel: 'Customise',
+&rbrace;;</code></pre>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Cookie Config</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Update the cookie consent configuration for [CLIENT NAME]. File: src/config/cookie-consent.config.ts. Set gtmId to [GTM ID], gtagId to [GA4 ID], bannerText to match their cookie policy, and policyVersion to '1.0'. Use UK English spelling on all button labels. Do not change any developer settings below the marketing team section.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               19 — SWIPER CAROUSELS
+          ─────────────────────────────────────────────────────── -->
+          <article id="carousel" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">19</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Swiper Carousels</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Swiper v11 via CDN. Brand colours overridden in global.css.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Carousel</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <!-- TestimonialSlider component -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Prebuilt Component — TestimonialSlider</p>
+                <div class="p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-3">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <code class="code-label">src/components/TestimonialSlider.astro</code>
+                  </div>
+                  <p class="m-0 text-sm text-[--color-body]">Ready-made Swiper carousel for patient reviews and testimonials. Accepts a <code class="code-label">testimonials</code> array. Includes navigation arrows, pagination dots, responsive breakpoints, and optional autoplay.</p>
+                  <pre class="code-block"><code>---
+import TestimonialSlider from '../components/TestimonialSlider.astro';
+
+const reviews = [
+  &lbrace; name: "Sarah M.", role: "Physiotherapy patient", body: "Excellent care...", rating: 5 &rbrace;,
+  &lbrace; name: "James K.", role: "Sports massage client",  body: "Fast recovery...", rating: 5 &rbrace;,
+];
+---
+
+&lt;TestimonialSlider testimonials=&lbrace;reviews&rbrace; /&gt;</code></pre>
+                </div>
+              </div>
+
+              <!-- Testimonial object shape -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Testimonial Object Shape</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { field: "name",   type: "string",    desc: "Patient or client full name" },
+                    { field: "role",   type: "string",    desc: "Treatment type or patient context" },
+                    { field: "body",   type: "string",    desc: "Review text (1–3 sentences)" },
+                    { field: "rating", type: "number 1–5",desc: "Star rating — renders filled/empty stars" },
+                  ].map(f => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <code class="code-label shrink-0">{f.field}</code>
+                      <code class="code-hex shrink-0">{f.type}</code>
+                      <p class="m-0 text-xs text-[--color-body]">{f.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Brand overrides -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Brand Colour Overrides — Already in global.css</p>
+                <pre class="code-block"><code>/* global.css — Swiper brand overrides — do not remove */
+.swiper-button-next,
+.swiper-button-prev &lbrace;
+  color: var(--color-primary) !important;
+&rbrace;
+.swiper-pagination-bullet-active &lbrace;
+  background: var(--color-primary) !important;
+&rbrace;</code></pre>
+                <p class="m-0 text-sm text-[--color-body]">Swiper arrows and active pagination dots automatically use the client's brand colour. These overrides are global — they apply to every Swiper instance on the site.</p>
+              </div>
+
+              <!-- Breakpoint pattern -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">Standard Breakpoints Used in TestimonialSlider</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { bp: "< 768px",   slides: "1" },
+                    { bp: "768px+",    slides: "2" },
+                    { bp: "1024px+",   slides: "3" },
+                  ].map(b => (
+                    <div class="flex flex-col gap-1 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] text-center">
+                      <code class="code-hex">{b.bp}</code>
+                      <p class="m-0 text-sm font-semibold text-[--color-headline]">{b.slides} slide{b.slides !== "1" ? "s" : ""}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mx-8 mb-8 rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+              <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                <span class="caption-light">Claude AI Prompt — Carousels</span>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+              <div class="px-5 pt-4 pb-5">
+                <p class="prompt-text prompt-code">Add a [testimonial / service / team] carousel to [SECTION]. Import TestimonialSlider from src/components/TestimonialSlider.astro and pass a testimonials array matching the shape: name (string), role (string), body (string), rating (number 1–5). Do not import Swiper CSS or JS manually — the component handles this. Do not override Swiper colours — they are set globally in global.css.</p>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               20 — CLIENT SETUP CHECKLIST
+          ─────────────────────────────────────────────────────── -->
+          <article id="setup" class="border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">20</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Client Setup Checklist</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Everything to do when starting a new clinic site from this template.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Setup</span>
+            </header>
+
+            <div class="px-8 py-6 bg-white flex flex-col gap-6">
+
+              <!-- 4-step brand setup -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 1 — Brand Colours &amp; Fonts · <code class="code-hex normal-case">src/styles/global.css @theme</code></p>
+                {[
+                  { token: "--color-primary",        action: "Change to client brand colour (hex). This updates every button, link, and accent automatically." },
+                  { token: "--color-primary-hover",  action: "Set to a slightly darker or lighter shade of --color-primary for hover states." },
+                  { token: "--color-accent",         action: "Set to a very light tint of the brand colour. Used for section backgrounds and secondary fills." },
+                  { token: "--font-heading",         action: "Change if the client uses a different heading font. Inter Tight is the default." },
+                  { token: "--font-body",            action: "Change if the client uses a different body font. Inter is the default." },
+                ].map(s => (
+                  <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <code class="code-label shrink-0">{s.token}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{s.action}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Step 2 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 2 — Cookie Consent · <code class="code-hex normal-case">src/config/cookie-consent.config.ts</code></p>
+                <div class="p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex flex-col gap-2">
+                  <p class="m-0 text-sm text-[--color-body]">Set <code class="code-label">gtmId</code>, <code class="code-label">gtagId</code>, <code class="code-label">bannerText</code>, and <code class="code-label">policyVersion</code>. See section 18 for full field reference.</p>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 3 — Global Components</p>
+                {[
+                  { file: "src/components/Header.astro",  action: "Update clinic name, logo, navigation links, phone number, and booking CTA." },
+                  { file: "src/components/Footer.astro",  action: "Update clinic name, address, map embed, social links, and legal page links." },
+                  { file: "public/favicon.svg",           action: "Replace with the client's favicon. Keep .svg format for sharpness at all sizes." },
+                ].map(s => (
+                  <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                    <code class="code-label shrink-0">{s.file}</code>
+                    <p class="m-0 text-sm text-[--color-body]">{s.action}</p>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Step 4 -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Step 4 — Legal Pages &amp; noindex Rules</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { page: "/privacy-policy",      rule: "Add client content. Must be indexable." },
+                    { page: "/terms-conditions",    rule: "Add client content. Must be indexable." },
+                    { page: "/cookie-policy",       rule: "Add client content. Must match bannerText in cookie config." },
+                    { page: "/thank-you",           rule: "noindex prop is true — already set in template." },
+                    { page: "/thank-you-booking",   rule: "noindex prop is true — already set in template." },
+                    { page: "/contact",             rule: "Update form endpoint and contact details." },
+                  ].map(p => (
+                    <div class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <div class="icon-dot-offset mt-0.5"></div>
+                      <div class="flex flex-col gap-0.5">
+                        <code class="code-label">{p.page}</code>
+                        <p class="m-0 text-xs text-[--color-body]">{p.rule}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Page/URL map -->
+              <div class="border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest mb-3">API Routes Included in Template</p>
+                <div class="flex flex-col gap-2">
+                  {[
+                    { route: "/api/book-now",        file: "src/pages/api/book-now.ts",        desc: "Handles booking form submissions." },
+                    { route: "/api/booking-complete", file: "src/pages/api/booking-complete.ts", desc: "Handles post-booking confirmation flow." },
+                  ].map(r => (
+                    <div class="flex items-start gap-4 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card] flex-wrap">
+                      <code class="code-label shrink-0">{r.route}</code>
+                      <code class="code-hex shrink-0">{r.file}</code>
+                      <p class="m-0 text-sm text-[--color-body]">{r.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="bg-white px-8 pb-8">
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Client Setup</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">Set up this template for a new client: [CLIENT NAME]. 1. Update --color-primary, --color-primary-hover, and --color-accent in src/styles/global.css @theme to match their brand. 2. Set gtmId and gtagId in src/config/cookie-consent.config.ts. 3. Update the clinic name, logo, nav links, phone, and CTA in Header.astro and Footer.astro. 4. Replace public/favicon.svg with the client's favicon. 5. Add content to privacy-policy, terms-conditions, and cookie-policy pages. 6. Update contact form endpoint in contact.astro and /api/book-now.ts.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
+        </main><!-- end articles -->
+
+
+        <!-- FOOTER -->
+        <footer class="ds-dark">
+
+          <div class="px-[30px] py-8 flex-layout flex-layout--between gap-4">
+            <span class="text-sm font-semibold text-white/70">HMDG Base Template</span>
+          </div>
+
+          <div class="border-t border-white/10">
+            <div class="px-[30px] py-4 flex-layout flex-layout--between gap-4">
+              <div class="flex-layout items-center gap-5 flex-wrap">
+                <span class="text-sm text-white/60">© Copyright HMDG {new Date().getFullYear()}</span>
+                <span class="text-sm text-white/60">
+                  Designed &amp; Developed by
+                  <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer" class="font-semibold text-white/70 hover:text-white transition-colors">HMDG</a>
+                </span>
+              </div>
+              <nav class="flex-layout items-center gap-5 flex-wrap" aria-label="Legal">
+                <a href="/privacy-policy"   class="text-sm text-white/70 hover:text-white transition-colors">Privacy Policy</a>
+                <a href="/terms-conditions" class="text-sm text-white/70 hover:text-white transition-colors">Terms &amp; Conditions</a>
+                <a href="/cookie-policy"    class="text-sm text-white/70 hover:text-white transition-colors">Cookie Policy</a>
+              </nav>
+            </div>
+          </div>
+
+        </footer>
+
+
+      </div><!-- end right panel -->
+    </div><!-- end two-column layout -->
+
+
+  <script>
+    // ── Radius demos: set --demo-radius CSS variable from data-radius attribute ──
+    (document.querySelectorAll('[data-radius]') as NodeListOf<HTMLElement>).forEach(el => {
+      const v = el.getAttribute('data-radius');
+      if (v) el.style.setProperty('--demo-radius', v);
+    });
+
+    // ── Colour swatches: apply data-hex as background via JS (dynamic values) ──
+    (document.querySelectorAll('[data-hex]') as NodeListOf<HTMLElement>).forEach(el => {
+      const v = el.getAttribute('data-hex');
+      if (!v) return;
+      el.style.background = v;
+      // Add a subtle border so white/light swatches are always visible
+      el.style.border = '1px solid rgba(0,0,0,0.08)';
+    });
+
+    // ── Copy-to-clipboard for AI Prompt boxes ──
+    (document.querySelectorAll('.copy-btn') as NodeListOf<HTMLButtonElement>).forEach(btn => {
+      btn.addEventListener('click', () => {
+        let el: HTMLElement | null = btn.parentElement;
+        let promptEl: Element | null = null;
+        while (el && !promptEl) {
+          promptEl = el.querySelector('.prompt-text');
+          el = el.parentElement;
+        }
+        if (!promptEl) return;
+        const text = (promptEl.textContent ?? '').trim();
+
+        const onSuccess = () => {
+          btn.textContent = '✓ Copied';
+          btn.style.color = '#4ade80';
+          btn.style.borderColor = 'rgba(74,222,128,0.35)';
+          btn.style.background = 'rgba(74,222,128,0.08)';
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+            btn.style.background = '';
+          }, 2000);
+        };
+
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(promptEl as Element, onSuccess));
+        } else {
+          fallbackCopy(promptEl, onSuccess);
+        }
+      });
+    });
+
+    function fallbackCopy(el: Element, onSuccess: () => void) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      if (!sel) return;
+      sel.removeAllRanges();
+      sel.addRange(range);
+      try { document.execCommand('copy'); onSuccess(); } catch { /* silent */ }
+      sel.removeAllRanges();
+    }
+
+    // ── Sidebar active state via IntersectionObserver ──
+    const sections = document.querySelectorAll('article[id]') as NodeListOf<HTMLElement>;
+    const sidebarLinks = document.querySelectorAll('[data-nav]') as NodeListOf<HTMLElement>;
+
+    if (sections.length && sidebarLinks.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              sidebarLinks.forEach(link => {
+                const id = link.getAttribute('data-nav');
+                link.classList.toggle('is-active', id === entry.target.id);
+              });
+            }
+          });
+        },
+        { rootMargin: '-20% 0px -75% 0px', threshold: 0 }
+      );
+      sections.forEach(s => observer.observe(s));
+    }
+  </script>
+
+  <!-- ── Cookie Consent ────────────────────────────────────────── -->
+  <CookieConsent />
+
+  </body>
+</html>
