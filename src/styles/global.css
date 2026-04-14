@@ -435,8 +435,9 @@
      — Centres content horizontally (margin: auto)
      — Caps width at 1340px — balanced, readable on all screens
      — Applies responsive vertical padding:
-         mobile  (<1200px): 70px top/bottom
-         desktop (≥1200px): 90px top/bottom
+         Vertical padding now goes on the <section> element, not
+         the container. See Section Padding Convention in
+         .claude/rules/frontend.md.
      — Applies fixed horizontal padding: 30px both sides
      ────────────────────────────────────────────────────────*/
   .container-main {
@@ -444,17 +445,8 @@
     max-width:      var(--spacing-container-max);
     margin-left:    auto;
     margin-right:   auto;
-    padding-top:    var(--spacing-section-y);
-    padding-bottom: var(--spacing-section-y);
     padding-left:   var(--spacing-section-x);
     padding-right:  var(--spacing-section-x);
-  }
-
-  @media (min-width: 1200px) {
-    .container-main {
-      padding-top:    var(--spacing-section-y-lg);
-      padding-bottom: var(--spacing-section-y-lg);
-    }
   }
 
   /* ── container-inner ──────────────────────────────────────
@@ -475,23 +467,15 @@
      Alias for .container-main.
      Use when the element is a semantic <section> tag.
      Identical behaviour — just a readable naming option.
+     Vertical padding now goes on the <section> element.
      ────────────────────────────────────────────────────────*/
   .section {
     width:          100%;
     max-width:      var(--spacing-container-max);
     margin-left:    auto;
     margin-right:   auto;
-    padding-top:    var(--spacing-section-y);
-    padding-bottom: var(--spacing-section-y);
     padding-left:   var(--spacing-section-x);
     padding-right:  var(--spacing-section-x);
-  }
-
-  @media (min-width: 1200px) {
-    .section {
-      padding-top:    var(--spacing-section-y-lg);
-      padding-bottom: var(--spacing-section-y-lg);
-    }
   }
 
   /* ── container ────────────────────────────────────────────

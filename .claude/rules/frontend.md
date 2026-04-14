@@ -28,6 +28,25 @@ description: Frontend code rules — Astro, Tailwind, images, header, footer, an
 - Use `{/* ... */}` JSX-style comments in template blocks if you want the comment stripped at compile time rather than at build time.
 - Never hardcode secrets or internal API paths into page markup — keep them in `.env` (non-`PUBLIC_` prefix) and access only from server-side code.
 
+## Section Padding Convention
+
+Vertical padding goes on `<section>`, not on the container.
+
+Standard pattern:
+
+```html
+<section class="py-section-y lg:py-section-y-lg bg-white">
+  <div class="container-main">
+    ...content...
+  </div>
+</section>
+```
+
+- `<section>` owns: background colour, vertical padding
+- `.container-main` owns: max-width (1340px), auto margin, 30px horizontal padding
+- `.container-main` has **NO** vertical padding
+- Same applies to `.section` (alias for `.container-main`)
+
 ## Image Rules
 
 ### Default format
