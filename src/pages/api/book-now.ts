@@ -5,7 +5,7 @@
  * CookieConsent booking tracker and forwards it to GA4 via the
  * Measurement Protocol. The GA4 API secret never touches the browser.
  *
- * Netlify Function — requires @astrojs/netlify adapter.
+ * Cloudflare Pages Function — requires @astrojs/cloudflare adapter.
  * ─────────────────────────────────────────────────────────────────
  */
 

@@ -1,16 +1,16 @@
-# Deployment Guide — HMDG Astro Base Template
+# Deployment Guide — HMDG Astro Base Template (Cloudflare)
 
-This project is built with **Astro v6 + Tailwind v4** and deployed to **Netlify** using the `@astrojs/netlify` adapter.
+This project is built with **Astro v6 + Tailwind v4** and deployed to **Cloudflare Pages** using the `@astrojs/cloudflare` adapter.
 
-API routes (`/api/book-now`, `/api/booking-complete`) run as **Netlify Functions** — no extra configuration needed.
+API routes (`/api/book-now`, `/api/booking-complete`) run as **Cloudflare Pages Functions** — no extra configuration needed.
 
 ---
 
 ## Prerequisites
 
-- Node.js 18 or higher
-- A GitHub, GitLab, or Bitbucket account
-- A Netlify account (netlify.com)
+- Node.js 22 or higher
+- A GitHub account
+- A Cloudflare account (cloudflare.com)
 - GA4 Measurement ID and API Secret (from Google Analytics)
 - Google Tag Manager container ID (from GTM)
 
@@ -30,46 +30,48 @@ git push -u origin main
 
 ---
 
-## Step 2 — Connect to Netlify
+## Step 2 — Connect to Cloudflare Pages
 
-1. Go to [netlify.com](https://netlify.com) and log in
-2. Click **Add new site** → **Import an existing project**
-3. Select **GitHub** (or GitLab / Bitbucket)
-4. Authorise Netlify and select your repository
+1. Go to [dash.cloudflare.com](https://dash.cloudflare.com) and log in
+2. Navigate to **Workers & Pages → Create → Pages**
+3. Click **Connect to Git** and select **GitHub**
+4. Authorise Cloudflare and select your repository
 
 ---
 
 ## Step 3 — Configure build settings
 
-Netlify usually detects Astro automatically. Confirm these settings:
+Cloudflare usually detects Astro automatically. Confirm these settings:
 
-| Setting | Value |
-|---|---|
-| Build command | `npm run build` |
-| Publish directory | `dist` |
-| Node version | `18` (or higher) |
+| Setting                | Value           |
+|------------------------|-----------------|
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Node version           | `22`            |
 
-If Node version is not set, add an environment variable:
+If Node version is not auto-detected, add an environment variable:
 
 ```
-NODE_VERSION = 18
+NODE_VERSION = 22
 ```
 
 ---
 
 ## Step 4 — Add environment variables
 
-In Netlify: **Site settings → Environment variables → Add a variable**
+In Cloudflare: **Pages project → Settings → Environment variables → Add variable**
 
-Add all of the following:
+Add the following for the **Production** environment (and optionally **Preview**):
 
-| Variable | Description | Where to find it |
-|---|---|---|
-| `GA4_API_SECRET` | GA4 Measurement Protocol API secret | GA4 → Admin → Data Streams → Web stream → Measurement Protocol API secrets |
-| `GA4_MEASUREMENT_ID` | GA4 Measurement ID (G-XXXXXXXXXX) | GA4 → Admin → Data Streams → Web stream → Measurement ID |
-| `SITE_ORIGIN` | Your live domain with protocol | e.g. `https://yourclinic.co.uk` |
+| Variable             | Description                         | Where to find it                                                                 |
+|----------------------|-------------------------------------|----------------------------------------------------------------------------------|
+| `GA4_API_SECRET`     | GA4 Measurement Protocol API secret | GA4 → Admin → Data Streams → Web stream → Measurement Protocol API secrets       |
+| `GA4_MEASUREMENT_ID` | GA4 Measurement ID (G-XXXXXXXXXX)   | GA4 → Admin → Data Streams → Web stream → Measurement ID                         |
+| `SITE_ORIGIN`        | Your live domain with protocol      | e.g. `https://yourclinic.co.uk`                                                  |
 
 > These variables are used by the server-side API routes (`/api/book-now` and `/api/booking-complete`) to forward events to GA4 via the Measurement Protocol. Without them the routes will still return 200 but GA4 events will not be recorded.
+
+> Mark `GA4_API_SECRET` as **Encrypted** in the Cloudflare dashboard to keep it out of logs.
 
 ---
 
@@ -90,27 +92,26 @@ export const cookieConsentConfig = {
 };
 ```
 
-> Do not commit live GTM or GA4 IDs to a public repository. For production, move these to Netlify environment variables and read them via `import.meta.env`.
+> Do not commit live GTM or GA4 IDs to a public repository. For production, move these to Cloudflare Pages environment variables and read them via `import.meta.env`.
 
 ---
 
 ## Step 6 — Deploy
 
-1. Click **Deploy site** in Netlify
-2. Netlify runs `npm run build` and uploads the `dist` folder
-3. A preview URL will be generated (e.g. `https://random-name.netlify.app`)
+1. Click **Save and Deploy** in Cloudflare Pages
+2. Cloudflare runs `npm run build` and uploads the `dist` folder
+3. A preview URL will be generated (e.g. `https://random-hash.astro-base-template.pages.dev`)
 4. Test the preview before pointing a custom domain
 
 ---
 
 ## Step 7 — Connect a custom domain
 
-1. In Netlify: **Domain management → Add a domain**
+1. In Cloudflare Pages: **Custom domains → Set up a custom domain**
 2. Enter the client's domain (e.g. `yourclinic.co.uk`)
-3. Update DNS records at the domain registrar:
-   - Add a **CNAME** record pointing to the Netlify subdomain, or
-   - Use **Netlify DNS** for full management
-4. Netlify provisions a free **SSL certificate** automatically via Let's Encrypt
+3. If the domain is already on Cloudflare DNS, the CNAME record is added automatically
+4. If not, add a **CNAME** at your registrar pointing to `<project>.pages.dev`
+5. Cloudflare provisions a free **SSL certificate** automatically
 
 ---
 
@@ -135,12 +136,9 @@ After going live, verify:
 
 ## Continuous deployment
 
-Once connected, Netlify automatically redeploys on every push to the `main` branch. No manual action needed.
+Once connected, Cloudflare Pages automatically redeploys on every push to the `main` branch. No manual action needed.
 
-To deploy a specific branch as a staging environment:
-
-1. In Netlify: **Site settings → Build & deploy → Branch deploys**
-2. Enable deploy previews for pull requests
+Every pull request gets a unique **deploy preview** URL for review and QA before merging.
 
 ---
 
@@ -170,23 +168,23 @@ GA4_MEASUREMENT_ID=G-XXXXXXXXXX
 SITE_ORIGIN=http://localhost:4321
 ```
 
-`.env` is already in `.gitignore` by default in Astro projects.
+For Wrangler-based local preview (`wrangler pages dev dist`), use `.dev.vars` instead of `.env` — same format, same secrets. `.dev.vars` is already in `.gitignore`.
 
 ---
 
 ## Adapter reference
 
-The Netlify adapter is configured in `astro.config.mjs`:
+The Cloudflare adapter is configured in `astro.config.mjs`:
 
 ```js
-import netlify from '@astrojs/netlify';
+import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
-  adapter: netlify(),
+  adapter: cloudflare(),
 });
 ```
 
 This enables:
-- Netlify Functions for all SSR routes (`export const prerender = false`)
-- Automatic `_redirects` file generation
-- Edge-compatible output
+- Cloudflare Pages Functions for all SSR routes (`export const prerender = false`)
+- Edge-compatible output targeting the Cloudflare Workers runtime
+- Access to Cloudflare platform bindings via `locals.runtime.env`

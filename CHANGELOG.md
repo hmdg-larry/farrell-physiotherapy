@@ -1,8 +1,45 @@
 # Changelog
 
-All notable changes to the HMDG Astro Base Template will be documented here.
+All notable changes to the HMDG Astro Base Template (Cloudflare) will be documented here.
 
 Format: `[version] — YYYY-MM-DD`
+
+---
+
+## [2.0.0] — 2026-04-16
+
+### Cloudflare Pages — Platform migration from Netlify
+
+**Breaking change:** adapter swapped from `@astrojs/netlify` to `@astrojs/cloudflare`. API routes now run as Cloudflare Pages Functions.
+
+**`astro.config.mjs`:**
+- Replaced `import netlify from '@astrojs/netlify'` with `import cloudflare from '@astrojs/cloudflare'`
+- Changed `adapter: netlify()` to `adapter: cloudflare()`
+
+**`package.json`:**
+- Removed `@astrojs/netlify`
+- Added `@astrojs/cloudflare` v13.x (Astro 6 compatible)
+- Renamed package to `astro-base-template-cloudflare`
+
+**Configuration files:**
+- Removed `netlify.toml`
+- Removed `vercel.json` (not relevant for Cloudflare Pages)
+- Added `wrangler.toml` for Cloudflare Pages / Wrangler CLI configuration
+
+**`public/_headers`:**
+- Updated comment — file is fully supported by Cloudflare Pages (no changes to rules)
+
+**API routes:**
+- Updated comments in `book-now.ts` and `booking-complete.ts` to reference Cloudflare Pages Functions
+- Runtime behaviour unchanged — `import.meta.env` works identically on Cloudflare Pages
+
+**`.gitignore`:**
+- Replaced `.netlify` with `.wrangler` and `.dev.vars`
+
+**Documentation:**
+- `README.md` — rewritten for Cloudflare Pages deployment
+- `deployment.md` — rewritten with Cloudflare dashboard steps
+- `CLAUDE.md` — updated stack line
 
 ---
 

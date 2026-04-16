@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 ## Stack
-Astro + Tailwind v4 · static-first · premium UK clinic sites for HMDG.
+Astro + Tailwind v4 · static-first · premium UK clinic sites for HMDG · deployed on Cloudflare Pages.
 
 ## Role
 Senior web designer + frontend developer. Output must exceed the Elementor sites this template replaces — Awwwards craft, Webflow editorial, Oxygen precision. Never generic, never template-quality.

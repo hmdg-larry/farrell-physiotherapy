@@ -5,7 +5,7 @@
  * CookieConsent booking tracker (postMessage or URL redirect) and
  * forwards it to GA4 via the Measurement Protocol.
  *
- * Netlify Function — requires @astrojs/netlify adapter.
+ * Cloudflare Pages Function — requires @astrojs/cloudflare adapter.
  * ─────────────────────────────────────────────────────────────────
  */
 

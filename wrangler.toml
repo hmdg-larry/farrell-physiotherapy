@@ -1,0 +1,9 @@
+# ── Cloudflare Pages configuration ───────────────────────────────────────────
+# Used by Wrangler CLI for local development (wrangler pages dev dist).
+# Production build settings are configured in the Cloudflare Pages dashboard.
+
+name = "astro-base-template-cloudflare"
+compatibility_date = "2024-09-23"
+
+# [vars] — non-secret env vars for local dev
+# For secrets (GA4_API_SECRET etc.) use .dev.vars — see .env.example

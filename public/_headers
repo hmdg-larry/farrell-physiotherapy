@@ -1,6 +1,6 @@
 /*
   # ── Security Headers ─────────────────────────────────────────────
-  # Applied globally to every route on Netlify.
+  # Applied globally to every route on Cloudflare Pages.
   # Adjust the CSP directives if you add new third-party services.
 
   X-Frame-Options: SAMEORIGIN

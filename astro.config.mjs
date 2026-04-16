@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import netlify from '@astrojs/netlify';
+import cloudflare from '@astrojs/cloudflare';
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -49,7 +49,12 @@ function stripHtmlComments() {
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: netlify(),   // Enables Netlify Functions for API routes (export const prerender = false)
+  // output: 'static' is the default in Astro 6 (hybrid mode removed — same behaviour).
+  // Pages opt into SSR individually with: export const prerender = false
+  adapter: cloudflare({
+    imageService: 'passthrough',  // Don't use Cloudflare Images binding — avoids reserved name conflict
+    platformProxy: { enabled: true }, // Enable Wrangler proxy for local dev (reads .dev.vars)
+  }),
   integrations: [stripHtmlComments()],
   vite: {
     plugins: [tailwindcss()]
