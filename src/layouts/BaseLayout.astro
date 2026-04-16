@@ -64,9 +64,9 @@ const cfg = cookieConsentConfig;
 
     <!-- ── Fonts ────────────────────────────────────────────────
          Inter + Inter Tight are self-hosted via @fontsource-variable
-         (imported in the frontmatter). Served from Netlify's CDN with
-         immutable cache headers. No Google Fonts round-trips, no GDPR
-         concerns about data sent to Google.
+         (imported in the frontmatter). Served from Cloudflare's edge
+         with immutable cache headers. No Google Fonts round-trips, no
+         GDPR concerns about data sent to Google.
     ──────────────────────────────────────────────────────────── -->
     <title>{title}</title>
     {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -74,8 +74,7 @@ const cfg = cookieConsentConfig;
     <!-- ── Security meta tags ────────────────────────────────────
          These provide baseline security on any host.
          For stronger enforcement, use HTTP headers via:
-           - public/_headers  (Netlify)
-           - vercel.json      (Vercel)
+           - public/_headers  (Cloudflare Pages)
     ──────────────────────────────────────────────────────────── -->
     <!-- ── Google Consent Mode v2 — MUST be first, before GTM fires ──────────
          is:inline is critical — without it Astro defers the script and
@@ -139,7 +138,7 @@ const cfg = cookieConsentConfig;
 
          Content-Security-Policy is the one exception — it IS supported
          as a <meta> tag and provides a browser-enforced fallback when
-         HTTP headers are unavailable (e.g. local dev without Netlify CLI).
+         HTTP headers are unavailable (e.g. local dev without Wrangler).
     ──────────────────────────────────────────────────────────────────── -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Content-Security-Policy" content="
@@ -149,7 +148,7 @@ const cfg = cookieConsentConfig;
       font-src 'self';
       img-src 'self' data: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com;
       frame-src 'self' https://www.google.com https://*.cliniko.com;
-      connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com;
+      connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://api.web3forms.com;
       object-src 'none';
       base-uri 'self';
       form-action 'self';

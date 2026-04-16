@@ -4,23 +4,19 @@ Premium UK clinic site template — static-first, built for speed, deployed on C
 
 ---
 
-## Project Overview
-
-A production-ready Astro base template used as the starting point for HMDG client websites. Static-first rendering, zero unnecessary JavaScript, Tailwind v4 for styling, and Cloudflare Pages for hosting.
-
-Every clone of this template should deploy cleanly to Cloudflare Pages via GitHub with minimal configuration.
-
----
-
 ## Tech Stack
 
-- **Astro 6** — static-first, zero-JS by default
-- **Tailwind CSS v4** — via `@tailwindcss/vite`
-- **TypeScript 5** — strict
-- **JavaScript** — where TS is unnecessary
-- **Swiper.js** — carousels, imported per-module
-- **Cloudflare adapter** — `@astrojs/cloudflare` for deployment
-- **Node.js** — `>= 22.12.0`
+| Layer | Technology |
+|---|---|
+| Framework | Astro 6 — static-first, zero-JS by default |
+| Styling | Tailwind CSS v4 via `@tailwindcss/vite` |
+| TypeScript | v5 strict |
+| Fonts | Inter + Inter Tight — self-hosted via `@fontsource-variable` |
+| Carousels | Swiper.js — imported per-module |
+| Hosting | Cloudflare Pages via `@astrojs/cloudflare` |
+| Contact form | Web3Forms — zero backend, no file uploads needed |
+| Analytics | Google Tag Manager + GA4 with Consent Mode v2 |
+| Node.js | `>= 22.12.0` |
 
 ---
 
@@ -30,74 +26,63 @@ Every clone of this template should deploy cleanly to Cloudflare Pages via GitHu
 - npm (ships with Node)
 - Git
 - A GitHub account
-- A Cloudflare account connected to GitHub
+- A Cloudflare account
+- A Web3Forms account (free)
 
 ---
 
 ## Local Development
 
-### 1. Clone the repository
-
 ```bash
+# 1. Clone the repository
 git clone https://github.com/<org>/<repo>.git
 cd <repo>
-```
 
-### 2. Install dependencies
-
-```bash
+# 2. Install dependencies
 npm install
-```
 
-### 3. Set up environment variables (if the project uses them)
-
-```bash
+# 3. Copy environment variables
 cp .env.example .env
-# then edit .env with the real values
-```
+# Edit .env with your real values
 
-### 4. Start the development server
-
-```bash
+# 4. Start the dev server
 npm run dev
+# → http://localhost:4321
 ```
-
-The site will be available at `http://localhost:4321`.
 
 ### Available scripts
 
-| Command           | Description                                          |
-| ----------------- | ---------------------------------------------------- |
-| `npm run dev`     | Start local dev server with HMR                      |
-| `npm run build`   | Build the site for production                        |
-| `npm run preview` | Preview the production build locally                 |
-| `npm run astro`   | Run the Astro CLI (e.g. `astro add`, `astro check`)  |
+| Command | Description |
+|---|---|
+| `npm run dev` | Local dev server with HMR |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build locally |
+| `npm run astro` | Astro CLI (`astro add`, `astro check`, etc.) |
 
 ---
 
-## Production Build
+## Step-by-Step: First Deployment
 
-Run a production build locally before pushing major changes:
+### Step 1 — Set up Web3Forms (contact form)
 
-```bash
-npm run build
-```
+1. Go to [web3forms.com](https://web3forms.com) and sign up for free.
+2. Click **Create New Access Key**.
+3. Enter the clinic's email address — all form submissions go here.
+4. Copy the **Access Key**.
+5. Add it to your `.env` file locally:
+   ```
+   PUBLIC_WEB3FORMS_KEY=your-access-key-here
+   ```
+6. You will also add this to Cloudflare Pages later (Step 3).
 
-Output is generated into the `/dist` directory.
-
-Preview the production build with:
-
-```bash
-npm run preview
-```
-
-This mirrors what Cloudflare Pages will serve — use it to catch build-time issues before deploying.
+**That's it for Web3Forms.** No webhook, no backend, no dashboard config needed.
+The contact form at `/contact` is already wired up and ready.
 
 ---
 
-## GitHub Workflow
+### Step 2 — Push to GitHub
 
-### First-time setup
+If starting from scratch:
 
 ```bash
 git init
@@ -108,94 +93,137 @@ git remote add origin https://github.com/<org>/<repo>.git
 git push -u origin main
 ```
 
-### Day-to-day workflow
+---
+
+### Step 3 — Connect to Cloudflare Pages
+
+1. Log into [dash.cloudflare.com](https://dash.cloudflare.com).
+2. Go to **Workers & Pages → Create → Pages → Connect to Git**.
+3. Authorise GitHub and select your repository.
+4. Configure build settings:
+
+   | Setting | Value |
+   |---|---|
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+   | Node.js version | `22` |
+
+5. Under **Environment variables**, click **Add variable** for each:
+
+   | Variable | Value | Notes |
+   |---|---|---|
+   | `PUBLIC_WEB3FORMS_KEY` | your Web3Forms key | Contact form — safe to be public |
+   | `GA4_API_SECRET` | from GA4 dashboard | Mark as **Encrypted** |
+   | `GA4_MEASUREMENT_ID` | `G-XXXXXXXXXX` | From GA4 dashboard |
+   | `SITE_ORIGIN` | `https://yourclinic.co.uk` | Used for API origin validation |
+
+6. Click **Save and Deploy**.
+7. Cloudflare builds from `main` and gives you a preview URL (e.g. `xyz.pages.dev`).
+
+---
+
+### Step 4 — Update the cookie consent config
+
+Open `src/config/cookie-consent.config.ts` and replace the placeholder IDs with the client's real values:
+
+```ts
+export const cookieConsentConfig = {
+  gtmId:  'GTM-XXXXXXX',    // Google Tag Manager container ID
+  gtagId: 'G-XXXXXXXXXX',   // GA4 Measurement ID
+  // ...
+};
+```
+
+Do not commit real GTM or GA4 IDs to a public repository — use environment variables for production.
+
+---
+
+### Step 5 — Connect a custom domain
+
+1. In Cloudflare Pages: **Custom domains → Set up a custom domain**.
+2. Enter the clinic's domain (`yourclinic.co.uk`).
+3. If the domain is already on Cloudflare DNS, the record is added automatically.
+4. If not, add a `CNAME` at your registrar pointing to `<project>.pages.dev`.
+5. SSL is provisioned automatically — no action needed.
+
+---
+
+### Step 6 — Post-launch checklist
+
+- [ ] Site loads on the custom domain over HTTPS
+- [ ] Cookie consent banner appears on first visit
+- [ ] Accept All / Reject All work correctly
+- [ ] GTM fires after consent (check GTM Preview mode)
+- [ ] GA4 receives events (check GA4 Realtime)
+- [ ] Contact form submits successfully (check inbox linked to Web3Forms key)
+- [ ] `/api/book-now` and `/api/booking-complete` return 200
+- [ ] Thank-you pages are `noindex` (check `<meta name="robots">`)
+- [ ] Legal pages live: `/privacy-policy`, `/terms-conditions`, `/cookie-policy`
+- [ ] No console errors in browser dev tools
+- [ ] PageSpeed mobile score ≥ 90
+
+---
+
+## Day-to-Day Workflow
 
 ```bash
 git checkout -b feature/<short-description>
-# ...make changes...
+# make changes
 git add .
-git commit -m "Clear, descriptive message"
+git commit -m "Clear description of what changed"
 git push origin feature/<short-description>
 ```
 
-Open a pull request into `main`. Once merged, Cloudflare Pages will automatically deploy the updated `main` branch to production.
+Open a pull request. Cloudflare Pages builds a **deploy preview** and attaches the URL to the PR. Merge into `main` → auto-deploys to production.
 
 ### Branch strategy
 
-| Branch      | Purpose                                                         |
-| ----------- | --------------------------------------------------------------- |
-| `main`      | Production — auto-deploys to the live site                      |
-| `feature/*` | Feature branches — auto-deploys as Cloudflare Pages previews    |
-
----
-
-## Cloudflare Pages Deployment
-
-### First-time setup
-
-1. Log into [Cloudflare](https://dash.cloudflare.com) and go to **Workers & Pages → Create → Pages → Connect to Git**.
-2. Select your GitHub account and repository.
-3. Configure build settings (Cloudflare usually auto-detects Astro):
-
-   | Setting           | Value           |
-   | ----------------- | --------------- |
-   | Build command     | `npm run build` |
-   | Build output directory | `dist`     |
-   | Node version      | `22`            |
-
-4. Add environment variables under **Settings → Environment variables** (only if required — see `.env.example`).
-5. Click **Save and Deploy**. The first deploy will build from `main` and publish to a Cloudflare-provided URL (e.g. `xyz.pages.dev`).
-6. (Optional) Add a custom domain under **Custom domains** and follow the DNS steps.
-
-The project already includes the Cloudflare adapter (`@astrojs/cloudflare`), so server endpoints and API routes work out of the box as Cloudflare Pages Functions. Security headers are applied automatically via `public/_headers`.
-
----
-
-## Ongoing Deployment Workflow
-
-After the initial setup, all deployments are automatic.
-
-```bash
-# 1. Pull the latest main
-git checkout main
-git pull origin main
-
-# 2. Create a branch, make changes, commit, and push
-git checkout -b fix/<short-description>
-git add .
-git commit -m "Fix: <what changed and why>"
-git push origin fix/<short-description>
-```
-
-3. Open a pull request. Cloudflare Pages will build a **deploy preview** and attach the URL to the PR.
-4. Review the preview. When merged into `main`, Cloudflare builds and deploys to production automatically.
+| Branch | Purpose |
+|---|---|
+| `main` | Production — auto-deploys on push |
+| `feature/*` | Preview — Cloudflare builds a unique preview URL per PR |
 
 ### Rollback
 
-Use **Cloudflare Dashboard → Pages → Deployments** and click **Rollback** on any previous successful build to instantly roll back.
+Cloudflare Dashboard → Pages → Deployments → click **Rollback** on any past successful build.
+
+---
+
+## Environment Variables Reference
+
+| Variable | Exposed to browser | Required | Description |
+|---|---|---|---|
+| `PUBLIC_WEB3FORMS_KEY` | Yes | Yes | Web3Forms access key for contact form |
+| `GA4_API_SECRET` | No | For GA4 relay | GA4 Measurement Protocol secret |
+| `GA4_MEASUREMENT_ID` | No | For GA4 relay | GA4 Measurement ID (`G-XXXXXXXXXX`) |
+| `SITE_ORIGIN` | No | For GA4 relay | Full production URL (`https://yourclinic.co.uk`) |
+
+Set local values in `.env` (never commit). Set production values in the Cloudflare Pages dashboard under **Settings → Environment variables**.
+
+---
+
+## Project Structure
+
+```
+/src/
+  components/   Header, Footer, CookieConsent
+  layouts/      BaseLayout.astro — wraps every page
+  pages/        Routes, contact form, API endpoints
+  styles/       global.css — design tokens + Tailwind v4
+  config/       cookie-consent.config.ts
+/public/
+  _headers      Cloudflare Pages security headers + CSP + cache rules
+  images/       Static images
+```
 
 ---
 
 ## Notes
 
-- **Environment variables** — Never commit `.env`. Use `.env.example` to document required variables. Set real values in the Cloudflare Pages dashboard under **Settings → Environment variables**. Variables prefixed with `PUBLIC_` are exposed to client-side code — keep secrets server-side only.
-- **Branch-based deploys** — `main` is production. Every other branch with an open PR gets a unique Cloudflare preview URL for review and QA.
-- **Automatic deploys** — Every push to a connected branch triggers a Cloudflare build. No manual deploy step is needed.
-- **Node version** — Pin Node 22 in Cloudflare Pages either via a `NODE_VERSION=22` env var or a `.nvmrc` file at the project root to match local dev.
-- **Performance** — The template targets 90+ PageSpeed (mobile), LCP < 2.5s, CLS < 0.1, INP < 200ms. Do not regress these with heavy third-party scripts or unnecessary hydration.
-- **Local secrets** — For local Wrangler dev (`wrangler pages dev dist`), put secrets in `.dev.vars` (never commit this file — it is in `.gitignore`).
-
-### Project structure
-
-```
-/src/
-  components/   Reusable Astro components (Header, Footer, etc.)
-  layouts/      BaseLayout — wraps every page
-  pages/        Routes and API endpoints
-  styles/       Global CSS, Tailwind v4 tokens
-  config/       Project config (e.g. cookie consent)
-/public/        Static assets served as-is (incl. _headers)
-```
+- `PUBLIC_` env vars are exposed to the browser. Only use this prefix for non-secret values. The Web3Forms key is designed to be public — it only controls which inbox receives submissions.
+- All other env vars are server-side only and never sent to the browser.
+- The Cloudflare adapter (`@astrojs/cloudflare`) runs API routes (`/api/*`) as Cloudflare Pages Functions — zero cold start, edge-executed.
+- Security headers (`X-Frame-Options`, `HSTS`, `CSP`, etc.) are applied via `public/_headers` — Cloudflare Pages serves this automatically on every route.
 
 ---
 

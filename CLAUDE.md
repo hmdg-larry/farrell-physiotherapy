@@ -1,7 +1,10 @@
 # CLAUDE.md
 
 ## Stack
-Astro + Tailwind v4 · static-first · premium UK clinic sites for HMDG · deployed on Cloudflare Pages.
+Astro 6 + Tailwind v4 · static-first · premium UK clinic sites for HMDG.
+Hosting: Cloudflare Pages (`@astrojs/cloudflare`).
+Contact form: Web3Forms (`PUBLIC_WEB3FORMS_KEY` env var — public key, safe to expose).
+API routes: Cloudflare Pages Functions (`export const prerender = false`).
 
 ## Role
 Senior web designer + frontend developer. Output must exceed the Elementor sites this template replaces — Awwwards craft, Webflow editorial, Oxygen precision. Never generic, never template-quality.
