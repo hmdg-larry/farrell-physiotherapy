@@ -1,0 +1,290 @@
+---
+/**
+ * 404.astro
+ * ─────────────────────────────────────────────────────────
+ * Custom 404 page — full-viewport hero on the primary brand
+ * colour. "4 ◉ 4" composition where the middle zero is an
+ * organic scalloped blob with an upside-down smile arc.
+ *
+ * Design brief: bold, playful, confident — one screen, two
+ * clear recovery paths (home + contact).
+ *
+ * Uses only existing design tokens and .btn variants — zero
+ * new colours, zero new dependencies. Animations are CSS-only
+ * with full prefers-reduced-motion support.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found — 404"
+  description="The page you are looking for no longer exists or has been moved."
+  noindex={true}
+>
+
+  <section class="nf-hero" aria-labelledby="nf-title">
+
+    <!-- Decorative curved lines — low-opacity background flourishes -->
+    <svg class="nf-lines" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path class="nf-line nf-line--a" d="M-50,120 C250,60 380,220 600,180 S950,80 1250,140" />
+      <path class="nf-line nf-line--b" d="M-20,680 C200,720 360,560 640,620 S1000,740 1260,680" />
+      <path class="nf-line nf-line--c" d="M100,-40 C160,180 320,260 280,460 S220,760 320,860" />
+      <path class="nf-line nf-line--d" d="M1100,-20 C1040,200 880,300 940,500 S1020,760 900,860" />
+    </svg>
+
+    <div class="nf-content">
+
+      <!-- 404 hero — two 4s with blob in between -->
+      <div class="nf-four-row" role="img" aria-label="404 error">
+        <span class="nf-four nf-four--left"  aria-hidden="true">4</span>
+
+        <!-- Scalloped "0" blob — cream shape + inner primary smile arc -->
+        <svg class="nf-blob" viewBox="0 0 200 200" aria-hidden="true">
+          <!-- 10-bump scalloped circle — hand-tuned path for organic feel -->
+          <path
+            class="nf-blob__shape"
+            d="M100 6
+               C116 6 122 22 134 20
+               C150 16 160 28 164 42
+               C176 46 188 56 186 72
+               C184 88 196 96 194 112
+               C192 128 180 134 180 150
+               C180 166 166 170 158 180
+               C150 190 134 186 122 190
+               C110 194 102 202 90 198
+               C78 194 68 198 56 190
+               C44 182 32 184 26 170
+               C20 156 10 148 14 134
+               C18 120 6 112 10 96
+               C14 80 4 72 14 58
+               C24 44 26 30 42 26
+               C58 22 66 10 82 14
+               C92 16 88 6 100 6 Z"
+          />
+          <!-- Upside-down smile — semicircle arc in primary colour -->
+          <path
+            class="nf-blob__smile"
+            d="M 70 135 Q 100 105 130 135"
+          />
+        </svg>
+
+        <span class="nf-four nf-four--right" aria-hidden="true">4</span>
+      </div>
+
+      <h1 id="nf-title" class="sr-only">Page Not Found</h1>
+
+      <p class="nf-copy">
+        This page no longer exists or has been removed.
+      </p>
+
+      <div class="nf-actions">
+        <a href="/" class="btn btn-white nf-btn">Go Back to Homepage</a>
+        <a href="/contact/" class="btn btn-transparent nf-btn">Contact Us</a>
+      </div>
+
+    </div>
+
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Hero shell — full viewport on primary brand colour ─── */
+  .nf-hero {
+    position:         relative;
+    overflow:         hidden;
+    min-height:       80svh;
+    background-color: var(--color-primary);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    padding:          4rem 1.5rem;
+  }
+
+  /* Layered radial gradients for depth — matches the language
+     used on /thank-you-hmdg so the template feels cohesive */
+  .nf-hero::before {
+    content: "";
+    position: absolute;
+    inset:    0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(255, 255, 255, 0.08), transparent 55%),
+      radial-gradient(ellipse at 80% 90%, rgba(0,   0,   0,   0.14), transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Decorative background curves ─── */
+  .nf-lines {
+    position: absolute;
+    inset:    0;
+    width:    100%;
+    height:   100%;
+    pointer-events: none;
+  }
+  .nf-line {
+    fill:             none;
+    stroke:           rgba(255, 255, 255, 0.22);
+    stroke-width:     1.5;
+    stroke-linecap:   round;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nf-line {
+      stroke-dasharray:  2000;
+      stroke-dashoffset: 2000;
+      animation:         nf-draw 2200ms ease-out forwards;
+    }
+    .nf-line--b { animation-delay:  300ms; }
+    .nf-line--c { animation-delay:  600ms; }
+    .nf-line--d { animation-delay:  900ms; }
+  }
+
+  @keyframes nf-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ── Centred content stack ─── */
+  .nf-content {
+    position:   relative;
+    text-align: center;
+    max-width:  36rem;
+    width:      100%;
+  }
+
+  /* ── 404 hero row ─── */
+  .nf-four-row {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0;
+    line-height:     0.9;
+  }
+
+  .nf-four {
+    font-family:    var(--font-heading);
+    font-weight:    800;
+    font-size:      clamp(7rem, 14vw + 3rem, 17.5rem);
+    color:          #ffffff;
+    letter-spacing: -0.04em;
+  }
+
+  /* The two 4s overlap the blob by ~15% for composition depth */
+  .nf-four--left  { margin-right: -0.12em; }
+  .nf-four--right { margin-left:  -0.12em; }
+
+  .nf-blob {
+    flex-shrink: 0;
+    width:       clamp(7rem, 14vw + 3rem, 17.5rem);
+    height:      clamp(7rem, 14vw + 3rem, 17.5rem);
+    display:     block;
+  }
+
+  .nf-blob__shape {
+    fill:            var(--color-accent);
+    stroke:          rgba(0, 0, 0, 0.04);
+    stroke-width:    0.5;
+  }
+
+  .nf-blob__smile {
+    fill:            none;
+    stroke:          var(--color-primary);
+    stroke-width:    10;
+    stroke-linecap:  round;
+    stroke-linejoin: round;
+  }
+
+  /* ── Entrance animations ─── */
+  @media (prefers-reduced-motion: no-preference) {
+    .nf-four--left {
+      opacity:   0;
+      transform: translateX(-40px);
+      animation: nf-slide-left 600ms ease-out forwards;
+    }
+    .nf-four--right {
+      opacity:         0;
+      transform:       translateX(40px);
+      animation:       nf-slide-right 600ms ease-out forwards;
+      animation-delay: 100ms;
+    }
+    .nf-blob {
+      opacity:         0;
+      transform:       scale(0);
+      transform-origin: center;
+      animation:       nf-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation-delay: 300ms;
+    }
+    .nf-copy {
+      opacity:         0;
+      transform:       translateY(10px);
+      animation:       nf-rise 500ms ease-out forwards;
+      animation-delay: 800ms;
+    }
+    .nf-actions {
+      opacity:         0;
+      transform:       translateY(10px);
+      animation:       nf-rise 500ms ease-out forwards;
+      animation-delay: 1000ms;
+    }
+  }
+
+  @keyframes nf-slide-left {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes nf-slide-right {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes nf-pop {
+    0%   { opacity: 0; transform: scale(0);   }
+    70%  { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1);   }
+  }
+  @keyframes nf-rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Copy ─── */
+  .nf-copy {
+    color:        #ffffff;
+    font-size:    var(--text-lg);
+    line-height:  1.6;
+    max-width:    28rem;
+    margin:       2rem auto 0;
+  }
+
+  /* ── Action buttons ─── */
+  .nf-actions {
+    display:         flex;
+    gap:             1rem;
+    justify-content: center;
+    flex-wrap:       wrap;
+    margin-top:      2rem;
+  }
+
+  .nf-btn {
+    min-width: 14rem;
+  }
+
+  /* Mobile: stack full-width */
+  @media (max-width: 640px) {
+    .nf-actions {
+      flex-direction: column;
+      gap:            0.75rem;
+    }
+    .nf-btn {
+      width: 100%;
+    }
+  }
+
+  /* ── Screen reader only utility ─── */
+  .sr-only {
+    position:  absolute;
+    width:     1px;
+    height:    1px;
+    padding:   0;
+    margin:    -1px;
+    overflow:  hidden;
+    clip:      rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border:    0;
+  }
+</style>

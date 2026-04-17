@@ -96,12 +96,22 @@ Cloudflare Dashboard → Pages → Deployments → click **Rollback** on any pas
 
 | Variable | Exposed to browser | Required | Description |
 |---|---|---|---|
-| `PUBLIC_WEB3FORMS_KEY` | Yes | Yes | Web3Forms access key for contact form |
-| `GA4_API_SECRET` | No | For GA4 relay | GA4 Measurement Protocol secret |
-| `GA4_MEASUREMENT_ID` | No | For GA4 relay | GA4 Measurement ID (`G-XXXXXXXXXX`) |
+| `NODE_VERSION` | — | **Yes** | Set in Cloudflare only. Must be `22` |
+| `PUBLIC_SITE_NAME` | Yes | **Yes** | Site/clinic name — powers email subject + `from_name` |
+| `PUBLIC_WEB3FORMS_KEY` | Yes | **Yes** | Web3Forms access key (controls which form receives submissions) |
+| `PUBLIC_CLIENT_EMAIL` | Yes | **Yes** | Recipient inbox — overrides Web3Forms default (Pro feature). Comma-separated for multiple |
+| `PUBLIC_RECAPTCHA_SITE_KEY` | Yes | **Yes** | Google reCAPTCHA v3 Site Key (public, safe to expose) |
 | `SITE_ORIGIN` | No | For GA4 relay | Full production URL (`https://yourclinic.co.uk`) |
+| `GA4_API_SECRET` | No | For GA4 relay | GA4 Measurement Protocol secret (encrypted) |
+| `GA4_MEASUREMENT_ID` | No | For GA4 relay | GA4 Measurement ID (`G-XXXXXXXXXX`) |
 
-Set local values in `.env` (never commit). Set production values in the Cloudflare Pages dashboard under **Settings → Environment variables**.
+Set local values in `.env` (never commit). Set production values in the Cloudflare Pages dashboard under **Settings → Variables and Secrets**.
+
+> **All `PUBLIC_` env vars are build-time baked into the HTML.** Adding a new `PUBLIC_` variable in Cloudflare requires a redeploy before it takes effect.
+
+> **Reply-to behaviour:** The contact form automatically sets `replyto` to the sender's email, so clicking Reply on the notification emails the submitter back directly.
+
+> **reCAPTCHA Secret Key** lives on the Web3Forms dashboard, NOT in env vars. Web3Forms handles server-side verification.
 
 ---
 

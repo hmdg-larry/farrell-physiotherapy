@@ -9,7 +9,44 @@
  *   - Update the logo/clinic name text
  *   - Update nav links to match the site structure
  *   - The Book Now CTA href should point to the booking section or URL
+ *
+ * ── Active-state system (MANDATORY on every nav change) ─────────
+ * Every nav link on the site must visually indicate the current
+ * page using the helpers below. Applies to desktop + mobile.
+ * See .claude/rules/frontend.md — "Navigation Active State".
+ *
+ *   isActive(href)    — exact-match leaf link or top-level plain link
+ *   isSection(prefix) — dropdown / flyout triggers whose CHILDREN
+ *                       should activate the parent trigger
+ *
+ * Tiers to cover on any dropdown/mega-menu change:
+ *   1. Top-level plain links          → isActive
+ *   2. Top-level dropdown triggers    → isSection
+ *   3. Mid-level flyout triggers      → isSection  (MOST MISSED)
+ *   4. Leaf links in dropdowns        → isActive
+ *   5. Every mobile equivalent        → same helpers, no drift
  */
+
+const currentPath = Astro.url.pathname;
+
+// Exact match — '/' is homepage-only; trailing slash normalised
+const isActive = (href: string): boolean => {
+  if (href === '/') return currentPath === '/';
+  const norm = href.endsWith('/') ? href : href + '/';
+  return currentPath === norm || currentPath === norm.slice(0, -1);
+};
+
+// Prefix match — use for dropdown parents and mid-level flyout
+// triggers so children activate their ancestors. Kept in scope even
+// when the current nav has no dropdowns so the pattern is visible
+// to anyone adding a submenu later.
+const isSection = (prefix: string): boolean => currentPath.startsWith(prefix);
+void isSection; // reserved for future dropdown / mid-level flyout triggers
+
+// Per-link active booleans computed here so tier-checking is explicit.
+// Current base template has only hash links + /contact; expand when a
+// real nav hierarchy is added.
+const contactActive = isActive('/contact');
 ---
 
 <header class="sticky top-0 z-50 bg-white border-b border-[--color-border] shadow-[--shadow-nav]">
@@ -25,10 +62,14 @@
       class="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-body]"
       aria-label="Main navigation"
     >
-      <a href="#services"     class="hover:text-[--color-primary] transition-colors">Services</a>
-      <a href="#testimonials" class="hover:text-[--color-primary] transition-colors">Reviews</a>
-      <a href="#team"         class="hover:text-[--color-primary] transition-colors">Team</a>
-      <a href="#contact"      class="hover:text-[--color-primary] transition-colors">Contact</a>
+      <!-- Hash links scroll within the same page — no is-active (all live on /) -->
+      <a href="#services"     class="site-nav-item hover:text-[--color-primary] transition-colors">Services</a>
+      <a href="#testimonials" class="site-nav-item hover:text-[--color-primary] transition-colors">Reviews</a>
+      <a href="#team"         class="site-nav-item hover:text-[--color-primary] transition-colors">Team</a>
+      <a
+        href="/contact"
+        class:list={["site-nav-item hover:text-[--color-primary] transition-colors", { "is-active": contactActive }]}
+      >Contact</a>
     </nav>
 
     <!-- Mobile Hamburger (visible on mobile only) -->
@@ -58,10 +99,13 @@
     aria-hidden="true"
   >
     <nav class="flex flex-col px-[--spacing-section-x] py-4 gap-4 text-sm font-medium text-[--color-body]" aria-label="Mobile navigation">
-      <a href="#services"     class="hover:text-[--color-primary] transition-colors py-2">Services</a>
-      <a href="#testimonials" class="hover:text-[--color-primary] transition-colors py-2">Reviews</a>
-      <a href="#team"         class="hover:text-[--color-primary] transition-colors py-2">Team</a>
-      <a href="#contact"      class="hover:text-[--color-primary] transition-colors py-2">Contact</a>
+      <a href="#services"     class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Services</a>
+      <a href="#testimonials" class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Reviews</a>
+      <a href="#team"         class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Team</a>
+      <a
+        href="/contact"
+        class:list={["mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2", { "is-active": contactActive }]}
+      >Contact</a>
       <a href="#contact" class="btn btn-default self-start mt-2">Book Now</a>
     </nav>
   </div>

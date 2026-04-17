@@ -37,3 +37,26 @@
 
 /*.ico
   Cache-Control: public, max-age=604800
+
+# ── Noindex protection for thank-you / credit pages ───────────
+# HTTP-level X-Robots-Tag complements <meta name="robots"> in BaseLayout.
+# Defence in depth — some crawlers ignore meta but respect HTTP headers.
+# Applies to all /thank-you* routes regardless of trailing slash.
+
+/thank-you
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you/
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-booking
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-booking/
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-hmdg
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-hmdg/
+  X-Robots-Tag: noindex, nofollow

@@ -7,8 +7,8 @@
  * moment — one screen, one CTA, clean editorial typography.
  *
  * URL:  /thank-you-hmdg/
- * Role: Attribution + brand reinforcement. Indexable (not a
- *       conversion thank-you) but outbound links are nofollow.
+ * Role: Attribution + brand reinforcement. noindex — we don't want
+ *       HMDG's brand mention competing with clinic content in SERPs.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
@@ -16,6 +16,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout
   title="Credits — ClinicName"
   description="Website designed and developed by HMDG — experts in physiotherapy website design, physiotherapy marketing, and healthcare marketing in the UK."
+  noindex={true}
 >
 
   <!-- ── Hero — red brand block, centred attribution ─── -->

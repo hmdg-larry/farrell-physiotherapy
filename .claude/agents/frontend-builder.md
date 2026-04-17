@@ -86,6 +86,14 @@ Never recreate these with ad-hoc Tailwind classes. Use the existing system.
 - Prefer modular Astro components for all repeated sections (hero, services, team, reviews, booking CTA)
 - Use `<slot />` and named slots correctly
 
+### Navigation active state — mandatory on every nav change
+
+Every nav link in `Header.astro`, `Footer.astro`, any dropdown, flyout, mega-menu, or mobile menu MUST have an `is-active` conditional driven by `isActive()` or `isSection()` helpers. Apply proactively on every nav add/edit/clone — do not wait to be asked. Cover all five tiers: top-level links, top-level dropdown triggers, mid-level flyout triggers (most commonly missed), leaf links, and every mobile equivalent. Footer active state lives on a dark background and must follow the `ui-designer`-approved spec: `.footer-link.is-active { color: #fff; font-weight: 600; }`. Full rules and checklist: `.claude/rules/frontend.md` — "Navigation Active State".
+
+### Automatic sitemap — mandatory on every new page
+
+The sitemap auto-discovers every indexable `.astro` file in `src/pages/`. **Never add a page's URL manually to any sitemap list** — creating the file is enough. The `sitemapAutoScan` integration (in `astro.config.mjs`) regenerates `src/data/sitemap-pages.generated.ts` on every dev start and build. Classification logic lives in `src/lib/sitemap.ts` under `classify()`. Pages are excluded automatically if they're under `/api/`, start with `_`, match `/thank-you*`, or pass `noindex={true}` to BaseLayout. Never install `@astrojs/sitemap` — this custom system replaces it. Full rules: `.claude/rules/frontend.md` — "Automatic Sitemap Generation".
+
 ---
 
 ## Images

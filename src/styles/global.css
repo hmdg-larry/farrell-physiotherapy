@@ -763,6 +763,55 @@
     transform:     translateY(-2px);
   }
 
+  /* ════════════════════════════════════════════════════════
+     NAVIGATION ACTIVE STATE (Header + Footer)
+     ════════════════════════════════════════════════════════
+
+     Mandatory system — every nav link in Header.astro and
+     Footer.astro uses `.is-active` to visually indicate the
+     current page. Applied via Astro's class:list directive.
+
+     Tiers this covers:
+       1. Top-level plain links
+       2. Top-level dropdown triggers (via isSection)
+       3. Mid-level flyout triggers (via isSection)  ← most missed
+       4. Leaf links in dropdowns
+       5. Every mobile equivalent
+
+     See .claude/rules/frontend.md — "Navigation Active State"
+     for the full helper + handoff rules.
+     ════════════════════════════════════════════════════════ */
+
+  /* ── Header nav item — white bg, primary active colour ───
+     Used on every site-nav-item and mobile-nav-item. Hover
+     styling is kept inline in the Header.astro markup via
+     Tailwind so this only owns the active-state layer.      */
+  .site-nav-item.is-active,
+  .nav-dropdown-item.is-active,
+  .mobile-nav-item.is-active,
+  .mobile-sub-item.is-active {
+    color:       var(--color-primary);
+    font-weight: 500;
+  }
+
+  /* ── Footer link — dark bg, semibold white for active ────
+     Dark footer background requires a stronger active state
+     than hover. Default = caption grey, hover = white/400,
+     active = white/600. Three-tier contrast keeps current
+     page distinguishable from hover without extra decoration. */
+  .footer-link {
+    color:       var(--color-caption);
+    transition:  color 0.2s ease;
+  }
+  .footer-link:hover {
+    color: #ffffff;
+  }
+  .footer-link.is-active {
+    color:       #ffffff;
+    font-weight: 600;
+  }
+
+
   /* ── Form inputs ───────────────────────────────────────────*/
   .input {
     width:            100%;

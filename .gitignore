@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# auto-generated sitemap path list (regenerated on dev / build)
+src/data/sitemap-pages.generated.ts
 
 # dependencies
 node_modules/
