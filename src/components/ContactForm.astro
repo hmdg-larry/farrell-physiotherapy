@@ -6,12 +6,16 @@
  *
  * Drop this component on any page where you need a contact form:
  *   <ContactForm />
- *   <ContactForm subjectPrefix="Smith Clinic" brandName="Smith Clinic" />
+ *
+ * All branding (email subject, from_name) auto-populates from
+ * PUBLIC_SITE_NAME — no need to pass props. To override per-page:
+ *   <ContactForm subjectPrefix="Smith Clinic Booking" />
  *
  * Requirements:
+ *   - PUBLIC_SITE_NAME           — Your site/clinic name (e.g. "Smith Clinic")
  *   - PUBLIC_WEB3FORMS_KEY       — Web3Forms access key
  *   - PUBLIC_RECAPTCHA_SITE_KEY  — Google reCAPTCHA v3 Site Key
- *     Both must be set in .env (local) + Cloudflare Pages env vars (production).
+ *     All three must be set in .env (local) + Cloudflare Pages env vars (production).
  *   - Web3Forms dashboard must have the reCAPTCHA Secret Key configured so
  *     it can verify tokens server-side.
  *   - CSP already allows api.web3forms.com + google.com/recaptcha + gstatic.com
@@ -34,9 +38,9 @@
  */
 
 interface Props {
-  /** Email subject prefix (e.g. "Smith Clinic" → "Smith Clinic - Jane Smith"). Default: "Website Name" */
+  /** Override the email subject prefix. Defaults to PUBLIC_SITE_NAME env var. */
   subjectPrefix?: string;
-  /** Brand name used in from_name field. Default: "Website Name" */
+  /** Override the from_name in the email. Defaults to PUBLIC_SITE_NAME env var. */
   brandName?: string;
   /** Show phone field? Default: true */
   showPhone?: boolean;
@@ -48,9 +52,13 @@ interface Props {
   redirect?: string;
 }
 
+// Auto-detect site name from env var. Set PUBLIC_SITE_NAME once in .env +
+// Cloudflare Pages — every form on the site uses it automatically.
+const siteName = import.meta.env.PUBLIC_SITE_NAME ?? 'Website Name';
+
 const {
-  subjectPrefix = 'Website Name',
-  brandName     = 'Website Name',
+  subjectPrefix = siteName,
+  brandName     = siteName,
   showPhone     = true,
   submitLabel   = 'Send Enquiry',
   id            = 'default',
