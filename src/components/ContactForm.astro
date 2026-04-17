@@ -1,0 +1,226 @@
+---
+/**
+ * ContactForm.astro
+ * ─────────────────────────────────────────────────────────
+ * Reusable Web3Forms-powered contact form.
+ *
+ * Drop this component on any page where you need a contact form:
+ *   <ContactForm />
+ *   <ContactForm subjectPrefix="Smith Clinic" brandName="Smith Clinic" />
+ *
+ * Requirements:
+ *   - PUBLIC_WEB3FORMS_KEY env var must be set (Cloudflare Pages dashboard + local .env)
+ *   - CSP must allow https://api.web3forms.com (already set in BaseLayout.astro
+ *     and public/_headers — don't remove)
+ *
+ * How it works:
+ *   1. User fills the form and clicks Submit.
+ *   2. JS sends a JSON POST to https://api.web3forms.com/submit.
+ *   3. Web3Forms forwards the submission by email to the inbox linked
+ *      to the access key in the Web3Forms dashboard.
+ *   4. Inline success/error state shown — no page reload.
+ *   5. Form resets on success.
+ *
+ * Spam protection:
+ *   - botcheck honeypot checkbox (hidden — bots tick it, users don't)
+ *   - Web3Forms' server-side spam filtering
+ */
+
+interface Props {
+  /** Email subject prefix (e.g. "Smith Clinic" → "Smith Clinic - Jane Smith"). Default: "Website Contact" */
+  subjectPrefix?: string;
+  /** Brand name used in from_name field. Default: "Website Enquiry" */
+  brandName?: string;
+  /** Show phone field? Default: true */
+  showPhone?: boolean;
+  /** Submit button label. Default: "Send Enquiry" */
+  submitLabel?: string;
+  /** Optional unique id suffix so multiple forms can live on one page */
+  id?: string;
+}
+
+const {
+  subjectPrefix = 'Website Contact',
+  brandName     = 'Website Enquiry',
+  showPhone     = true,
+  submitLabel   = 'Send Enquiry',
+  id            = 'default',
+} = Astro.props;
+
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+
+// Unique IDs so multiple forms can coexist on one page without collisions
+const formId    = `contact-form-${id}`;
+const nameId    = `contact-name-${id}`;
+const emailId   = `contact-email-${id}`;
+const phoneId   = `contact-phone-${id}`;
+const messageId = `contact-message-${id}`;
+const successId = `form-success-${id}`;
+const errorId   = `form-error-${id}`;
+---
+
+<form
+  id={formId}
+  data-subject-prefix={subjectPrefix}
+  data-brand-name={brandName}
+  novalidate
+  class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
+>
+  {/* Web3Forms access key — public by design, safe to expose */}
+  <input type="hidden" name="access_key" value={web3formsKey} />
+
+  {/* Email subject + from_name — updated dynamically with sender's name on submit */}
+  <input type="hidden" name="subject" class="js-subject" value={`${subjectPrefix} - Contact Enquiry`} />
+  <input type="hidden" name="from_name" class="js-from" value={brandName} />
+
+  {/* Honeypot — real users never see this; bots autofill and are silently dropped */}
+  <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" tabindex="-1" />
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="flex flex-col gap-2">
+      <label for={nameId} class="text-sm font-semibold text-[--color-headline]">
+        Full Name <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      </label>
+      <input
+        id={nameId}
+        type="text"
+        name="name"
+        class="input"
+        placeholder="Jane Smith"
+        autocomplete="name"
+        required
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for={emailId} class="text-sm font-semibold text-[--color-headline]">
+        Email Address <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      </label>
+      <input
+        id={emailId}
+        type="email"
+        name="email"
+        class="input"
+        placeholder="jane@example.com"
+        autocomplete="email"
+        required
+      />
+    </div>
+  </div>
+
+  {showPhone && (
+    <div class="flex flex-col gap-2">
+      <label for={phoneId} class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+      <input
+        id={phoneId}
+        type="tel"
+        name="phone"
+        class="input"
+        placeholder="+44 7700 000000"
+        autocomplete="tel"
+      />
+    </div>
+  )}
+
+  <div class="flex flex-col gap-2">
+    <label for={messageId} class="text-sm font-semibold text-[--color-headline]">
+      Your Message <span class="text-[--color-primary]" aria-hidden="true">*</span>
+    </label>
+    <textarea
+      id={messageId}
+      name="message"
+      class="input"
+      rows="4"
+      placeholder="Tell us how we can help..."
+      required
+    ></textarea>
+  </div>
+
+  {/* Status messages — hidden until submission completes */}
+  <div
+    id={successId}
+    class="hidden rounded-[--radius-input] bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800"
+    role="status"
+    aria-live="polite"
+  >
+    Thank you — your message has been sent. We will be in touch shortly.
+  </div>
+  <div
+    id={errorId}
+    class="hidden rounded-[--radius-input] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
+    role="alert"
+    aria-live="assertive"
+  >
+    Something went wrong. Please try again or email us directly.
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-default js-submit">
+      <span class="js-label">{submitLabel}</span>
+      <span class="js-spinner hidden" aria-hidden="true">Sending…</span>
+    </button>
+  </div>
+</form>
+
+<script>
+  // Handles every <ContactForm /> on the page — each gets its own IIFE instance
+  document.querySelectorAll<HTMLFormElement>('form[data-subject-prefix]').forEach((form) => {
+    const submit    = form.querySelector<HTMLButtonElement>('.js-submit')!;
+    const label     = form.querySelector<HTMLSpanElement>('.js-label')!;
+    const spinner   = form.querySelector<HTMLSpanElement>('.js-spinner')!;
+    const subjectEl = form.querySelector<HTMLInputElement>('.js-subject')!;
+    const fromEl    = form.querySelector<HTMLInputElement>('.js-from')!;
+    const success   = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-success-')}`) ?? null;
+    const error     = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-error-')}`) ?? null;
+
+    const subjectPrefix = form.dataset.subjectPrefix ?? 'Website Contact';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Clear previous status
+      success?.classList.add('hidden');
+      error?.classList.add('hidden');
+
+      // Personalise subject and from_name with the sender's name
+      const nameVal = (form.querySelector<HTMLInputElement>('[name="name"]')?.value ?? '').trim();
+      if (nameVal) {
+        subjectEl.value = `${subjectPrefix} - ${nameVal}`;
+        fromEl.value    = nameVal;
+      }
+
+      // Loading state
+      submit.disabled = true;
+      label.classList.add('hidden');
+      spinner.classList.remove('hidden');
+
+      try {
+        const data = Object.fromEntries(new FormData(form));
+        const res  = await fetch('https://api.web3forms.com/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body:    JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          success?.classList.remove('hidden');
+          form.reset();
+        } else {
+          error?.classList.remove('hidden');
+        }
+      } catch {
+        error?.classList.remove('hidden');
+      } finally {
+        submit.disabled = false;
+        label.classList.remove('hidden');
+        spinner.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>

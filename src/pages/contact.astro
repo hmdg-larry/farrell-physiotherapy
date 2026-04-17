@@ -2,26 +2,17 @@
 //
 // contact.astro
 // ─────────────────────────────────────────────────────────
-// Public contact page — general enquiry form powered by Web3Forms.
+// Public contact page — uses the reusable <ContactForm /> component.
 //
-// How submissions flow:
-//   1. User fills the form and clicks Submit.
-//   2. JS sends a JSON POST to https://api.web3forms.com/submit.
-//   3. Web3Forms forwards the submission by email to the
-//      address linked to the access key in the dashboard.
-//   4. Inline success or error state is shown — no page reload.
-//   5. On success the form resets and the thank-you message
-//      remains visible.
+// The form is Web3Forms-powered. To change the inbox that receives
+// submissions, update PUBLIC_WEB3FORMS_KEY in:
+//   - .env                   (local dev)
+//   - Cloudflare Pages       (production — Settings → Environment variables)
 //
-// Setup per client:
-//   1. Create a free account at https://web3forms.com.
-//   2. Get your Access Key from the dashboard.
-//   3. Set PUBLIC_WEB3FORMS_KEY in .env (local) and in the
-//      Cloudflare Pages dashboard (production).
+// For full setup instructions see deployment.md → Part 2: Web3Forms Setup.
 //
-import BaseLayout from '../layouts/BaseLayout.astro';
-
-const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+import BaseLayout  from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
 ---
 
 <BaseLayout
@@ -45,156 +36,16 @@ const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   <section class="bg-white">
     <div class="container-main">
       <div class="container-inner max-w-2xl mx-auto">
-
-        <form
-          id="contact-form"
-          novalidate
-          class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
-        >
-          {/* Web3Forms access key — public by design, safe to expose */}
-          <input type="hidden" name="access_key" value={web3formsKey} />
-
-          {/* Email subject — updated dynamically to "ClinicName - {Full Name}" on submit */}
-          <input type="hidden" name="subject" id="contact-subject" value="ClinicName - Contact Enquiry" />
-
-          {/* from_name appears in the inbox sender field */}
-          <input type="hidden" name="from_name" id="contact-from-name" value="ClinicName Website" />
-
-          {/* Honeypot — real users never see this; bots autofill and are silently dropped */}
-          <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" tabindex="-1" />
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div class="flex flex-col gap-2">
-              <label for="contact-full-name" class="text-sm font-semibold text-[--color-headline]">
-                Full Name <span class="text-[--color-primary]" aria-hidden="true">*</span>
-              </label>
-              <input
-                id="contact-full-name"
-                type="text"
-                name="name"
-                class="input"
-                placeholder="Jane Smith"
-                autocomplete="name"
-                required
-              />
-            </div>
-            <div class="flex flex-col gap-2">
-              <label for="contact-email" class="text-sm font-semibold text-[--color-headline]">
-                Email Address <span class="text-[--color-primary]" aria-hidden="true">*</span>
-              </label>
-              <input
-                id="contact-email"
-                type="email"
-                name="email"
-                class="input"
-                placeholder="jane@example.com"
-                autocomplete="email"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <label for="contact-phone" class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
-            <input
-              id="contact-phone"
-              type="tel"
-              name="phone"
-              class="input"
-              placeholder="+44 7700 000000"
-              autocomplete="tel"
-            />
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <label for="contact-message" class="text-sm font-semibold text-[--color-headline]">
-              Your Message <span class="text-[--color-primary]" aria-hidden="true">*</span>
-            </label>
-            <textarea
-              id="contact-message"
-              name="message"
-              class="input"
-              rows="4"
-              placeholder="Tell us how we can help..."
-              required
-            ></textarea>
-          </div>
-
-          {/* Status messages — hidden until submission attempt */}
-          <div id="form-success" class="hidden rounded-[--radius-input] bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800" role="status" aria-live="polite">
-            Thank you — your message has been sent. We will be in touch shortly.
-          </div>
-          <div id="form-error" class="hidden rounded-[--radius-input] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800" role="alert" aria-live="assertive">
-            Something went wrong. Please try again or email us directly.
-          </div>
-
-          <div>
-            <button type="submit" id="contact-submit" class="btn btn-default">
-              <span id="submit-label">Send Enquiry</span>
-              <span id="submit-spinner" class="hidden" aria-hidden="true">Sending…</span>
-            </button>
-          </div>
-        </form>
-
+        <ContactForm
+          subjectPrefix="ClinicName"
+          brandName="ClinicName Website"
+          id="contact-page"
+        />
       </div>
     </div>
   </section>
 
 </BaseLayout>
-
-<script>
-  const form      = document.getElementById('contact-form')     as HTMLFormElement;
-  const submit    = document.getElementById('contact-submit')   as HTMLButtonElement;
-  const label     = document.getElementById('submit-label')     as HTMLSpanElement;
-  const spinner   = document.getElementById('submit-spinner')   as HTMLSpanElement;
-  const success   = document.getElementById('form-success')     as HTMLDivElement;
-  const error     = document.getElementById('form-error')       as HTMLDivElement;
-  const subjectEl = document.getElementById('contact-subject')  as HTMLInputElement;
-  const fromEl    = document.getElementById('contact-from-name') as HTMLInputElement;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Clear previous status
-    success.classList.add('hidden');
-    error.classList.add('hidden');
-
-    // Personalise subject and from_name with the sender's name
-    const nameVal = (form.querySelector<HTMLInputElement>('[name="name"]')?.value ?? '').trim();
-    if (nameVal) {
-      subjectEl.value = `ClinicName - ${nameVal}`;
-      fromEl.value    = nameVal;
-    }
-
-    // Loading state
-    submit.disabled = true;
-    label.classList.add('hidden');
-    spinner.classList.remove('hidden');
-
-    try {
-      const data = Object.fromEntries(new FormData(form));
-      const res  = await fetch('https://api.web3forms.com/submit', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body:    JSON.stringify(data),
-      });
-      const json = await res.json();
-
-      if (json.success) {
-        success.classList.remove('hidden');
-        form.reset();
-      } else {
-        error.classList.remove('hidden');
-      }
-    } catch {
-      error.classList.remove('hidden');
-    } finally {
-      submit.disabled = false;
-      label.classList.remove('hidden');
-      spinner.classList.add('hidden');
-    }
-  });
-</script>
 
 <style>
   .hero-dark {
@@ -203,8 +54,5 @@ const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   .contact-inner {
     padding-top:    4rem;
     padding-bottom: 4rem;
-  }
-  .hidden {
-    display: none;
   }
 </style>

@@ -9,6 +9,7 @@
  */
 import "../styles/global.css";
 import CookieConsent from "../components/CookieConsent.astro";
+import ContactForm  from "../components/ContactForm.astro";
 
 const colours = [
   { label: "--color-primary",       hex: "#DB003E", desc: "Main brand colour — buttons, links, accents. Change per client.",              group: "Brand"   },
@@ -493,56 +494,23 @@ const navLinks = [
 
             <div class="px-8 py-6 flex flex-col gap-6">
 
-              <p class="m-0 text-[--color-body]">All form inputs use the <code class="code-label">.input</code> class. Radius matches buttons (10px). Focus ring uses <code class="code-hex">--color-primary</code> with a 3px offset ring.</p>
+              <p class="m-0 text-[--color-body]">All contact forms use the reusable <code class="code-label">&lt;ContactForm /&gt;</code> component (Web3Forms-powered). All inputs use the <code class="code-label">.input</code> class. Radius matches buttons (10px). Focus ring uses <code class="code-hex">--color-primary</code> with a 3px offset ring.</p>
 
-              <form
-                name="contact"
-                method="POST"
-                data-netlify="true"
-                data-netlify-honeypot="bot-field"
-                action="/thank-you"
-                class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
-              >
-                <input type="hidden" name="form-name" value="contact" />
-                <input type="hidden" name="subject" value="HMDG Base Template - Contact Form" />
-                <p class="hidden" aria-hidden="true">
-                  <label>Leave this field empty: <input name="bot-field" /></label>
-                </p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div class="flex flex-col gap-2">
-                    <label for="docs-full-name" class="text-sm font-semibold text-[--color-headline]">Full Name</label>
-                    <input id="docs-full-name" type="text" name="full_name" class="input" placeholder="Jane Smith" required />
-                  </div>
-                  <div class="flex flex-col gap-2">
-                    <label for="docs-email" class="text-sm font-semibold text-[--color-headline]">Email Address</label>
-                    <input id="docs-email" type="email" name="email" class="input" placeholder="jane@example.com" required />
-                  </div>
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label for="docs-phone" class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
-                  <input id="docs-phone" type="tel" name="phone" class="input" placeholder="+44 7700 000000" />
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label for="docs-service" class="text-sm font-semibold text-[--color-headline]">Select a Service</label>
-                  <select id="docs-service" name="service" class="input">
-                    <option value="">Choose a service...</option>
-                    <option>Physiotherapy</option>
-                    <option>Sports Massage</option>
-                    <option>Pilates</option>
-                  </select>
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label for="docs-message" class="text-sm font-semibold text-[--color-headline]">Your Message</label>
-                  <textarea id="docs-message" name="message" class="input" rows="3" placeholder="Tell us about your condition..." required></textarea>
-                </div>
-                <div>
-                  <button type="submit" class="btn btn-default">Send Enquiry</button>
-                </div>
-              </form>
+              <ContactForm
+                subjectPrefix="HMDG Base Template"
+                brandName="HMDG Base Template Demo"
+                id="docs"
+              />
 
               <div class="border-t border-[--color-border] pt-5">
-                <pre class="code-block"><code>&lt;label class="text-sm font-semibold text-[--color-headline]"&gt;Label&lt;/label&gt;
+                <pre class="code-block"><code>&lt;ContactForm
+  subjectPrefix="ClinicName"
+  brandName="ClinicName Website"
+  id="contact-page"
+/&gt;
+
+{/* For lower-level usage, inputs use: */}
+&lt;label class="text-sm font-semibold text-[--color-headline]"&gt;Label&lt;/label&gt;
 &lt;input  type="text"  class="input" placeholder="..." /&gt;
 &lt;select              class="input"&gt;...&lt;/select&gt;
 &lt;textarea            class="input" rows="4"&gt;&lt;/textarea&gt;</code></pre>
@@ -556,7 +524,7 @@ const navLinks = [
                 <button class="copy-btn" type="button">Copy</button>
               </div>
               <div class="px-5 pt-4 pb-5">
-                <p class="prompt-text prompt-code">Add a [FORM NAME] form with fields for [FIELDS]. Use the .input class on all inputs, selects, and textareas. Labels use class="text-sm font-semibold text-[--color-headline]". Wrap each label + input in a flex flex-col gap-2 div. Submit uses .btn.btn-default. Do not create new form styles.</p>
+                <p class="prompt-text prompt-code">Add a contact form using the &lt;ContactForm /&gt; component from src/components/ContactForm.astro. Pass subjectPrefix, brandName, and a unique id prop. It is Web3Forms-powered (PUBLIC_WEB3FORMS_KEY env var required). Never build a new form from scratch and never use Netlify Forms, Formspree, or custom handlers. For non-contact form fields, use the .input class on all inputs, selects, and textareas. Labels use class="text-sm font-semibold text-[--color-headline]". Wrap each label + input in a flex flex-col gap-2 div.</p>
               </div>
             </div>
 

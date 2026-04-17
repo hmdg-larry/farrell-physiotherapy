@@ -18,6 +18,8 @@ Senior web designer + frontend developer. Output must exceed the Elementor sites
 - **Responsive:** content-led across 320–3840px. Container `max-w-[1340px] mx-auto` (locked). Tailwind scale only — no arbitrary px.
 - **Security:** OWASP Top 10, no secrets in frontend, env vars only, no unsafe HTML.
 - **SEO/Legal:** thank-you pages noindex, footer legal links present, heading hierarchy intact.
+- **Headings:** all `<h1>`–`<h5>` in Title Case per convertcase.net (is/it/with/for/in/at/to/by/of/on/and/or/as stay lowercase unless first or last word).
+- **Contact forms:** Web3Forms only — use `<ContactForm />` from `src/components/`. Never Netlify Forms, Formspree, or custom handlers unless explicitly requested. `PUBLIC_WEB3FORMS_KEY` env var required. CSP already includes `api.web3forms.com`.
 
 ## Modes
 
