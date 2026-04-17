@@ -24,6 +24,8 @@
  * Spam protection:
  *   - botcheck honeypot checkbox (hidden — bots tick it, users don't)
  *   - Web3Forms' server-side spam filtering
+ *   - hCaptcha widget (enabled by default; uses Web3Forms' public shared
+ *     sitekey 50b2fe65-b00b-4b9e-ad62-3ba471098be2 — no account needed)
  */
 
 interface Props {
@@ -37,6 +39,8 @@ interface Props {
   submitLabel?: string;
   /** Optional unique id suffix so multiple forms can live on one page */
   id?: string;
+  /** Enable hCaptcha spam protection. Default: true (Web3Forms enforces this if enabled on the account). */
+  hCaptcha?: boolean;
 }
 
 const {
@@ -45,6 +49,7 @@ const {
   showPhone     = true,
   submitLabel   = 'Send Enquiry',
   id            = 'default',
+  hCaptcha      = true,
 } = Astro.props;
 
 const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
@@ -135,6 +140,10 @@ const errorId   = `form-error-${id}`;
     ></textarea>
   </div>
 
+  {hCaptcha && (
+    <div class="h-captcha" data-sitekey="50b2fe65-b00b-4b9e-ad62-3ba471098be2"></div>
+  )}
+
   {/* Status messages — hidden until submission completes */}
   <div
     id={successId}
@@ -160,6 +169,10 @@ const errorId   = `form-error-${id}`;
     </button>
   </div>
 </form>
+
+{hCaptcha && (
+  <script is:inline src="https://js.hcaptcha.com/1/api.js" async defer></script>
+)}
 
 <script>
   // Handles every <ContactForm /> on the page — each gets its own IIFE instance

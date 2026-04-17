@@ -1,0 +1,196 @@
+---
+/**
+ * thank-you-hmdg.astro
+ * ─────────────────────────────────────────────────────────
+ * Public credits/attribution page linked from the footer
+ * ("Designed & Developed by HMDG"). A calm, confident brand
+ * moment — one screen, one CTA, clean editorial typography.
+ *
+ * URL:  /thank-you-hmdg/
+ * Role: Attribution + brand reinforcement. Indexable (not a
+ *       conversion thank-you) but outbound links are nofollow.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Credits — ClinicName"
+  description="Website designed and developed by HMDG — experts in physiotherapy website design, physiotherapy marketing, and healthcare marketing in the UK."
+>
+
+  <!-- ── Hero — red brand block, centred attribution ─── -->
+  <section class="credits-hero">
+    <div class="container-main">
+      <div class="credits-hero__inner">
+        <span class="credits-eyebrow">Attribution</span>
+        <h1 class="credits-title">Credits</h1>
+        <p class="credits-subtitle">
+          Designed, Developed, and Cared for by HMDG.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Body — wordmark, attribution paragraph, CTA ─── -->
+  <section class="credits-body">
+    <div class="container-main">
+      <article class="credits-article">
+
+        <h2 class="credits-wordmark" aria-label="HMDG">HMDG</h2>
+
+        <div class="credits-copy">
+          <p>
+            This website is designed and built by HMDG. HMDG are experts in
+            <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer nofollow">Physiotherapy website design</a>
+            and
+            <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer nofollow">Physiotherapy marketing</a>.
+          </p>
+          <p>
+            They are a team of healthcare practitioners, designers, developers, and online
+            marketers that combine expert digital knowledge with clinical experience to create
+            projects and campaigns that are specifically tailored to the
+            <a href="https://hmdg.co.uk/" target="_blank" rel="noopener noreferrer nofollow">healthcare marketing</a>
+            industry.
+          </p>
+        </div>
+
+        <div class="credits-cta">
+          <a
+            href="https://hmdg.co.uk/"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="btn btn-default"
+          >
+            Visit HMDG.co.uk
+            <svg
+              width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17L17 7M7 7h10v10" />
+            </svg>
+          </a>
+        </div>
+
+      </article>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Hero ────────────────────────────────────────────── */
+  .credits-hero {
+    background-color: var(--color-primary);
+    position:         relative;
+    overflow:         hidden;
+  }
+
+  /* Soft light / shadow layering — breaks the flat fill
+     and gives the red hero depth without adding imagery.  */
+  .credits-hero::before {
+    content:  "";
+    position: absolute;
+    inset:    0;
+    background:
+      radial-gradient(ellipse at 20% 10%,  rgba(255, 255, 255, 0.10), transparent 55%),
+      radial-gradient(ellipse at 80% 90%,  rgba(0,   0,   0,   0.14), transparent 60%);
+    pointer-events: none;
+  }
+
+  .credits-hero__inner {
+    position:   relative;
+    max-width:  40rem;
+    margin:     0 auto;
+    text-align: center;
+    padding:    5rem 0;
+  }
+  @media (min-width: 1024px) {
+    .credits-hero__inner {
+      padding: 8rem 0;
+    }
+  }
+
+  .credits-eyebrow {
+    display:        inline-block;
+    font-size:      0.75rem;
+    font-weight:    700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color:          rgba(255, 255, 255, 0.78);
+    margin-bottom:  1.25rem;
+  }
+
+  .credits-title {
+    color:  var(--color-white);
+    margin: 0;
+  }
+
+  .credits-subtitle {
+    margin:      1rem auto 0;
+    color:       rgba(255, 255, 255, 0.85);
+    font-size:   var(--text-lg);
+    line-height: 1.6;
+    max-width:   32rem;
+  }
+
+  /* ── Body ────────────────────────────────────────────── */
+  .credits-body {
+    background-color: var(--color-white);
+    padding:          4.375rem 0;
+  }
+  @media (min-width: 1024px) {
+    .credits-body {
+      padding: 5.625rem 0;
+    }
+  }
+
+  .credits-article {
+    max-width: 48rem;
+    margin:    0 auto;
+  }
+
+  /* Brand wordmark — <h2>HMDG</h2> lowercased visually
+     via CSS so the accessible name stays "HMDG" for
+     screen readers while matching the brand wordmark.    */
+  .credits-wordmark {
+    font-family:    var(--font-heading);
+    font-size:      clamp(3rem, 5vw + 1rem, 5rem);
+    font-weight:    800;
+    line-height:    0.95;
+    letter-spacing: -0.05em;
+    text-transform: lowercase;
+    color:          var(--color-headline);
+    margin:         0;
+  }
+
+  .credits-copy {
+    margin-top: 2.5rem;
+  }
+  .credits-copy p {
+    font-size:   var(--text-lg);
+    line-height: 1.8;
+    color:       var(--color-body);
+    margin:      0;
+  }
+  .credits-copy p + p {
+    margin-top: 1.75rem;
+  }
+  .credits-copy a {
+    color:                     var(--color-primary);
+    text-decoration:           underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset:     0.25em;
+    transition:                color 0.2s ease, text-decoration-thickness 0.2s ease;
+  }
+  .credits-copy a:hover {
+    color:                     var(--color-primary-hover);
+    text-decoration-thickness: 2px;
+  }
+
+  .credits-cta {
+    margin-top: 3rem;
+    display:    flex;
+  }
+</style>
