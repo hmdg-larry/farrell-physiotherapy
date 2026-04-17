@@ -82,8 +82,10 @@ const errorId   = `form-error-${id}`;
   <input type="hidden" name="subject" class="js-subject" value={`${subjectPrefix} - Contact Enquiry`} />
   <input type="hidden" name="from_name" class="js-from" value={brandName} />
 
-  {/* reCAPTCHA v3 token — populated by JS just before submit */}
-  <input type="hidden" name="g-recaptcha-response" class="js-recaptcha-token" value="" />
+  {/* reCAPTCHA v3 token — populated by JS just before submit.
+      Field name MUST be "recaptcha_response" per Web3Forms docs (not the
+      standard Google "g-recaptcha-response"). */}
+  <input type="hidden" name="recaptcha_response" class="js-recaptcha-token" value="" />
 
   {/* Honeypot — real users never see this; bots autofill and are silently dropped */}
   <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" tabindex="-1" />
