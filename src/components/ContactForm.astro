@@ -34,9 +34,9 @@
  */
 
 interface Props {
-  /** Email subject prefix (e.g. "Smith Clinic" → "Smith Clinic - Jane Smith"). Default: "Website Contact" */
+  /** Email subject prefix (e.g. "Smith Clinic" → "Smith Clinic - Jane Smith"). Default: "Website Name" */
   subjectPrefix?: string;
-  /** Brand name used in from_name field. Default: "Website Enquiry" */
+  /** Brand name used in from_name field. Default: "Website Name" */
   brandName?: string;
   /** Show phone field? Default: true */
   showPhone?: boolean;
@@ -44,14 +44,17 @@ interface Props {
   submitLabel?: string;
   /** Optional unique id suffix so multiple forms can live on one page */
   id?: string;
+  /** URL to redirect to after successful submission. Set to empty string to show inline success message instead. Default: "/thank-you" */
+  redirect?: string;
 }
 
 const {
-  subjectPrefix = 'Website Contact',
-  brandName     = 'Website Enquiry',
+  subjectPrefix = 'Website Name',
+  brandName     = 'Website Name',
   showPhone     = true,
   submitLabel   = 'Send Enquiry',
   id            = 'default',
+  redirect      = '/thank-you',
 } = Astro.props;
 
 const web3formsKey    = import.meta.env.PUBLIC_WEB3FORMS_KEY      ?? '';
@@ -72,6 +75,7 @@ const errorId   = `form-error-${id}`;
   data-subject-prefix={subjectPrefix}
   data-brand-name={brandName}
   data-recaptcha-key={recaptchaSiteKey}
+  data-redirect={redirect}
   novalidate
   class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
 >
@@ -212,8 +216,9 @@ const errorId   = `form-error-${id}`;
     const success     = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-success-')}`) ?? null;
     const error       = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-error-')}`) ?? null;
 
-    const subjectPrefix  = form.dataset.subjectPrefix ?? 'Website Contact';
+    const subjectPrefix  = form.dataset.subjectPrefix ?? 'Website Name';
     const recaptchaKey   = form.dataset.recaptchaKey  ?? '';
+    const redirectUrl    = form.dataset.redirect      ?? '';
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -252,6 +257,12 @@ const errorId   = `form-error-${id}`;
         const json = await res.json();
 
         if (json.success) {
+          if (redirectUrl) {
+            // Redirect to thank-you page on success
+            window.location.href = redirectUrl;
+            return;
+          }
+          // Fallback — show inline success when no redirect configured
           success?.classList.remove('hidden');
           form.reset();
         } else {
