@@ -5,7 +5,7 @@ This guide is for the marketing team only. You do not need to understand code. Y
 There are **two things** you need to do for every new client site:
 
 1. Fill in the config file with the client's details
-2. Add the secret keys into Netlify (not in the file)
+2. Add the secret keys into Cloudflare Pages (not in the file)
 
 ---
 
@@ -266,9 +266,9 @@ bookingDomains: [],
 
 ---
 
-## Part 2 — Add the Secret Keys in Netlify
+## Part 2 — Add the Secret Keys in Cloudflare Pages
 
-The GA4 API Secret must **never** go in the config file. It must be added directly into Netlify. This keeps it secure.
+The GA4 API Secret must **never** go in the config file. It must be added directly into Cloudflare Pages. This keeps it secure.
 
 ### Step 1 — Get the GA4 API Secret
 
@@ -283,21 +283,24 @@ The GA4 API Secret must **never** go in the config file. It must be added direct
 9. Give it a name (e.g. `Astro Site`) and click **Create**
 10. Copy the secret value — it looks like a long random string
 
-### Step 2 — Add the secrets to Netlify
+### Step 2 — Add the secrets to Cloudflare Pages
 
-1. Log in to [netlify.com](https://netlify.com)
-2. Click on the client's site
-3. Click **Site configuration** in the left menu
-4. Click **Environment variables**
-5. Click **Add a variable** for each of the following:
+1. Log in to [dash.cloudflare.com](https://dash.cloudflare.com)
+2. Click **Workers & Pages** in the left menu
+3. Click on the client's site
+4. Click the **Settings** tab at the top
+5. Click **Variables and Secrets** in the side menu
+6. Click **Add variable** for each of the following:
 
-| Variable name | What to paste in |
-|---|---|
-| `GA4_API_SECRET` | The API secret you just copied from GA4 |
-| `GA4_MEASUREMENT_ID` | The client's GA4 Measurement ID (e.g. `G-9KW3PLMX22`) |
-| `SITE_ORIGIN` | The client's full website URL (e.g. `https://cityphysio.co.uk`) |
+| Variable name | What to paste in | Encrypt? |
+|---|---|---|
+| `GA4_API_SECRET` | The API secret you just copied from GA4 | **Yes — toggle Encrypt on** |
+| `GA4_MEASUREMENT_ID` | The client's GA4 Measurement ID (e.g. `G-9KW3PLMX22`) | No |
+| `SITE_ORIGIN` | The client's full website URL (e.g. `https://cityphysio.co.uk`) | No |
 
-6. After adding all three, click **Deploy** or trigger a new deployment so the changes take effect
+7. After adding all three, go to **Deployments → latest deployment → Retry deployment**.
+
+> **Important:** Cloudflare Pages does **not** auto-redeploy when environment variables change. Without manually clicking Retry deployment, the new values will not take effect on the live site.
 
 ---
 
@@ -329,23 +332,23 @@ Go through this list before telling the developer it is ready:
 - [ ] Banner message updated to match client's cookie policy wording
 - [ ] Unused cookie categories set to `enabled: false`
 - [ ] Booking platform list updated — only the client's platform remains
-- [ ] `GA4_API_SECRET` added to Netlify environment variables
-- [ ] `GA4_MEASUREMENT_ID` added to Netlify environment variables
-- [ ] `SITE_ORIGIN` added to Netlify environment variables (full URL with https://)
-- [ ] A new deployment triggered on Netlify after adding environment variables
+- [ ] `GA4_API_SECRET` added to Cloudflare Pages → Variables and Secrets (with Encrypt enabled)
+- [ ] `GA4_MEASUREMENT_ID` added to Cloudflare Pages → Variables and Secrets
+- [ ] `SITE_ORIGIN` added to Cloudflare Pages → Variables and Secrets (full URL with https://)
+- [ ] A new deployment triggered in Cloudflare Pages (Deployments → Retry deployment) after adding environment variables
 
 ---
 
 ## Common Mistakes
 
 **The banner is not showing on the site**
-The Netlify environment variables may not have been saved, or a new deployment was not triggered after adding them.
+The Cloudflare Pages environment variables may not have been saved, or a redeployment was not triggered after adding them. In Cloudflare → Deployments → Retry deployment.
 
 **The wrong GTM is firing**
 Double-check the GTM ID in the config file matches the client's container, not another client's.
 
 **Booking events are not showing in GA4**
-Check that the client's booking platform domain is in the `bookingDomains` list and that the GA4 API secret is saved correctly in Netlify.
+Check that the client's booking platform domain is in the `bookingDomains` list and that the GA4 API secret is saved correctly in Cloudflare Pages → Variables and Secrets.
 
 **All visitors are seeing the banner again after it was working**
 The `policyVersion` was changed unnecessarily. If the cookie policy did not change, this should not be bumped.
