@@ -56,33 +56,34 @@ const features = [
 ];
 
 const navLinks = [
-  { href: "#colours",    label: "Colours",        num: "01" },
-  { href: "#fonts",      label: "Fonts",          num: "02" },
-  { href: "#typography", label: "Typography",     num: "03" },
-  { href: "#body-text",  label: "Body Text",      num: "04" },
-  { href: "#buttons",    label: "Buttons",        num: "05" },
-  { href: "#forms",      label: "Forms",          num: "06" },
-  { href: "#containers", label: "Containers",     num: "07" },
-  { href: "#flex",       label: "Flex Layout",    num: "08" },
-  { href: "#cards",      label: "Cards",          num: "09" },
-  { href: "#combined",   label: "Example",        num: "10" },
-  { href: "#utilities",  label: "Utility Classes",num: "11" },
-  { href: "#tokens",     label: "Design Tokens",  num: "12" },
-  { href: "#globalcss",  label: "global.css",     num: "13" },
-  { href: "#images",     label: "Image Rules",    num: "14" },
-  { href: "#security",   label: "Security",       num: "15" },
-  { href: "#agents",     label: "Agent System",   num: "16" },
-  { href: "#modes",      label: "Modes & Tiers",  num: "17" },
-  { href: "#skills",     label: "Skills Library", num: "18" },
-  { href: "#perfbuild",  label: "Perf & Build",   num: "19" },
-  { href: "#herovideo",  label: "Hero Video",     num: "20" },
-  { href: "#projectlog", label: "Project Log",    num: "21" },
-  { href: "#envvars",    label: "Env Variables",  num: "22" },
-  { href: "#baselayout", label: "BaseLayout",     num: "23" },
-  { href: "#cookiecfg",  label: "Cookie Config",  num: "24" },
-  { href: "#carousel",   label: "Carousels",      num: "25" },
-  { href: "#setup",      label: "Client Setup",   num: "26" },
-  { href: "#deploy",     label: "Deploy to CF",   num: "27" },
+  { href: "#workflow",   label: "Workflow",       num: "01" },
+  { href: "#colours",    label: "Colours",        num: "02" },
+  { href: "#fonts",      label: "Fonts",          num: "03" },
+  { href: "#typography", label: "Typography",     num: "04" },
+  { href: "#body-text",  label: "Body Text",      num: "05" },
+  { href: "#buttons",    label: "Buttons",        num: "06" },
+  { href: "#forms",      label: "Forms",          num: "07" },
+  { href: "#containers", label: "Containers",     num: "08" },
+  { href: "#flex",       label: "Flex Layout",    num: "09" },
+  { href: "#cards",      label: "Cards",          num: "10" },
+  { href: "#combined",   label: "Example",        num: "11" },
+  { href: "#utilities",  label: "Utility Classes",num: "12" },
+  { href: "#tokens",     label: "Design Tokens",  num: "13" },
+  { href: "#globalcss",  label: "global.css",     num: "14" },
+  { href: "#images",     label: "Image Rules",    num: "15" },
+  { href: "#security",   label: "Security",       num: "16" },
+  { href: "#agents",     label: "Agent System",   num: "17" },
+  { href: "#modes",      label: "Modes & Tiers",  num: "18" },
+  { href: "#skills",     label: "Skills Library", num: "19" },
+  { href: "#perfbuild",  label: "Perf & Build",   num: "20" },
+  { href: "#herovideo",  label: "Hero Video",     num: "21" },
+  { href: "#projectlog", label: "Project Log",    num: "22" },
+  { href: "#envvars",    label: "Env Variables",  num: "23" },
+  { href: "#baselayout", label: "BaseLayout",     num: "24" },
+  { href: "#cookiecfg",  label: "Cookie Config",  num: "25" },
+  { href: "#carousel",   label: "Carousels",      num: "26" },
+  { href: "#setup",      label: "Client Setup",   num: "27" },
+  { href: "#deploy",     label: "Deploy to CF",   num: "28" },
 ];
 ---
 
@@ -224,13 +225,413 @@ const navLinks = [
 
 
           <!-- ───────────────────────────────────────────────────
-               01 — GLOBAL COLOUR VARIABLES
+               01 — WORKFLOW (Developer + Support team)
+          ─────────────────────────────────────────────────────── -->
+          <article id="workflow" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">01</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Workflow</h5>
+                  <p class="text-sm text-[--color-caption] m-0">How developers and the support team work with this template. Read this before anything else.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Workflow</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-8">
+
+              <!-- Plain English -->
+              <div class="p-4 bg-[--color-accent] border-l-4 border-[--color-primary] rounded-[--radius-card]">
+                <p class="m-0 text-sm text-[--color-body] leading-relaxed">
+                  <strong>Plain English:</strong> Two groups of people use this template. <strong>Developers</strong> use it to build a new clinic website. <strong>Support team</strong> uses it to fix tickets on a website that is already live. Both groups go through GitHub. GitHub is the single source of truth — no one edits files directly on Cloudflare.
+                </p>
+              </div>
+
+              <!-- ───────── WORKFLOW A — DEVELOPER ───────── -->
+              <section class="flex flex-col gap-5">
+
+                <header class="flex flex-wrap items-center gap-3">
+                  <span class="text-[10px] font-bold text-white bg-[--color-primary] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wider">Workflow A</span>
+                  <h5 class="m-0">Developers — building a new client site</h5>
+                </header>
+
+                <p class="m-0 text-sm text-[--color-body]">
+                  Every website developer must follow these steps when starting a new clinic project. The base template is the source — every client site is a separate private repository created from a clone of this template. Never edit the base template directly for a client.
+                </p>
+
+                <!-- Numbered steps -->
+                <ol class="list-none p-0 m-0 flex flex-col gap-2">
+                  {[
+                    { num: "01", title: "Clone the base template",      body: "Open a terminal on your local computer. Run: git clone https://github.com/felmerald-hmdg/astro-base-template-cloudflare.git PROJECT-NAME — replacing PROJECT-NAME with the client's name." },
+                    { num: "02", title: "Customise locally",            body: "Open the cloned folder in your editor. Customise per the Client Setup Checklist (Section 27 — Phase 2). Run npm install, npm run dev, then test locally." },
+                    { num: "03", title: "Create a NEW private repo on GitHub", body: 'Go to github.com → "New repository". Name it exactly the same as the client (PROJECT-NAME). Set it to PRIVATE. Do NOT initialise with a README — the cloned template already has one.' },
+                    { num: "04", title: "Point the local clone at the new repo", body: "Back in the terminal, inside the cloned folder, run: git remote set-url origin https://github.com/YOUR-ORG/PROJECT-NAME.git — then git push -u origin main." },
+                    { num: "05", title: "Deploy to Cloudflare Pages",   body: "Follow the step-by-step deployment guide in Section 28. The first deploy connects the new private repo to a Cloudflare Pages project. After that, every push to main auto-deploys." },
+                  ].map(s => (
+                    <li class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <span class="flex items-center justify-center w-9 h-9 shrink-0 rounded-full bg-[--color-primary] text-white font-bold text-xs font-mono">{s.num}</span>
+                      <div class="flex-1 min-w-0">
+                        <p class="m-0 text-sm font-semibold text-[--color-headline]">{s.title}</p>
+                        <p class="m-0 text-xs text-[--color-body] leading-relaxed">{s.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+
+                <!-- Diagram A -->
+                <div class="border-t border-[--color-border] pt-5">
+                  <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0 mb-4">Visual flow</p>
+                  <div class="max-w-xl mx-auto flex flex-col items-stretch">
+
+                    <!-- Box 1 -->
+                    <div class="flex items-center gap-4 p-4 bg-white border-2 border-[--color-primary] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-accent] text-[--color-primary]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Source</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">HMDG Base Template</p>
+                        <p class="m-0 text-xs text-[--color-body]">Public template repo on GitHub</p>
+                      </div>
+                    </div>
+
+                    <!-- Arrow with label -->
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">git clone</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 2 -->
+                    <div class="flex items-center gap-4 p-4 bg-white border border-[--color-border] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                          <line x1="8" y1="21" x2="16" y2="21"></line>
+                          <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Step 2</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Developer's local computer</p>
+                        <p class="m-0 text-xs text-[--color-body]">Customise per Client Setup Checklist (Section 27)</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">git push</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 3 -->
+                    <div class="flex items-center gap-4 p-4 bg-white border border-[--color-border] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <path d="M9 9h6v6H9z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Step 3</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">New PRIVATE GitHub repo</p>
+                        <p class="m-0 text-xs text-[--color-body]">Named "PROJECT-NAME" (the client)</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">connect (Section 28)</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 4 - destination -->
+                    <div class="flex items-center gap-4 p-4 bg-[--color-primary]/8 border-2 border-[--color-primary] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-primary] text-white">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-primary] uppercase tracking-wide">Live</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Cloudflare Pages</p>
+                        <p class="m-0 text-xs text-[--color-body]">Auto-deploys on every push to main</p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </section>
+
+
+              <!-- ───────── WORKFLOW B — SUPPORT TEAM ───────── -->
+              <section class="flex flex-col gap-5 border-t-2 border-[--color-border] pt-8">
+
+                <header class="flex flex-wrap items-center gap-3">
+                  <span class="text-[10px] font-bold text-white bg-[--color-headline] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wider">Workflow B</span>
+                  <h5 class="m-0">Intercom support team — fixing tickets on a live site</h5>
+                </header>
+
+                <p class="m-0 text-sm text-[--color-body]">
+                  Once a client site is live, ongoing support is handled by the Intercom team. Every support team member must have a GitHub account with access to the client's repository. Fixes are made on a feature branch, opened as a pull request, and merged to <code class="code-label">main</code> only by Fel. Cloudflare auto-deploys after the merge.
+                </p>
+
+                <!-- Numbered steps -->
+                <ol class="list-none p-0 m-0 flex flex-col gap-2">
+                  {[
+                    { num: "01", title: "Receive the ticket in Intercom",       body: "A customer or staff member reports an issue or change request through Intercom. Read the ticket in full and identify which file(s) or component(s) need to change." },
+                    { num: "02", title: "Pull the project locally",              body: "On your local computer, run git clone for the relevant client's GitHub repository (or git pull if you already have it locally). Run npm install, then npm run dev to verify everything still works before you start." },
+                    { num: "03", title: "Make the fix on a feature branch",      body: "Create a new branch named after the ticket, e.g. git checkout -b fix/contact-form-typo. Edit the file(s), test in the browser, and confirm the change addresses the ticket exactly." },
+                    { num: "04", title: "Push the branch to GitHub",             body: "Commit your changes with a clear message describing the fix. Push the branch: git push -u origin fix/contact-form-typo. Then open a Pull Request on GitHub from your branch into main." },
+                    { num: "05", title: "Notify Fel for review",                 body: "Tell Fel the PR is ready (Slack, email, or comment on the PR itself). Include the Intercom ticket reference. Wait for review — DO NOT merge yourself." },
+                    { num: "06", title: "Fel merges to main",                    body: "Fel reviews the PR, requests changes if needed, and merges the approved PR to main. This is the only human gate in the deploy chain." },
+                    { num: "07", title: "Cloudflare auto-deploys",               body: "The merge to main triggers an automatic Cloudflare Pages build and deploy. Live within 2–4 minutes. Verify the fix on the production URL and update the Intercom ticket as resolved." },
+                  ].map(s => (
+                    <li class="flex items-start gap-4 p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <span class="flex items-center justify-center w-9 h-9 shrink-0 rounded-full bg-[--color-headline] text-white font-bold text-xs font-mono">{s.num}</span>
+                      <div class="flex-1 min-w-0">
+                        <p class="m-0 text-sm font-semibold text-[--color-headline]">{s.title}</p>
+                        <p class="m-0 text-xs text-[--color-body] leading-relaxed">{s.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+
+                <!-- Diagram B -->
+                <div class="border-t border-[--color-border] pt-5">
+                  <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0 mb-4">Visual flow</p>
+                  <div class="max-w-xl mx-auto flex flex-col items-stretch">
+
+                    <!-- Box 1 -->
+                    <div class="flex items-center gap-4 p-4 bg-white border-2 border-[--color-headline] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Trigger</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Intercom ticket</p>
+                        <p class="m-0 text-xs text-[--color-body]">Customer or staff reports an issue / change</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">git pull</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 2 -->
+                    <div class="flex items-center gap-4 p-4 bg-white border border-[--color-border] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Step 2-3</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Local fix on a feature branch</p>
+                        <p class="m-0 text-xs text-[--color-body]">Edit, test in browser, commit</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">git push + open PR</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 3 - PR -->
+                    <div class="flex items-center gap-4 p-4 bg-white border border-[--color-border] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="18" cy="18" r="3"></circle>
+                          <circle cx="6" cy="6" r="3"></circle>
+                          <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                          <line x1="6" y1="9" x2="6" y2="21"></line>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Step 4</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Pull Request on GitHub</p>
+                        <p class="m-0 text-xs text-[--color-body]">From feature branch → main</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-headline] text-white text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">notify Fel</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 4 - Human gate (highlighted) -->
+                    <div class="flex items-center gap-4 p-4 bg-[--color-primary]/8 border-2 border-[--color-primary] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-primary] text-white">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M9 12l2 2 4-4"></path>
+                          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-primary] uppercase tracking-wide">Human gate</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Fel reviews + merges to main</p>
+                        <p class="m-0 text-xs text-[--color-body]">The only manual approval in the chain</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center py-2">
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <span class="px-3 py-1 bg-[--color-accent] text-[--color-primary] text-[10px] font-mono font-bold uppercase tracking-wider rounded-[--radius-badge]">auto-deploy</span>
+                      <div class="w-px h-4 bg-[--color-border]"></div>
+                      <svg class="w-4 h-4 text-[--color-border]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+
+                    <!-- Box 5 - Live -->
+                    <div class="flex items-center gap-4 p-4 bg-white border border-[--color-border] rounded-[--radius-card]">
+                      <div class="flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-[--color-muted] text-[--color-headline]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <p class="m-0 text-xs font-bold text-[--color-caption] uppercase tracking-wide">Live</p>
+                        <p class="m-0 text-sm font-bold text-[--color-headline]">Cloudflare auto-deploys</p>
+                        <p class="m-0 text-xs text-[--color-body]">Live in 2–4 min · update Intercom as resolved</p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </section>
+
+
+              <!-- ───────── ROLES & RESPONSIBILITIES ───────── -->
+              <section class="flex flex-col gap-3 border-t-2 border-[--color-border] pt-8">
+                <header class="flex items-center gap-3">
+                  <h5 class="m-0">Roles &amp; responsibilities</h5>
+                </header>
+                <p class="m-0 text-sm text-[--color-body]">Quick reference: who is responsible for what step.</p>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full border border-[--color-border] rounded-[--radius-card] overflow-hidden text-xs">
+                    <thead class="bg-[--color-muted]">
+                      <tr>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Role</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">GitHub access</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Can clone template?</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Can push to feature branch?</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Can merge to main?</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Owns deploy?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { role: "Developer",         gh: "Yes",        clone: "Yes — for new clients",       feat: "Yes",   merge: "No",  deploy: "Sets up first deploy in Cloudflare" },
+                        { role: "Intercom support",  gh: "Yes",        clone: "Yes — to fix tickets",         feat: "Yes",   merge: "No",  deploy: "No (auto on merge)" },
+                        { role: "Fel",                gh: "Admin",      clone: "Yes",                          feat: "Yes",   merge: "Yes — only person", deploy: "Owner of Cloudflare project" },
+                        { role: "Marketing team",    gh: "No",         clone: "No",                           feat: "No",    merge: "No",  deploy: "Provides inputs (Section 27 Phase 1)" },
+                        { role: "Client",             gh: "No",         clone: "No",                           feat: "No",    merge: "No",  deploy: "Provides content + signs off" },
+                      ].map(r => (
+                        <tr class="border-t border-[--color-border] bg-white">
+                          <td class="px-3 py-2 align-top font-semibold text-[--color-headline]">{r.role}</td>
+                          <td class="px-3 py-2 align-top text-[--color-body]">{r.gh}</td>
+                          <td class="px-3 py-2 align-top text-[--color-body]">{r.clone}</td>
+                          <td class="px-3 py-2 align-top text-[--color-body]">{r.feat}</td>
+                          <td class="px-3 py-2 align-top text-[--color-body]">{r.merge}</td>
+                          <td class="px-3 py-2 align-top text-[--color-body]">{r.deploy}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+
+              <!-- ───────── GOLDEN RULES ───────── -->
+              <section class="flex flex-col gap-3 border-t-2 border-[--color-border] pt-8">
+                <header>
+                  <h5 class="m-0">Golden rules — read once, follow always</h5>
+                </header>
+                <ul class="list-none p-0 m-0 flex flex-col gap-2">
+                  {[
+                    "GitHub is the single source of truth. Never edit files directly on Cloudflare.",
+                    "Every client site is a SEPARATE private repo. The base template is never edited for one client.",
+                    'Repository name = "PROJECT-NAME" (the client). Use the same string in Cloudflare Pages and the Web3Forms form name so everything stays consistent.',
+                    "Only Fel merges to main. Everyone else opens pull requests.",
+                    "Cloudflare auto-deploys on every merge to main. There is no manual deploy button to press.",
+                    "If something goes wrong, revert the merge commit on GitHub. The previous deploy is restored automatically.",
+                  ].map(r => (
+                    <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                      <div class="icon-dot-offset mt-0.5"></div>
+                      <p class="m-0 text-sm text-[--color-body]">{r}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+            </div>
+
+            <!-- Claude prompts (one for each role) -->
+            <div class="bg-white px-8 pb-8 flex flex-col gap-3">
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Developer: start a new client build</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">I'm starting a new clinic site for [CLIENT NAME] using the HMDG base template. (1) Confirm I have all Phase 1 marketing inputs from Section 27. (2) Walk me through git clone of the base template, npm install, and dev verification. (3) Help me create a new private GitHub repo named exactly [CLIENT NAME], reset the local remote, and push. (4) Then guide me through the Cloudflare Pages deploy steps in Section 28 — including the four PUBLIC_* env vars under Build scope and Retry deployment. Confirm npm run build is clean before I push.</p>
+                </div>
+              </div>
+
+              <div class="rounded-[--radius-card] overflow-hidden border border-[--color-border]">
+                <div class="px-5 py-3 flex items-center justify-between border-b border-[--color-border]">
+                  <span class="caption-light">Claude AI Prompt — Support: fix an Intercom ticket</span>
+                  <button class="copy-btn" type="button">Copy</button>
+                </div>
+                <div class="px-5 pt-4 pb-5">
+                  <p class="prompt-text prompt-code">I have an Intercom ticket for [CLIENT NAME]. Ticket details: [PASTE TICKET]. (1) Confirm I have the latest from origin/main with git pull. (2) Help me identify which file(s) need to change. (3) Create a feature branch named fix/[ticket-summary]. (4) Make the fix, test locally with npm run dev, run npm run build to verify. (5) Commit + push the branch. (6) Open a PR on GitHub from the branch into main. (7) Tell me what to write to Fel so they can review + merge. Do NOT merge yourself.</p>
+                </div>
+              </div>
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               02 — GLOBAL COLOUR VARIABLES
           ─────────────────────────────────────────────────────── -->
           <article id="colours" class="bg-white border-b border-[--color-border]">
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">01</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">02</span>
                 <h5 class="m-0">Global Colour Variables</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Colors</span>
@@ -272,7 +673,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">02</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">03</span>
                 <h5 class="m-0">Font Variables</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Fonts</span>
@@ -330,7 +731,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">03</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">04</span>
                 <h5 class="m-0">Typography Scale — H1 to H6</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Type</span>
@@ -380,7 +781,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">04</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">05</span>
                 <h5 class="m-0">Body Text System</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Body</span>
@@ -419,7 +820,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">05</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">06</span>
                 <h5 class="m-0">Button System</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Buttons</span>
@@ -495,7 +896,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">06</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">07</span>
                 <h5 class="m-0">Form Elements</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Forms</span>
@@ -543,7 +944,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">07</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">08</span>
                 <h5 class="m-0">Container System</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Layout</span>
@@ -600,7 +1001,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">08</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">09</span>
                 <h5 class="m-0">Flex Layout System</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Flex</span>
@@ -672,7 +1073,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">09</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">10</span>
                 <h5 class="m-0">Card Component</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Cards</span>
@@ -739,7 +1140,7 @@ const navLinks = [
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">10</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">11</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Combined Example — Real Clinic Section</h5>
                   <p class="text-sm text-[--color-caption] m-0">Every part of the design system working together.</p>
@@ -816,7 +1217,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">11</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">12</span>
                 <h5 class="m-0">Utility Classes</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Utils</span>
@@ -881,7 +1282,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">12</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">13</span>
                 <h5 class="m-0">Design Tokens — Radius, Shadows, Spacing</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Tokens</span>
@@ -966,7 +1367,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">13</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">14</span>
                 <h5 class="m-0">global.css Structure</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">CSS</span>
@@ -1062,7 +1463,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">14</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">15</span>
                 <h5 class="m-0">Image Format Rules</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Images</span>
@@ -1151,7 +1552,7 @@ const navLinks = [
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">15</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">16</span>
                 <h5 class="m-0">Security Reference</h5>
               </div>
               <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide">Security</span>
@@ -1211,7 +1612,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">16</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">17</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Agent System</h5>
                   <p class="text-sm text-[--color-caption] m-0">12 specialist AI agents. Each one has a single clear job. Use the review sequence below for every important page build.</p>
@@ -1356,7 +1757,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">17</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">18</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Modes & Agent Tiers</h5>
                   <p class="text-sm text-[--color-caption] m-0">How Claude decides what to do, how big a task is, and which agents to call.</p>
@@ -1445,7 +1846,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">18</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">19</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Skills Library</h5>
                   <p class="text-sm text-[--color-caption] m-0">Reusable build patterns. Each skill is a step-by-step recipe Claude follows when the work matches.</p>
@@ -1510,7 +1911,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">19</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">20</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Performance & Build Tooling</h5>
                   <p class="text-sm text-[--color-caption] m-0">The site-wide setup that ships every clone with PageSpeed-friendly defaults.</p>
@@ -1618,7 +2019,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">20</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">21</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Hero Video Pattern</h5>
                   <p class="text-sm text-[--color-caption] m-0">Self-hosted MP4 H.264. Mandatory across every HMDG clinic site.</p>
@@ -1710,7 +2111,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">21</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">22</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Project Log Protocol</h5>
                   <p class="text-sm text-[--color-caption] m-0">A simple internal log so every Claude session can pick up where the last one left off.</p>
@@ -1794,7 +2195,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">22</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">23</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Environment Variables</h5>
                   <p class="text-sm text-[--color-caption] m-0">12 variables that drive every deploy. Most come from the marketing team.</p>
@@ -1942,7 +2343,7 @@ BaseLayout.astro    → CSP meta tag in &lt;head&gt; for all pages
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">23</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">24</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">BaseLayout.astro</h5>
                   <p class="text-sm text-[--color-caption] m-0">The single shared wrapper for every client-facing page.</p>
@@ -2041,7 +2442,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">24</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">25</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Cookie Consent Config</h5>
                   <p class="text-sm text-[--color-caption] m-0">Marketing team editable fields in <code class="code-label">src/config/cookie-consent.config.ts</code></p>
@@ -2123,7 +2524,7 @@ export const cookieConsentConfig = &lbrace;
 
             <header class="flex items-center justify-between px-8 py-5 border-b border-[--color-border]">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">25</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">26</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Swiper Carousels</h5>
                   <p class="text-sm text-[--color-caption] m-0">Swiper v11 via CDN. Brand colours overridden in global.css.</p>
@@ -2227,7 +2628,7 @@ const reviews = [
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] bg-white flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">26</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">27</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Client Setup Checklist</h5>
                   <p class="text-sm text-[--color-caption] m-0">Two phases — what marketing must give you, then what dev does.</p>
@@ -2411,7 +2812,7 @@ const reviews = [
               <div class="flex flex-col gap-3">
                 <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">D2. Cookie consent · <code class="code-hex normal-case">src/config/cookie-consent.config.ts</code></p>
                 <div class="p-4 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
-                  <p class="m-0 text-sm text-[--color-body]">Set <code class="code-label">gtmId</code>, <code class="code-label">gtagId</code>, <code class="code-label">bannerText</code>, and <code class="code-label">policyVersion</code>. Full field reference in section 24.</p>
+                  <p class="m-0 text-sm text-[--color-body]">Set <code class="code-label">gtmId</code>, <code class="code-label">gtagId</code>, <code class="code-label">bannerText</code>, and <code class="code-label">policyVersion</code>. Full field reference in section 25.</p>
                 </div>
               </div>
 
@@ -2462,7 +2863,7 @@ const reviews = [
                     "Web3Forms dashboard → Recipient Emails → primary client inbox. This is the PRIMARY recipient.",
                     "Web3Forms dashboard → Spam Protection → reCAPTCHA → paste the Secret Key from M3.",
                     "Copy the Form Access Key (UUID). This goes in PUBLIC_WEB3FORMS_KEY.",
-                    "Set the four PUBLIC_* env vars locally and on Cloudflare Pages (see section 22).",
+                    "Set the four PUBLIC_* env vars locally and on Cloudflare Pages (see section 23).",
                     "Click Retry deployment in Cloudflare so the env vars bake into the build.",
                   ].map((step, i) => (
                     <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
@@ -2568,7 +2969,7 @@ const reviews = [
 
             <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-[--color-border] font-mono">27</span>
+                <span class="text-xs font-bold text-[--color-border] font-mono">28</span>
                 <div class="flex flex-col gap-0.5">
                   <h5 class="m-0">Deploy to Cloudflare Pages</h5>
                   <p class="text-sm text-[--color-caption] m-0">Step-by-step. From a fresh clone to a live URL on Cloudflare Workers / Pages.</p>
@@ -2592,7 +2993,7 @@ const reviews = [
                   {[
                     "GitHub repo exists with the project pushed to main/master.",
                     "Cloudflare account exists (free tier is fine).",
-                    "All 12 env vars from section 22 are ready.",
+                    "All 12 env vars from section 23 are ready.",
                     "Local npm run build passes cleanly.",
                   ].map(i => (
                     <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
@@ -2654,7 +3055,7 @@ const reviews = [
                 <ol class="list-none p-0 m-0 flex flex-col gap-2">
                   {[
                     "Settings → Variables and Secrets → Add variable.",
-                    "Add each of the 12 vars from section 22. Type: Plaintext.",
+                    "Add each of the 12 vars from section 23. Type: Plaintext.",
                     'Scope: tick "Build" (NOT "Runtime").',
                     "If a value contains a semicolon (PUBLIC_CLIENT_EMAIL), paste it directly — no escaping needed.",
                     "Save each one as you go.",
