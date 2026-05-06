@@ -85,6 +85,7 @@ const navLinks = [
   { href: "#reviews",    label: "Google Reviews", num: "27" },
   { href: "#setup",      label: "Client Setup",   num: "28" },
   { href: "#deploy",     label: "Deploy to CF",   num: "29" },
+  { href: "#fallback",   label: "Fallback Redirect", num: "30" },
 ];
 ---
 
@@ -3490,6 +3491,102 @@ const reviewsLd = {
                     </div>
                   ))}
                 </div>
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!-- ───────────────────────────────────────────────────
+               30 — FALLBACK REDIRECTION
+          ─────────────────────────────────────────────────────── -->
+          <article id="fallback" class="bg-white border-b border-[--color-border]">
+
+            <header class="flex items-start justify-between px-8 py-5 border-b border-[--color-border] flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-[--color-border] font-mono">30</span>
+                <div class="flex flex-col gap-0.5">
+                  <h5 class="m-0">Fallback Redirection</h5>
+                  <p class="text-sm text-[--color-caption] m-0">Rank Math "Fallback Behaviour" equivalent — unmatched URLs 301 to the homepage on Cloudflare. Real 404s still surface on <code class="code-label">astro dev</code>.</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-[--color-primary] bg-[--color-accent] px-3 py-1 rounded-[--radius-badge] uppercase tracking-wide self-start">Worker</span>
+            </header>
+
+            <div class="px-8 py-6 flex flex-col gap-6">
+
+              <div class="p-4 bg-[--color-accent] border-l-4 border-[--color-primary] rounded-[--radius-card]">
+                <p class="m-0 text-sm text-[--color-body] leading-relaxed">
+                  <strong>Plain English:</strong> Ports the Rank Math "Fallback Behaviour → Redirect to Homepage" feature to Astro. Catches stray old URLs (forgotten WP permalinks, deep backlinks, crawler noise) at production and 301-redirects them to <code class="code-label">/</code> instead of returning 404 — preserving link equity during a WP → Astro migration.
+                </p>
+              </div>
+
+              <!-- Behaviour table -->
+              <div class="flex flex-col gap-3">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Behaviour</p>
+                <div class="overflow-x-auto">
+                  <table class="w-full border border-[--color-border] rounded-[--radius-card] overflow-hidden text-xs">
+                    <thead class="bg-[--color-muted]">
+                      <tr>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Environment</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Result for unmatched URL</th>
+                        <th class="text-left px-3 py-2 font-bold text-[--color-headline]">Why</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-t border-[--color-border] bg-white">
+                        <td class="px-3 py-2 align-top whitespace-nowrap"><code class="code-label text-[10px]">astro dev</code> (localhost)</td>
+                        <td class="px-3 py-2 align-top text-[--color-body]">Real 404 — branded <code class="code-label">404.astro</code> renders</td>
+                        <td class="px-3 py-2 align-top text-[--color-body] leading-relaxed">Surfaces missing routes, broken internal links, and typos during development.</td>
+                      </tr>
+                      <tr class="border-t border-[--color-border] bg-white">
+                        <td class="px-3 py-2 align-top whitespace-nowrap">Cloudflare Pages (preview + production)</td>
+                        <td class="px-3 py-2 align-top text-[--color-body]"><code class="code-label">301</code> → <code class="code-label">/</code></td>
+                        <td class="px-3 py-2 align-top text-[--color-body] leading-relaxed">SEO migration safety — old WP URLs flow to the homepage instead of breaking.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Mechanism -->
+              <div class="flex flex-col gap-3 border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Mechanism — automatic gate, no manual toggle</p>
+                <pre class="code-block"><code>{`// src/middleware.ts
+const FALLBACK_REDIRECT_ENABLED = import.meta.env.PROD;
+//                                ^^^^^^^^^^^^^^^^^^^
+// false on \`astro dev\`, true on every \`astro build\` — no risk of
+// forgetting to flip a manual switch on launch day.`}</code></pre>
+              </div>
+
+              <!-- Implementation files -->
+              <div class="flex flex-col gap-3 border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Implementation</p>
+                <ul class="list-none p-0 m-0 flex flex-col gap-2">
+                  <li class="p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]"><code class="code-label">src/middleware.ts</code> <span class="text-xs text-[--color-caption]">— intercepts 404 responses inside the Worker and rewrites to 301. Excludes <code class="code-label">/api/</code>, asset prefixes, robots.txt, sitemaps, favicon, manifest.</span></li>
+                  <li class="p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]"><code class="code-label">public/_redirects</code> <span class="text-xs text-[--color-caption]">— specific old → new mappings only. NEVER a wildcard (Cloudflare evaluates this before the Worker; a wildcard there loops the prerender simulator).</span></li>
+                  <li class="p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]"><code class="code-label">.claude/prompts/fallback-redirect.md</code> <span class="text-xs text-[--color-caption]">— full architecture reference. Read for edge cases, exclusion rationale, and migration playbook.</span></li>
+                </ul>
+              </div>
+
+              <!-- Per-client customisation -->
+              <div class="flex flex-col gap-3 border-t border-[--color-border] pt-5">
+                <p class="text-xs font-bold text-[--color-caption] uppercase tracking-widest m-0">Per-client customisation</p>
+                <ul class="list-none p-0 m-0 flex flex-col gap-2">
+                  <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="icon-dot-offset mt-0.5"></div>
+                    <p class="m-0 text-sm text-[--color-body]">Map known WP migration URLs by adding specific old → new lines to <code class="code-label">public/_redirects</code> ABOVE the Rank Math comment block. The wildcard fallback in middleware only catches the long tail.</p>
+                  </li>
+                  <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="icon-dot-offset mt-0.5"></div>
+                    <p class="m-0 text-sm text-[--color-body]">If the site uses public folders beyond <code class="code-label">/images/</code>, <code class="code-label">/videos/</code>, <code class="code-label">/fonts/</code>, <code class="code-label">/icons/</code>, <code class="code-label">/_astro/</code>, add the prefix to <code class="code-label">NEVER_FALLBACK_PREFIXES</code> in <code class="code-label">src/middleware.ts</code> so genuine 404s on those assets still surface as bugs.</p>
+                  </li>
+                  <li class="flex items-start gap-3 p-3 bg-[--color-muted] border border-[--color-border] rounded-[--radius-card]">
+                    <div class="icon-dot-offset mt-0.5"></div>
+                    <p class="m-0 text-sm text-[--color-body]">To test the fallback locally, run <code class="code-label">astro build</code> + <code class="code-label">astro preview</code> (uses PROD) instead of <code class="code-label">astro dev</code>.</p>
+                  </li>
+                </ul>
               </div>
 
             </div>

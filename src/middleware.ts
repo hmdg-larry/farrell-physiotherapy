@@ -36,26 +36,24 @@
 import { defineMiddleware } from 'astro:middleware';
 
 /**
- * ── MASTER TOGGLE ──────────────────────────────────────────────────
- * Flip to `true` ONLY when the site is going live.
+ * ── ENVIRONMENT GATE ───────────────────────────────────────────────
+ * Fallback fires on Cloudflare deploys (production builds), NOT on
+ * localhost (`astro dev`). Detected via Vite/Astro's PROD flag:
  *
- * While the site is in development we want real 404s to SURFACE so
- * missing routes, broken internal links, and typos are visible. Once
- * the site is launched, this fallback catches stray old URLs (random
- * crawlers, forgotten backlinks, deep WP permalinks) and 301-redirects
- * them to the homepage instead of returning 404.
+ *   `astro dev`        → import.meta.env.PROD === false → fallback OFF
+ *   `astro build`      → import.meta.env.PROD === true  → fallback ON
+ *   Cloudflare Pages   → import.meta.env.PROD === true  → fallback ON
  *
- * Workflow:
- *   while building / preview deploys → keep `false`  (real 404s show)
- *   day before go-live               → flip to `true` and ship
- *   day of go-live                   → fallback active in production
+ * Why automatic instead of a manual toggle: zero risk of forgetting
+ * to flip at launch, zero risk of accidentally shipping it disabled.
+ * Localhost always shows real 404s so missing routes, broken links,
+ * and typos surface during development.
  *
- * Mirrors the BaseLayout `noindex` site-wide pattern: both default
- * to "site is private / under construction" and flip together at
- * launch. Lives in code (not env var) so it's git-tracked and
- * reviewable — one commit per site to flip, no surprises.
+ * Note: `astro preview` (local production preview) ALSO activates the
+ * fallback because it's a production build. If you need real 404s
+ * locally for QA, use `astro dev` not `astro preview`.
  */
-const FALLBACK_REDIRECT_ENABLED = false;
+const FALLBACK_REDIRECT_ENABLED = import.meta.env.PROD;
 
 /**
  * Path prefixes that must NEVER fallback-redirect. Genuine 404s on
