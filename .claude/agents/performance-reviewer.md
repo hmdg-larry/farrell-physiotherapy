@@ -77,8 +77,9 @@ Flag any risk to these thresholds as **critical**. Every page must score 90+ on 
 
 ### Third-Party Scripts
 
+- **MANDATORY** — Google reCAPTCHA v3 uses the defer-on-intent loader (`.claude/skills/recaptcha-defer-on-intent.md`). Static `<script src="…recaptcha/api.js">` tags are a fail condition — apply the skill before passing the review.
+- **MANDATORY** — Google Maps `<iframe>` uses `loading="lazy"` at minimum. For above-the-fold or footer-global maps, a facade pattern (poster + JS-injected iframe on click / IntersectionObserver) is REQUIRED. Cloudflare Pages cold-loads of Maps embeds routinely take 800ms–2s — never on the LCP path.
 - Google Analytics or GTM loads asynchronously
-- Google Maps `<iframe>` uses `loading="lazy"` unless above the fold
 - Chat widgets and pop-ups defer loading until after the page is interactive
 - Cliniko booking embeds load asynchronously
 - Flag if total third-party JS exceeds 100KB

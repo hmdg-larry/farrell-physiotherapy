@@ -77,7 +77,8 @@ Every page must score **90+ on Google PageSpeed Insights (mobile)**.
 - [ ] No dynamic content injected above static content without reserved height
 
 ### Third-Party Resources
-- [ ] Google Maps iframe uses `loading="lazy"` (unless above fold)
+- [ ] **MANDATORY** — Google reCAPTCHA v3 uses defer-on-intent loader (`.claude/skills/recaptcha-defer-on-intent.md`). Static `<script src="…recaptcha/api.js">` is a fail. Verify exactly ONE `recaptcha/api.js` reference in the built HTML, and it must live inside the JS-injected loader (`s.src = …`), NEVER in a `<script src=…>` tag.
+- [ ] **MANDATORY** — Google Maps `<iframe>` uses `loading="lazy"` at minimum. For above-the-fold or footer-global maps, a facade pattern (poster image + JS-injected iframe on click / IntersectionObserver) is REQUIRED — `loading="lazy"` alone is not enough on Cloudflare cold loads. Explicit `width` + `height` to prevent CLS.
 - [ ] Analytics/GTM loads asynchronously
 - [ ] Chat widgets defer until after page is interactive
 - [ ] Booking embeds load asynchronously with reserved container space

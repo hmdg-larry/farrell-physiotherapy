@@ -92,7 +92,8 @@ Before adding any third-party feature, review its performance impact carefully. 
 
 | Feature | Performance rule |
 |---|---|
-| **Google Maps** | `loading="lazy"` on iframe unless above the fold. Explicit dimensions. Consider static map image with click-to-load. |
+| **Google Maps** | **MANDATORY DEFER.** `loading="lazy"` on iframe is the minimum. For above-the-fold or globally-rendered maps (footer, location pages), use a facade pattern — static poster image + JS-injected iframe on click or on `IntersectionObserver` entry. Explicit dimensions required to prevent CLS. Cloudflare Pages routinely takes 800ms–2s to cold-load the Maps embed; never let it sit on the LCP path. |
+| **Google reCAPTCHA v3** | **MANDATORY DEFER-ON-INTENT.** Never use a static `<script src="…recaptcha/api.js">` tag — always use the JS-injected loader pattern from `.claude/skills/recaptcha-defer-on-intent.md`, triggered by `focusin` + `pointerdown` + `submit` against the form element. Saves ~150 KB JS + TLS handshake + main-thread scoring loop off first paint. Applies to every form page on every clone. |
 | **Booking embeds** (Cliniko etc.) | Load asynchronously. Reserve container height. |
 | **Review widgets** | Lazy load. Prefer static rendering of review data over JS widgets. |
 | **Chat tools** | Defer loading until after page is interactive. Never load on initial paint. |
@@ -130,6 +131,15 @@ Before adding any third-party feature, review its performance impact carefully. 
 - Every Tier 3+ task must include a performance check
 - The `performance-optimisation` agent must run on all Tier 4 and Tier 5 tasks
 - The `performance-reviewer` agent covers quick checks; `performance-optimisation` covers deep audits and enforcement
+
+### Mandatory Deferrals — Required on Every Clone (No Exceptions)
+
+The performance agents (`performance-reviewer` and `performance-optimisation`) MUST verify these two deferrals on every clone and on every page that introduces either feature. If either is missing, fix it before the review passes — do not flag it as advisory.
+
+1. **Google reCAPTCHA v3** → defer-on-intent loader (`.claude/skills/recaptcha-defer-on-intent.md`). Static `<script src="…recaptcha/api.js">` tags are a fail condition.
+2. **Google Maps iframe** → `loading="lazy"` minimum; facade pattern for above-fold or footer-global placement. Unmanaged eager iframes are a fail condition.
+
+These two rules are non-negotiable because Cloudflare Pages serves HTML uncached at the edge, so the first visit pays the full third-party cost on every cold load — and reCAPTCHA + Maps are the two biggest offenders in the HMDG template lineage.
 
 ---
 

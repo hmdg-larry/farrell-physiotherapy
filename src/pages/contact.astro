@@ -370,7 +370,41 @@ const medicalClinicJsonLd = {
 </BaseLayout>
 
 {recaptchaSiteKey && (
-  <script is:inline src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+  <script is:inline define:vars={{ _rcKey: recaptchaSiteKey, _rcFormId: 'contact-form' }}>
+    // reCAPTCHA defer-on-intent — load only when the user engages with the form.
+    // Saves ~150KB JS + TLS handshake + main-thread scoring loop off first paint.
+    // The submit handler's grecaptcha.ready() call queues correctly against a
+    // late-loaded script, so submission flow is unaffected.
+    // Spec: .claude/skills/recaptcha-defer-on-intent.md
+    (function () {
+      var loaded = false;
+
+      function loadReCaptcha() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.google.com/recaptcha/api.js?render=' + _rcKey;
+        s.async = true;
+        document.head.appendChild(s);
+      }
+
+      function bind() {
+        var form = document.getElementById(_rcFormId);
+        if (!form) return;
+        // focusin bubbles — one listener covers every input + textarea
+        form.addEventListener('focusin',     loadReCaptcha, { once: true, passive: true });
+        form.addEventListener('pointerdown', loadReCaptcha, { once: true, passive: true });
+        // Submit fallback — covers programmatic submit + password-manager autofill
+        form.addEventListener('submit',      loadReCaptcha, { passive: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind, { once: true });
+      } else {
+        bind();
+      }
+    })();
+  </script>
 )}
 
 <script>
