@@ -50,8 +50,8 @@ Standard pattern:
 ## Image Rules
 
 ### Default format
-- `.webp` as the default image format across the project
-- No AVIF fallback setup needed
+- `.webp` or `.avif` — **both formats are accepted** across the project (do not warn about or convert `.avif`)
+- No fallback setup needed for either format
 - No dual-format `<picture>` source switching needed
 - `.jpg` or `.png` only when explicitly required
 
@@ -72,9 +72,25 @@ If a developer uploads or tries to use `.jpg` or `.png` where a better format sh
 ```
 
 - Use `loading="eager"` for above-the-fold hero images only
+- Hero/LCP image additionally gets `fetchpriority="high"` + `<link rel="preload">` (BaseLayout `preloadImage` prop) — and is never inside a carousel, never a CSS background, never animated from `opacity: 0`
 - Always include `decoding="async"` on every image
 - Always set explicit `width` and `height` to prevent CLS
 - Never mix aspect ratios within a card grid
+
+## Content Data Layer (Sanity-Ready — Mandatory)
+
+CMS-like content lives in typed local data files — components are render-only:
+
+- **Clinic identity** (name, contact, address, hours, booking CTA) → `src/data/site.ts` — THE single source of truth; Header, Footer, contact page, and JSON-LD all consume it
+- **Navigation** → `src/data/navigation.ts` · **Services** → `src/data/services.ts` · **Reviews** → `src/data/reviews.ts`
+- **Content shapes** → `src/lib/content/types.ts` · **Transforms** (hours formatting, JSON-LD builders) → `src/lib/content/normalize.ts`
+
+Rules:
+- Never hardcode clinic details, nav links, or service lists in components or pages — import from `src/data/*`
+- New CMS-like content gets a type in `types.ts` first, then a data file, then render-only consumption
+- Future Sanity integration replaces the data source layer only — see `SANITY_READY.md`
+
+---
 
 ## YouTube Background Video Rules
 

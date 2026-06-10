@@ -23,4 +23,4 @@ Every task — without exception — must begin with clear agent delegation befo
 - Tier 0: `Tier 0 — answering directly, no agent needed.`
 - Single agent: `Assigning to [agent-name] (Tier X — brief reason).`
 - Multi-agent: `This is a Tier X task. Pipeline: [agent] → [agent] → [agent].`
-- Full pipeline: `This is a Tier 5 task. Full pipeline: [all 11 agent names].`
+- Full pipeline: `This is a Tier 5 task. Full pipeline: [all 12 core agent names — IA → UX → UI → Build → Visual QA → a11y → Performance → Perf-Optimisation → SEO → Marketing → Security → Conversion].`

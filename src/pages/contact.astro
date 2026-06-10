@@ -29,10 +29,12 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero   from '../components/PageHero.astro';
+import { site } from '../data/site';
+import { buildMedicalClinicJsonLd } from '../lib/content/normalize';
 
 // ── Env-driven config — production-safe fallbacks ────────────
 // Use || (not ??) so empty-string env vars fall through too.
-const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Your Clinic';
+const siteName = site.name;
 
 const web3formsKey     = import.meta.env.PUBLIC_WEB3FORMS_KEY      || '';
 const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '';
@@ -42,70 +44,26 @@ const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '';
 const rawClientEmail = import.meta.env.PUBLIC_CLIENT_EMAIL || 'client@inbox.co.uk; agency@hmdg.co.uk';
 const ccEmail = rawClientEmail.replace(/,\s*/g, '; ');
 
-// ── Per-client clinic data — UPDATE THESE PER DEPLOY ─────────
-// (Could be lifted into a config file later; kept here for
-// readability while the template is single-tenant.)
-const clinicPhoneDisplay = '+44 (0) 1234 567 890';
-const clinicPhoneTel     = '+441234567890';
-const clinicEmail        = 'hello@yourclinic.co.uk';
-const clinicAddressLine1 = '1 Example Street';
-const clinicAddressLine2 = 'Town, Postcode';
-const clinicMapsUrl      = 'https://maps.google.com/?q=1+Example+Street+Town+Postcode';
+// ── Clinic data — single source of truth: src/data/site.ts ───
+// Update per-client values THERE, not here. Header, Footer, this
+// page, and the JSON-LD all consume the same object (Sanity-ready).
+const clinicPhoneDisplay = site.contact.phoneDisplay;
+const clinicPhoneTel     = site.contact.phoneTel;
+const clinicEmail        = site.contact.email;
+const clinicAddressLine1 = site.contact.addressLine1;
+const clinicAddressLine2 = site.contact.addressLine2;
+const clinicMapsUrl      = site.contact.mapsUrl;
 
-// Mon=1 ... Fri=5; Saturday=6, Sunday=0 closed.
-// Update per client. 24h format. minutes 0-59.
-const clinicHours = {
-  mon: { open: '09:00', close: '17:00' },
-  tue: { open: '09:00', close: '17:00' },
-  wed: { open: '09:00', close: '17:00' },
-  thu: { open: '09:00', close: '17:00' },
-  fri: { open: '09:00', close: '17:00' },
-  sat: null,
-  sun: null,
-};
+const clinicHours     = site.hours;
 const clinicHoursAttr = JSON.stringify(clinicHours);
 
 const heroImg = '/images/contact-hero.webp';
 
 // ── MedicalClinic JSON-LD — local SEO signal ─────────────────
-// Maps the per-client clinic data above into a structured-data
-// graph that Google uses for the Local Pack and rich results.
-// Update the per-client variables; this block updates automatically.
-const dayMap: Record<string, string> = {
-  mon: 'Monday',    tue: 'Tuesday',  wed: 'Wednesday',
-  thu: 'Thursday',  fri: 'Friday',   sat: 'Saturday',  sun: 'Sunday',
-};
-const openingHoursSpec = (Object.entries(clinicHours) as [keyof typeof clinicHours, typeof clinicHours.mon][])
-  .filter(([, spec]) => spec !== null)
-  .map(([day, spec]) => ({
-    '@type':     'OpeningHoursSpecification',
-    dayOfWeek:   dayMap[day],
-    opens:       spec!.open,
-    closes:      spec!.close,
-  }));
-
-const localityRaw = clinicAddressLine2.split(',');
-const addressLocality = (localityRaw[0] ?? '').trim();
-const postalCode      = (localityRaw[1] ?? '').trim();
-
+// Built from site settings by src/lib/content/normalize.ts so the
+// Local Pack data always matches the visible contact details.
 const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
-
-const medicalClinicJsonLd = {
-  '@context':  'https://schema.org',
-  '@type':     'MedicalClinic',
-  name:        siteName,
-  telephone:   clinicPhoneTel,
-  email:       clinicEmail,
-  url:         _siteOrigin + '/contact',
-  address: {
-    '@type':         'PostalAddress',
-    streetAddress:   clinicAddressLine1,
-    addressLocality,
-    postalCode,
-    addressCountry:  'GB',
-  },
-  openingHoursSpecification: openingHoursSpec,
-};
+const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/contact');
 ---
 
 <BaseLayout

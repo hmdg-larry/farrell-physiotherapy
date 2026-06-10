@@ -112,7 +112,7 @@ Common Tier 3 patterns:
 
 Use when: the task is a new page, a major page redesign, or an overhaul of multiple sections.
 
-Core pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → seo-reviewer + optional reviewers**
+Core pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → seo-reviewer + optional reviewers**
 
 Common Tier 4 patterns:
 
@@ -126,11 +126,11 @@ Common Tier 4 patterns:
 
 ---
 
-### Tier 5 — Full Pipeline (all 11 agents)
+### Tier 5 — Full Pipeline (all 12 core agents)
 
 Use when: the task is a homepage, structural template, major release, or anything that must meet the highest standard across every dimension.
 
-Pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
+Pipeline: **information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer**
 
 Use for:
 - Homepage builds or rebuilds
@@ -155,6 +155,19 @@ Full prompt template: @.claude/rules/agent-workflow.md
 | "homepage", "full site", "template", "structural redesign" | 5 |
 
 When in doubt, go one tier higher.
+
+---
+
+## Domain Specialist Agents (trigger-led, any tier)
+
+These agents sit outside the standard tier pipelines and LEAD their domain whenever it appears. Announce them by name like any other delegation:
+
+| Agent | Triggers | Role |
+|---|---|---|
+| `sanity-developer` | any Sanity build/integration work — schemas, GROQ, Studio, Astro + Sanity, content modelling | leads the work; coordinates frontend-builder and reviewers as needed |
+| `sanity-reviewer` | reviewing Sanity config, schemas, queries, previews, Visual Editing | reviews sanity-developer output; doc-verified findings |
+| `resent-email` | "replace web3forms with resend", "integrate resend email", "use resend for the contact form" | leads the full Web3Forms → Resend migration; mandatory security-reviewer final pass |
+| `visual-qa-reviewer` | automatically after frontend-builder on every Tier 4+ build | catches design-intent gaps before a11y review begins |
 
 ---
 
@@ -268,6 +281,8 @@ frontend-builder (needs UI design plan)
 ### Can run in parallel (after build is complete)
 These reviewers assess the same built output independently:
 
+**Wave 0.5 (sequential, immediately after build):** visual-qa-reviewer (catches design-intent gaps before other reviews start)
+
 **Wave 1 (parallel):** a11y-reviewer + performance-reviewer + seo-reviewer
 
 **Wave 1.5 (sequential after Wave 1):** performance-optimisation (needs performance-reviewer findings first — runs deep audit)
@@ -322,7 +337,7 @@ This applies to all task sizes — from a single spacing tweak to a full homepag
 > This is a Tier 3 task (new interactive component). Pipeline: `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `security-reviewer`.
 
 **Full pipeline:**
-> This is a Tier 5 task (homepage build). Full pipeline: `information-architecture-reviewer` → `ux-architect` → `ui-designer` → `frontend-builder` → `a11y-reviewer` → `performance-reviewer` → `performance-optimisation` → `seo-reviewer` → `marketing-reviewer` → `security-reviewer` → `conversion-reviewer`.
+> This is a Tier 5 task (homepage build). Full pipeline: `information-architecture-reviewer` → `ux-architect` → `ui-designer` → `frontend-builder` → `visual-qa-reviewer` → `a11y-reviewer` → `performance-reviewer` → `performance-optimisation` → `seo-reviewer` → `marketing-reviewer` → `security-reviewer` → `conversion-reviewer`.
 
 ### Rules
 

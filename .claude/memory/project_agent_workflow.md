@@ -1,17 +1,17 @@
 ---
 name: Agent review and build workflow
-description: The exact 10-agent sequence to follow for every important page build or major revision — IA → UI → Build → Visual QA → a11y → Performance → SEO → Marketing → Security → Conversion
+description: The exact 12-agent sequence for every important page build or major revision — IA → UX → UI → Build → Visual QA → a11y → Performance → Perf-Optimisation → SEO → Marketing → Security → Conversion
 type: project
 ---
 
 For every important page build or major revision, follow this agent sequence exactly. Do not skip steps. Do not rush into code before planning.
 
-**Sequence:**
-information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+**Sequence (canonical — also in `.claude/rules/agent-workflow.md`, which is the source of truth):**
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
-**Why:** User defined this as the mandatory quality pipeline to ensure every page is planned, built, reviewed, and refined across all dimensions before output is considered finished. visual-qa-reviewer was added between frontend-builder and a11y-reviewer to catch visual implementation gaps before accessibility review.
+**Why:** User defined this as the mandatory quality pipeline to ensure every page is planned, built, reviewed, and refined across all dimensions before output is considered finished. visual-qa-reviewer runs between frontend-builder and a11y-reviewer to catch visual implementation gaps; performance-optimisation runs after performance-reviewer for the deep audit.
 
-**How to apply:** Use the prompt template below when starting any significant build task.
+**How to apply:** Use the prompt template in `.claude/rules/agent-workflow.md` when starting any significant build task. The template below is a summary — if it ever disagrees with the rules file, the rules file wins.
 
 ---
 
@@ -20,7 +20,7 @@ information-architecture-reviewer → ux-architect → ui-designer → frontend-
 ```
 Review and build this task using the following agent sequence exactly:
 
-information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 Task:
 [describe the page, section, sitemap, or feature here]
@@ -50,7 +50,7 @@ Instructions:
    - use the existing global class system (.btn, .card, .container-main, .flex-layout, etc.)
    - reusable components
    - global header and footer only
-   - all images use the required picture pattern with decoding="async"
+   - all images use the required <img> pattern (.webp/.avif, explicit dimensions, decoding="async"; hero LCP gets eager + fetchpriority="high" + preload)
 
 4. Then use visual-qa-reviewer
    - check whether the built page matches the design intent
@@ -67,6 +67,10 @@ Instructions:
 6. Then use performance-reviewer
    - check image formats, DOM weight, lazy loading, JS usage, and CLS risks
    - optimise where needed
+
+6.5. Then use performance-optimisation
+   - deep speed audit: LCP sub-part diagnosis, third-party weight, hydration strategy
+   - verify 90+ PageSpeed Insights (mobile)
 
 7. Then use seo-reviewer
    - check H1, metadata, heading hierarchy, internal linking, noindex rules, and content structure

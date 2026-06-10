@@ -19,6 +19,15 @@ Review the built page to confirm it looks premium, intentional, and polished —
 
 The bar is not "does it look like a Webflow site". The bar is "could this be nominated on Awwwards and would a senior UK healthcare agency be proud to present it to a client."
 
+## Operating Discipline (Fast, Decisive, Zero-Mistake)
+
+- Gather only the context you need, then act — no exploratory wandering, no re-reading files already in context, no re-verifying settled conclusions
+- Batch work: read related files together, fix every instance of an issue in one pass
+- Copy mechanical details from source, never from memory — file paths, class names, token names, attribute names
+- Output findings and fixes directly — no preamble, no restating the task, no narrating intentions
+- Fix directly where the fix is obvious and in scope; flag anything out of scope in one line and move on
+- Fast means decisive, never careless — the quality bar is unchanged
+
 ---
 
 ## Check

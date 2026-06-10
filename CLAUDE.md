@@ -31,21 +31,24 @@ Senior web designer + frontend developer. Output must exceed the Elementor sites
 ## Non-Negotiables (condensed)
 - **Design:** premium hierarchy, generous whitespace, max 3 colours, modern type (Inter Tight / Satoshi / General Sans), eyebrow all-caps 0.12–0.20em, headings -0.02em, body ≥16px. No AI-looking layouts.
 - **Frontend:** no inline styles (CSS var injection only exception), class-based, semantic HTML, reusable Astro components, BaseLayout everywhere, Header/Footer never duplicated.
-- **Images:** `.webp` only, explicit width/height, `decoding="async"`, lazy by default, eager for hero LCP.
-- **Performance:** 90+ PSI mobile, LCP <2.5s, CLS <0.1, INP <200ms. Astro static-first, hydrate only when needed. Defer third-party. Flag >100KB third-party JS.
-- **A11y:** 4.5:1 body / 3:1 large, visible focus, 44×44 touch, proper heading order, `prefers-reduced-motion` fallback.
+- **Images:** `.avif` (primary) or `.webp` (both accepted, never warn), explicit width/height, `decoding="async"`, lazy by default, eager + `fetchpriority="high"` for hero LCP.
+- **Sections:** every `<section>` carries a purpose class (`hero`, `about`, `services`…) + a numbering class (`firstsection`…`tenthsection`, `herosection`) from global.css. Child classes inherit the section namespace (`services-card`, not `.card` unless documented global). Padding: standard 90/80px vertical via tokens, heroes 180px top — never hand-rolled. Full spec: `.claude/rules/project-rules.md`.
+- **Performance:** 90+ PSI mobile, LCP <2.5s, CLS <0.1, INP <200ms. Astro static-first, hydrate only when needed. Defer third-party. Flag >100KB third-party JS. LCP element gets preload + fetchpriority, is never lazy, never in a carousel, never animated from `opacity: 0`.
+- **A11y:** WCAG 2.2 AA. 4.5:1 body / 3:1 large, visible focus, 44×44 touch, proper heading order, `prefers-reduced-motion` fallback, focus never obscured by sticky UI, drag gestures have button alternatives.
 - **Responsive:** content-led across 320–3840px. Container `max-w-[1340px] mx-auto` (locked). Tailwind scale only — no arbitrary px.
 - **Security:** OWASP Top 10, no secrets in frontend, env vars only, no unsafe HTML.
 - **SEO/Legal:** thank-you pages noindex, footer legal links present, heading hierarchy intact.
 - **Headings:** all `<h1>`–`<h5>` in Title Case per convertcase.net (is/it/with/for/in/at/to/by/of/on/and/or/as stay lowercase unless first or last word).
 - **Contact forms:** Web3Forms only — use `<ContactForm />` from `src/components/`. Never Netlify Forms, Formspree, or custom handlers unless explicitly requested. `PUBLIC_WEB3FORMS_KEY` env var required. CSP already includes `api.web3forms.com`.
-- **Video (MANDATORY):** Self-hosted MP4 H.264 only. NEVER YouTube embed, NEVER WebM-only, NEVER Vimeo embed for hero/background video. Source video lives in `assets/videos/` (outside `public/`). Encoded output goes to `public/videos/hero-loop.mp4`. Encode spec is non-negotiable: `libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart -an -t 10` capped at 1280px wide. Use `npm run optimise-video`. Pattern: JS-injected `<source>` (not `<source media>`); mobile + reduced-motion users get poster only. Full spec in `.claude/skills/hero-video.md` — read before any video work.
+- **Video (MANDATORY):** Self-hosted MP4 H.264 only. NEVER YouTube embed, NEVER WebM-only, NEVER Vimeo embed for hero/background video. Hard ceiling: **max 15 seconds, max 5 MB** — must never hurt LCP. Source video lives in `assets/videos/` (outside `public/`). Encoded output goes to `public/videos/hero-loop.mp4`. Default encode spec: `libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart -an -t 10` capped at 1280px wide. Use `npm run optimise-video`. Pattern: JS-injected `<source>` (not `<source media>`); mobile + reduced-motion users get poster only. Full spec in `.claude/skills/hero-video.md` — read before any video work.
 
 ## Modes
 
 **FAST (default)** — Tier 0–2 work. No agent announcement for Tier 0–1. Diff-only output. Terse.
 **SHIP** — triggered by "ship", "finalise", "review", "launch", "production". Runs full pipeline per `.claude/rules/agent-workflow.md`.
 **EXPLORE** — questions, lookups, read-only. No agents. Terse answers.
+
+**Agent operating discipline (all agents):** decisive context-gathering, batched reads and fixes, mechanical details copied from source never memory, terse output with no preamble or narration. Fast means decisive, never careless.
 
 ## Agent Tier Policy (summary)
 
@@ -60,6 +63,7 @@ Escalate one tier when in doubt.
 
 Read these with the Read tool only when the current task needs them:
 
+- `.claude/rules/project-rules.md` — **Fel's master Rules. MANDATORY read when Fel says "Hey Claude, read our Rules"** — section naming/numbering/padding system, setup procedure, GitHub repo standards, QA gate
 - `.claude/rules/agent-delegation.md` — full tier system, handoff protocol, escalation, parallel waves
 - `.claude/rules/agent-workflow.md` — full pipeline prompt template for SHIP mode
 - `.claude/rules/design.md` — typography, spacing, layout, hero, interactions
@@ -75,6 +79,8 @@ Read these with the Read tool only when the current task needs them:
   layouts/     ← BaseLayout.astro
   pages/       ← client pages + API routes
   config/      ← cookie-consent.config.ts
+  data/        ← Sanity-ready content layer: site.ts (clinic identity — single source of truth), navigation.ts, services.ts, reviews.ts
+  lib/         ← sitemap.ts + content/ (types.ts contracts, normalize.ts transforms)
   styles/      ← global.css (tokens + Tailwind v4)
 /public/
   _headers _redirects robots.txt
@@ -91,3 +97,4 @@ CHANGELOG.md     ← PUBLIC semver changelog of the base template itself
 - `CHANGELOG.md` — public-facing semver changelog of the template itself (release history, breaking changes). Update only when the template's version bumps.
 - `.claude/skills/*.md` — reusable build patterns (contact form, hero video, performance, carousel, header menu). Read on demand.
 - `.claude/rules/*.md` — full delegation / workflow / quality rules. Loaded on demand from CLAUDE.md references above.
+- `SANITY_READY.md` — Sanity preparation guide: content lives in `src/data/*` (typed, render-only components); future integration replaces the data source layer only. Read before any Sanity or content-structure work.

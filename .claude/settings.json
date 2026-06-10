@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Edit",
+      "Write",
       "Bash(gh repo:*)",
       "Bash(git status*)",
       "Bash(git diff*)",
@@ -10,13 +12,28 @@
       "Bash(git push*)",
       "Bash(git pull*)",
       "Bash(npm run*)",
-      "Bash(npm install*)",
       "Bash(npx*)",
+      "Bash(node *)",
       "Bash(wc*)",
       "Bash(ls*)",
       "Bash(head*)",
+      "Bash(tail*)",
+      "Bash(cat*)",
       "Bash(grep*)",
       "Bash(find*)"
+    ],
+    "ask": [
+      "Bash(npm install*)",
+      "Bash(npm uninstall*)",
+      "Bash(rm *)",
+      "Bash(rm -*)",
+      "Bash(Remove-Item*)",
+      "Bash(git reset --hard*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git clean*)",
+      "Bash(git checkout --*)",
+      "Bash(git restore*)"
     ]
   }
 }

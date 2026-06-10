@@ -5,6 +5,7 @@ description: Accessibility, performance, security, SEO, marketing, and conversio
 # Quality Rules
 
 ## Accessibility (Non-Negotiable)
+- **WCAG 2.2 AA** is the minimum standard (includes the 2.2 criteria: focus not obscured by sticky UI, drag gestures need single-pointer alternatives, 24px minimum targets, consistent help placement, no redundant form entry, accessible authentication)
 - All text must be readable — minimum 4.5:1 contrast ratio for body, 3:1 for large text and UI
 - Focus states must be visible on every focusable element (`--color-primary`, 2px solid, 2px offset)
 - Components must be keyboard accessible where applicable
@@ -14,7 +15,7 @@ description: Accessibility, performance, security, SEO, marketing, and conversio
 - Touch targets minimum 44×44px on mobile
 
 ## Performance
-- Use optimised images — `.webp` as the default format
+- Use optimised images — `.webp` or `.avif` (both accepted)
 - Lazy load all images below the fold
 - Avoid bloated or unnecessary JavaScript
 - Avoid unnecessary DOM depth — keep the tree lean

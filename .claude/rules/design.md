@@ -50,6 +50,7 @@ Default page structure unless the page clearly requires otherwise:
 
 ### Hero Rules
 - Always use a full-width background image
+- **The hero image IS the LCP element** — budget ≤120KB desktop / ≤60KB mobile variant, text-protection overlays are CSS gradients only (never image layers), and the hero never sits inside a carousel or starts at `opacity: 0`
 - Protect text with overlay, gradient, panel, or proper contrast treatment
 - H1 communicates core value proposition (what the clinic does and for whom)
 - Primary CTA visible above the fold on all devices

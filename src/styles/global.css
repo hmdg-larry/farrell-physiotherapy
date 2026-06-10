@@ -206,8 +206,9 @@
        .container       → max-width only, no padding
        .flex-layout     → flex + 15px default gap
      ────────────────────────────────────────────────────────── */
-  --spacing-section-y:        4.375rem;  /* 70px   — vertical padding mobile  (<1200px) */
+  --spacing-section-y:        5rem;      /* 80px   — vertical padding mobile  (<1200px) */
   --spacing-section-y-lg:     5.625rem;  /* 90px   — vertical padding desktop (≥1200px) */
+  --spacing-hero-top:         11.25rem;  /* 180px  — hero top padding, all screens      */
   --spacing-section-x:        1.875rem;  /* 30px   — horizontal padding, all screens    */
   --spacing-container-max:    83.75rem;  /* 1340px — max-width for all containers       */
   --spacing-card-p:           1.75rem;   /* 28px   — inner padding for cards            */
@@ -402,6 +403,53 @@
    ============================================================ */
 
 @layer components {
+
+  /* ════════════════════════════════════════════════════════
+     SECTION NUMBERING SYSTEM (project Rules — mandatory)
+     ════════════════════════════════════════════════════════
+
+     Every <section> carries TWO classes:
+       1. purpose class   → identifies it (.hero, .about, .services…)
+       2. numbering class → applies the project spacing standard
+
+     <section class="services thirdsection">
+       <div class="container-main">…</div>
+     </section>
+
+     The numbered classes apply VERTICAL padding only:
+       mobile  (<1200px): 80px top/bottom
+       desktop (≥1200px): 90px top/bottom
+     Horizontal 30px comes from .container-main inside — the
+     computed section padding box is exactly 90px 30px (desktop)
+     and 80px 30px (mobile) per the Rules.
+
+     .herosection — for hero sections only:
+       180px top on all screens; 90px bottom desktop, 80px mobile.
+     ════════════════════════════════════════════════════════ */
+
+  .firstsection, .secondsection, .thirdsection, .fourthsection,
+  .fifthsection, .sixthsection, .seventhsection, .eighthsection,
+  .ninthsection, .tenthsection {
+    padding-top:    var(--spacing-section-y);
+    padding-bottom: var(--spacing-section-y);
+  }
+
+  .herosection {
+    padding-top:    var(--spacing-hero-top);
+    padding-bottom: var(--spacing-section-y);
+  }
+
+  @media (min-width: 1200px) {
+    .firstsection, .secondsection, .thirdsection, .fourthsection,
+    .fifthsection, .sixthsection, .seventhsection, .eighthsection,
+    .ninthsection, .tenthsection {
+      padding-top:    var(--spacing-section-y-lg);
+      padding-bottom: var(--spacing-section-y-lg);
+    }
+    .herosection {
+      padding-bottom: var(--spacing-section-y-lg);
+    }
+  }
 
   /* ════════════════════════════════════════════════════════
      CONTAINER SYSTEM

@@ -5,11 +5,13 @@
  * Global site footer. Used once in BaseLayout.astro.
  * Do NOT duplicate this component in individual pages.
  *
- * Per-client customisation:
- *   - Update clinic name, address, phone, email, opening hours
- *   - Update Quick Links and Services to match site structure
+ * Per-client customisation (SANITY-READY — content lives in data files):
+ *   - Clinic name, blurb, address, phone, email, hours, CTA → src/data/site.ts
+ *   - Quick Links + Legal links → src/data/navigation.ts
+ *   - Services column           → src/data/services.ts
  *   - Legal pages (privacy-policy, terms-conditions, cookie-policy) must exist
  *   - Dynamic copyright year is automatic via new Date()
+ *   This component only renders — do not hardcode content here.
  *
  * ── Active-state system (MANDATORY on every nav change) ─────────
  * Footer lives on a dark background so active state MUST differ
@@ -18,6 +20,11 @@
  * Uses the `.footer-link` base class + `.is-active` modifier.
  * See .claude/rules/frontend.md — "Navigation Active State".
  */
+
+import { site } from '../data/site';
+import { footerQuickLinks, footerLegalLinks } from '../data/navigation';
+import { services } from '../data/services';
+import { formatOpeningHours } from '../lib/content/normalize';
 
 const currentPath = Astro.url.pathname;
 
@@ -30,13 +37,11 @@ const isActive = (href: string): boolean => {
 const isSection = (prefix: string): boolean => currentPath.startsWith(prefix);
 void isSection; // reserved for future grouped footer sections
 
-// Active state booleans — explicit to keep the checklist visible.
-// Hash links skipped (they are in-page anchors, not routes).
-const homeActive           = isActive('/');
-const contactActive        = isActive('/contact');
-const privacyActive        = isActive('/privacy-policy');
-const termsActive          = isActive('/terms-conditions');
-const cookieActive         = isActive('/cookie-policy');
+// Hash links (#services) are in-page anchors, not routes — never active.
+const linkActive = (href: string): boolean => href.startsWith('/') && isActive(href);
+
+// Opening hours display lines — same source as contact page + JSON-LD.
+const hoursLines = formatOpeningHours(site.hours);
 ---
 
 <footer class="bg-[--color-headline]">
@@ -45,72 +50,65 @@ const cookieActive         = isActive('/cookie-policy');
   <div class="px-[--spacing-section-x] py-16">
     <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
 
-      <!-- Brand -->
+      <!-- Brand — name/blurb/CTA from src/data/site.ts -->
       <div class="flex-layout flex-layout--col gap-5">
         <a href="/" class="font-heading text-xl font-bold text-white hover:text-[--color-caption] transition-colors">
-          ClinicName
+          {site.name}
         </a>
         <p class="m-0 text-sm text-[--color-caption] leading-relaxed">
-          Your trusted clinic, helping patients recover faster, move better,
-          and live without pain. HCPC-registered and fully insured.
+          {site.blurb}
         </p>
-        <a href="#contact" class="btn btn-white self-start">Book Now</a>
+        <a href={site.bookingCta.href} class="btn btn-white self-start">{site.bookingCta.label}</a>
       </div>
 
-      <!-- Quick Links -->
+      <!-- Quick Links — from src/data/navigation.ts -->
       <div class="flex-layout flex-layout--col gap-5">
         <span class="text-xs font-semibold text-white uppercase tracking-widest">
           Quick Links
         </span>
         <nav class="flex-layout flex-layout--col gap-3" aria-label="Footer navigation">
-          <a
-            href="/"
-            class:list={["footer-link text-sm", { "is-active": homeActive }]}
-          >Home</a>
-          <!-- Hash link — no is-active (anchor, not route) -->
-          <a href="#services"      class="footer-link text-sm">Services</a>
-          <a href="#team"          class="footer-link text-sm">Meet the Team</a>
-          <a href="#testimonials"  class="footer-link text-sm">Patient Reviews</a>
-          <a
-            href="/contact"
-            class:list={["footer-link text-sm", { "is-active": contactActive }]}
-          >Contact Us</a>
+          {footerQuickLinks.map((link) => (
+            <a
+              href={link.href}
+              class:list={["footer-link text-sm", { "is-active": linkActive(link.href) }]}
+            >{link.label}</a>
+          ))}
         </nav>
       </div>
 
-      <!-- Services -->
+      <!-- Services — from src/data/services.ts -->
       <div class="flex-layout flex-layout--col gap-5">
         <span class="text-xs font-semibold text-white uppercase tracking-widest">
           Our Services
         </span>
         <nav class="flex-layout flex-layout--col gap-3" aria-label="Services navigation">
-          <!-- All hash-anchor for now; switch to real routes when service pages exist -->
-          <a href="#services" class="footer-link text-sm">Physiotherapy</a>
-          <a href="#services" class="footer-link text-sm">Sports Injuries</a>
-          <a href="#services" class="footer-link text-sm">Back &amp; Neck Pain</a>
-          <a href="#services" class="footer-link text-sm">Post-Surgery Rehab</a>
-          <a href="#services" class="footer-link text-sm">Injury Prevention</a>
+          {services.map((service) => (
+            <a
+              href={service.href}
+              class:list={["footer-link text-sm", { "is-active": linkActive(service.href) }]}
+            >{service.title}</a>
+          ))}
         </nav>
       </div>
 
-      <!-- Contact — address/tel/email are NOT footer-link (not navigation) -->
+      <!-- Contact — from src/data/site.ts; address/tel/email are NOT footer-link (not navigation) -->
       <div class="flex-layout flex-layout--col gap-5">
         <span class="text-xs font-semibold text-white uppercase tracking-widest">
           Contact
         </span>
         <div class="flex-layout flex-layout--col gap-3">
           <address class="not-italic flex-layout flex-layout--col gap-1">
-            <span class="text-sm text-[--color-caption]">123 High Street</span>
-            <span class="text-sm text-[--color-caption]">London, UK, EC1A 1BB</span>
+            <span class="text-sm text-[--color-caption]">{site.contact.addressLine1}</span>
+            <span class="text-sm text-[--color-caption]">{site.contact.addressLine2}</span>
           </address>
-          <a href="tel:02012345678"              class="text-sm text-[--color-caption] hover:text-white transition-colors">020 1234 5678</a>
-          <a href="mailto:hello@clinicname.co.uk" class="text-sm text-[--color-caption] hover:text-white transition-colors">hello@clinicname.co.uk</a>
+          <a href={`tel:${site.contact.phoneTel}`}    class="text-sm text-[--color-caption] hover:text-white transition-colors">{site.contact.phoneDisplay}</a>
+          <a href={`mailto:${site.contact.email}`}    class="text-sm text-[--color-caption] hover:text-white transition-colors">{site.contact.email}</a>
         </div>
         <div class="flex-layout flex-layout--col gap-2">
           <span class="text-xs font-semibold text-white uppercase tracking-widest">Opening Hours</span>
-          <span class="text-sm text-[--color-caption]">Mon – Fri &nbsp; 8:00am – 7:00pm</span>
-          <span class="text-sm text-[--color-caption]">Saturday &nbsp;&nbsp; 9:00am – 3:00pm</span>
-          <span class="text-sm text-[--color-caption]">Sunday &nbsp;&nbsp;&nbsp;&nbsp; Closed</span>
+          {hoursLines.map((line) => (
+            <span class="text-sm text-[--color-caption]">{line.days} &nbsp; {line.hours}</span>
+          ))}
         </div>
       </div>
 
@@ -137,20 +135,14 @@ const cookieActive         = isActive('/cookie-policy');
         </span>
       </div>
 
-      <!-- Legal links — full footer-link active state treatment -->
+      <!-- Legal links — from src/data/navigation.ts; full footer-link active state treatment -->
       <nav class="flex-layout items-center gap-5 flex-wrap" aria-label="Legal">
-        <a
-          href="/privacy-policy"
-          class:list={["footer-link text-sm", { "is-active": privacyActive }]}
-        >Privacy Policy</a>
-        <a
-          href="/terms-conditions"
-          class:list={["footer-link text-sm", { "is-active": termsActive }]}
-        >Terms &amp; Conditions</a>
-        <a
-          href="/cookie-policy"
-          class:list={["footer-link text-sm", { "is-active": cookieActive }]}
-        >Cookie Policy</a>
+        {footerLegalLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={["footer-link text-sm", { "is-active": linkActive(link.href) }]}
+          >{link.label}</a>
+        ))}
       </nav>
 
     </div>

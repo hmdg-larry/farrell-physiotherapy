@@ -6,6 +6,12 @@ type: project
 
 # HMDG Cookie Consent — Astro Implementation Plan
 
+> **HISTORICAL DOCUMENT — implementation is COMPLETE.** The cookie consent system
+> ships in the template (`src/config/cookie-consent.config.ts` + `src/components/CookieConsent.astro`).
+> All "Netlify" references below are outdated: the project deploys to **Cloudflare Pages**
+> (`@astrojs/cloudflare`); API routes are Cloudflare Pages Functions and env vars live in
+> Cloudflare Pages → Settings → Environment variables. Treat the live code as the source of truth.
+
 Source plugin: https://github.com/felmerald-hmdg/hmdg-cookie-consent
 Status: Not yet implemented — plan only (recorded 2026-04-06, reviewed and corrected 2026-04-06)
 Astro version: 6.1.3

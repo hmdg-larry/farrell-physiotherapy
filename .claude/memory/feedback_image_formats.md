@@ -1,19 +1,18 @@
 ---
-name: Image format rules (WebP only)
-description: Use .webp as the only image format across the project — no AVIF, no dual-format picture switching; keep image handling simple, clean, and performant
+name: Image format rules (WebP and AVIF)
+description: Use .webp or .avif — both formats are accepted; no dual-format picture switching; simple img tags with proper loading, dimensions, and LCP treatment for heroes
 type: feedback
 ---
 
-Use `.webp` as the default and only image format across the project.
+Use `.webp` or `.avif` as the image format across the project — **both are accepted**.
 
-**Why:** The user explicitly replaced the previous AVIF + WebP dual-format rule on 2026-04-10. WebP-only is fully acceptable for this project. No dual-format output is needed. This keeps image handling simple, clean, and performant without the complexity of `<picture>` source switching.
+**Why:** The user originally set WebP-only (2026-04-10), then explicitly broadened it to accept `.avif` as well (recorded in user-level memory, reaffirmed 2026-06-10 across CLAUDE.md, rules, and agents). Do not warn about, question, or convert `.avif` images. No dual-format `<picture>` switching is needed for either format.
 
 **How to apply:**
-- Always use `.webp` for all images
-- Do not set up AVIF as the primary format
+- Use `.webp` or `.avif` for all images — whichever the asset already is
 - Do not add `<picture>` fallback logic unless the user explicitly requests it
 - Use a simple `<img>` tag with `src`, `alt`, `loading`, `decoding="async"`, `width`, and `height`
-- Default to `.webp` when no format is specified
+- Prefer `.avif` (primary per project Rules 2026-06-10) when generating/optimising new assets; `.webp` equally accepted
 - Never output `.jpg` or `.png` unless explicitly required
 
 ## Required image pattern
@@ -29,7 +28,9 @@ Use `.webp` as the default and only image format across the project.
 ```
 
 ## Additional rules
-- Use `loading="lazy"` for below-fold images, `loading="eager"` for above-fold/hero
+- `loading="lazy"` for below-fold images; `loading="eager"` for above-fold/hero
+- Hero/LCP image additionally gets `fetchpriority="high"` + `<link rel="preload">` (BaseLayout `preloadImage` prop), is never inside a carousel, never a CSS background, never animated from `opacity: 0`
+- Budget: ≤120KB desktop hero, ≤60KB mobile variant via `srcset`
 - Always set explicit `width` and `height` to prevent CLS
 - Always include meaningful `alt` text
 - This rule is permanent and carries to all future projects unless explicitly overridden

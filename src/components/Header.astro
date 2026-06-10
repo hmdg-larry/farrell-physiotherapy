@@ -5,10 +5,10 @@
  * Global sticky navigation header. Used once in BaseLayout.astro.
  * Do NOT duplicate this component in individual pages.
  *
- * Per-client customisation:
- *   - Update the logo/clinic name text
- *   - Update nav links to match the site structure
- *   - The Book Now CTA href should point to the booking section or URL
+ * Per-client customisation (SANITY-READY — content lives in data files):
+ *   - Clinic name + Book Now CTA  → src/data/site.ts
+ *   - Nav links                   → src/data/navigation.ts (headerNav)
+ *   This component only renders — do not hardcode content here.
  *
  * ── Active-state system (MANDATORY on every nav change) ─────────
  * Every nav link on the site must visually indicate the current
@@ -27,6 +27,9 @@
  *   5. Every mobile equivalent        → same helpers, no drift
  */
 
+import { site } from '../data/site';
+import { headerNav } from '../data/navigation';
+
 const currentPath = Astro.url.pathname;
 
 // Exact match — '/' is homepage-only; trailing slash normalised
@@ -43,10 +46,9 @@ const isActive = (href: string): boolean => {
 const isSection = (prefix: string): boolean => currentPath.startsWith(prefix);
 void isSection; // reserved for future dropdown / mid-level flyout triggers
 
-// Per-link active booleans computed here so tier-checking is explicit.
-// Current base template has only hash links + /contact; expand when a
-// real nav hierarchy is added.
-const contactActive = isActive('/contact');
+// Hash links (#services) are same-page anchors — never active.
+// Route links (/contact) get the standard is-active treatment.
+const linkActive = (href: string): boolean => href.startsWith('/') && isActive(href);
 ---
 
 <header class="sticky top-0 z-50 bg-white border-b border-[--color-border] shadow-[--shadow-nav]">
@@ -54,22 +56,20 @@ const contactActive = isActive('/contact');
 
     <!-- Logo / Clinic Name -->
     <a href="/" class="text-xl font-bold text-[--color-primary]">
-      ClinicName
+      {site.name}
     </a>
 
-    <!-- Desktop Navigation -->
+    <!-- Desktop Navigation — rendered from src/data/navigation.ts -->
     <nav
       class="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-body]"
       aria-label="Main navigation"
     >
-      <!-- Hash links scroll within the same page — no is-active (all live on /) -->
-      <a href="#services"     class="site-nav-item hover:text-[--color-primary] transition-colors">Services</a>
-      <a href="#testimonials" class="site-nav-item hover:text-[--color-primary] transition-colors">Reviews</a>
-      <a href="#team"         class="site-nav-item hover:text-[--color-primary] transition-colors">Team</a>
-      <a
-        href="/contact"
-        class:list={["site-nav-item hover:text-[--color-primary] transition-colors", { "is-active": contactActive }]}
-      >Contact</a>
+      {headerNav.map((link) => (
+        <a
+          href={link.href}
+          class:list={["site-nav-item hover:text-[--color-primary] transition-colors", { "is-active": linkActive(link.href) }]}
+        >{link.label}</a>
+      ))}
     </nav>
 
     <!-- Mobile Hamburger (visible on mobile only) -->
@@ -85,9 +85,9 @@ const contactActive = isActive('/contact');
       <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
     </button>
 
-    <!-- Book Now CTA -->
-    <a href="#contact" class="btn btn-default hidden md:inline-flex">
-      Book Now
+    <!-- Book Now CTA — from src/data/site.ts -->
+    <a href={site.bookingCta.href} class="btn btn-default hidden md:inline-flex">
+      {site.bookingCta.label}
     </a>
 
   </div>
@@ -99,14 +99,13 @@ const contactActive = isActive('/contact');
     aria-hidden="true"
   >
     <nav class="flex flex-col px-[--spacing-section-x] py-4 gap-4 text-sm font-medium text-[--color-body]" aria-label="Mobile navigation">
-      <a href="#services"     class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Services</a>
-      <a href="#testimonials" class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Reviews</a>
-      <a href="#team"         class="mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2">Team</a>
-      <a
-        href="/contact"
-        class:list={["mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2", { "is-active": contactActive }]}
-      >Contact</a>
-      <a href="#contact" class="btn btn-default self-start mt-2">Book Now</a>
+      {headerNav.map((link) => (
+        <a
+          href={link.href}
+          class:list={["mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2", { "is-active": linkActive(link.href) }]}
+        >{link.label}</a>
+      ))}
+      <a href={site.bookingCta.href} class="btn btn-default self-start mt-2">{site.bookingCta.label}</a>
     </nav>
   </div>
 </header>

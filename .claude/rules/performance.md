@@ -39,13 +39,20 @@ Every page must score **90+ on Google PageSpeed Insights (mobile)**.
 ## Image Performance
 
 - Use correctly sized images — never serve 2000px images at 400px display size
-- All images must use `.webp` format — no dual-format `<picture>` switching needed
+- All images use `.webp` or `.avif` (both accepted) — no dual-format `<picture>` switching needed
 - Hero and above-fold images: `loading="eager"` — all others `loading="lazy"`
 - Every `<img>` must have explicit `width` and `height` to prevent CLS
 - Every `<img>` must have `decoding="async"`
 - Preload only essential above-the-fold hero images: `<link rel="preload">`
 - Never allow heavy uncompressed images into production
 - Optimise hero media carefully — it is the LCP element on most pages
+
+### LCP element rules (mandatory)
+- The LCP element (hero image or H1) gets `fetchpriority="high"` + `<link rel="preload">` (with `imagesrcset` when responsive)
+- The LCP image is an `<img>` tag — never a CSS `background-image` (discovered too late to prioritise)
+- The LCP element is never `loading="lazy"`, never inside a carousel/slider, never animated from `opacity: 0`
+- Budget: ≤120KB desktop hero, ≤60KB mobile variant served via `srcset`/`<picture>`
+- Lighthouse mobile weighting: TBT 30% · LCP 25% · CLS 25% — blocking JS and LCP dominate the score
 
 ---
 

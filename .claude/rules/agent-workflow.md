@@ -9,7 +9,7 @@ Use this prompt when starting any significant page build or major revision:
 ```
 Review and build this task using the following agent sequence exactly:
 
-information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
+information-architecture-reviewer → ux-architect → ui-designer → frontend-builder → visual-qa-reviewer → a11y-reviewer → performance-reviewer → performance-optimisation → seo-reviewer → marketing-reviewer → security-reviewer → conversion-reviewer
 
 Task:
 [describe the page, section, sitemap, or feature here]
@@ -40,8 +40,13 @@ Instructions:
    - no inline styles (exception: GTM noscript style is a technical requirement)
    - use the existing global class system (.btn, .card, .container-main, .flex-layout, etc.)
    - Header and Footer are components — never duplicate them per page
-   - all images use the required picture pattern with decoding="async"
+   - all images use the required <img> pattern (.webp/.avif, explicit width/height, decoding="async"; hero LCP gets eager + fetchpriority="high" + preload)
    - implement all component behaviours specified by ux-architect
+
+4.5. Then use visual-qa-reviewer
+   - compare the built output against the ui-designer plan section by section
+   - check composition, typography craft, depth/texture, animation choreography, CTA quality
+   - fix minor visual gaps directly; route major gaps back to frontend-builder
 
 5. Then use a11y-reviewer
    - check contrast ratios (4.5:1 body, 3:1 large text and UI)
