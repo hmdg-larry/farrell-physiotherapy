@@ -95,11 +95,21 @@ Mechanics in this architecture:
 
 ## GitHub Repository Setup (per client project)
 
-Create a **private** repository named after the project with: branch protection enabled, PR reviews enabled, force pushes disabled, branch deletion disabled, proper `.gitignore` (excluding `.env`, secrets, API keys, tokens, credentials).
+Create a **private** repository named after the project with: branch protection enabled where the plan allows, PR reviews enabled, force pushes disabled, branch deletion disabled, proper `.gitignore` (excluding `.env`, secrets, API keys, tokens, credentials).
 
-Invite as **Administrators**: `felmerald-hmdg` `hmdg-larry` `hmdgai` `JoshuaHMDG` `princesshmdg` `dannis-HMDG` `hmdg-antonio` `hmdg-junemark` `mondred-hmdg` `hmdg-renato` `hmdg-dave` `hmdg-enofre` `emmanuel-hmdg`
+**Access model: 3 Admins + Developer mode for everyone else.**
 
-Before completion report: repo name, URL, visibility, collaborator confirmation, branch protection confirmation, gitignore confirmation, production readiness confirmation.
+**Administrators** (repo settings, collaborators, branch protection, deploy keys):
+- `felmerald-hmdg` (owner)
+- `hmdg-larry`
+- `hmdgai`
+
+**Developers — Write access** (clone, edit code, commit, push, branch, open/review/merge PRs):
+`JoshuaHMDG` `princesshmdg` `dannis-HMDG` `hmdg-antonio` `hmdg-junemark` `mondred-hmdg` `hmdg-renato` `hmdg-dave` `hmdg-enofre` `emmanuel-hmdg`
+
+Implementation note (personal-account repos): GitHub ignores `permission=admin` on a direct role change for existing collaborators of user-owned repos. To grant admin, send the **invitation** with admin permissions (`PUT /repos/{owner}/{repo}/collaborators/{user}` with `permission=admin` while the user is NOT yet a collaborator) — the role applies when they accept. Downgrading to write works directly.
+
+Before completion report: repo name, URL, visibility, collaborator confirmation (3 admins + 10 developers), gitignore confirmation, production readiness confirmation.
 
 ---
 
