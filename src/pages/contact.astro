@@ -243,7 +243,8 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
                 </div>
                 <div class="field">
                   <label for="cf-email">Email Address <span class="req" aria-hidden="true">*</span></label>
-                  <input id="cf-email" type="email" name="email" class="input" autocomplete="email" inputmode="email" required />
+                  <input id="cf-email" type="email" name="email" class="input" autocomplete="email" inputmode="email" required aria-describedby="cf-email-error" />
+                  <p id="cf-email-error" class="field-error hidden" role="alert"></p>
                 </div>
               </div>
 
@@ -491,9 +492,60 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
     // or hits Enter twice while the request is in flight.
     let isSubmitting = false;
 
+    // Email field + its inline error message.
+    const emailField = form.querySelector<HTMLInputElement>('[name="email"]');
+    const emailError = document.getElementById('cf-email-error');
+
+    // Stricter than HTML5 type="email" (which accepts "a@b"): require a
+    // dotted domain. Mirrors a realistic address without over-rejecting.
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function setEmailError(message: string | null) {
+      if (!emailField) return;
+      if (message) {
+        emailField.setAttribute('aria-invalid', 'true');
+        if (emailError) {
+          emailError.textContent = message;
+          emailError.classList.remove('hidden');
+        }
+      } else {
+        emailField.removeAttribute('aria-invalid');
+        if (emailError) {
+          emailError.textContent = '';
+          emailError.classList.add('hidden');
+        }
+      }
+    }
+
+    // Clear the error as soon as the value becomes valid (responsive a11y).
+    emailField?.addEventListener('input', () => {
+      if (emailField.getAttribute('aria-invalid') === 'true' &&
+          EMAIL_RE.test(emailField.value.trim())) {
+        setEmailError(null);
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
+
+      // ── Email validation gate ──────────────────────────────────
+      // The form carries `novalidate`, so native bubbles are suppressed
+      // in favour of this controlled, accessible message. Block submit
+      // when the email is empty or not a valid address.
+      const emailValue = (emailField?.value ?? '').trim();
+      if (!emailValue) {
+        setEmailError('Please enter your email address.');
+        emailField?.focus();
+        return;
+      }
+      if (!emailField?.checkValidity() || !EMAIL_RE.test(emailValue)) {
+        setEmailError('Please enter a valid email address.');
+        emailField?.focus();
+        return;
+      }
+      setEmailError(null);
+
       isSubmitting = true;
 
       success?.classList.add('hidden');
@@ -1008,6 +1060,18 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
   .form-msg-error a {
     color:           rgb(127 29 29);
     text-decoration: underline;
+  }
+
+  /* Inline field-level validation message (email) */
+  .field-error {
+    margin-top: 0.375rem;
+    color:      rgb(127 29 29);
+    font-size:  var(--text-sm);
+    line-height: 1.4;
+  }
+  .input[aria-invalid="true"] {
+    border-color: rgb(239 68 68);
+    box-shadow:   0 0 0 3px rgb(239 68 68 / 0.15);
   }
   .hidden {
     display: none;
