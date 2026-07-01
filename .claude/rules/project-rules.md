@@ -30,6 +30,13 @@ Thoroughly review everything inside `.claude/` — all `.md` files, skills, agen
 
 ---
 
+## Git Protocol (STRICT — permanent)
+
+1. **No auto-push.** Never `git push` or `git commit` without an explicit instruction from Fel. After changes: stop, report, leave uncommitted. Permission is never inferred from context.
+2. **Always sync first.** Before making ANY change in a session: (a) `git pull` (fetch + merge) latest from the repo, (b) resolve merge conflicts, (c) verify `npm run build` succeeds — then proceed. Never start from a stale or broken base — the repo has multiple developers. Non-trivial conflicts or a failing build → pause and ask.
+
+Local `main` tracks `origin/master` (push via `git push origin main:master`). Non-negotiable; carries to every clone.
+
 ## Agent Delegation (always)
 
 Follow `.claude/rules/agent-delegation.md` exactly — Tier 0–5 classification, correct pipelines, no skipped delegation, no random assignment. Clearly identify responsible agents for planning, architecture, design, development, accessibility, SEO, performance, security, testing, QA, and visual QA.

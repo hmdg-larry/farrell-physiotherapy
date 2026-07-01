@@ -6,6 +6,13 @@ Hosting: Cloudflare Pages (`@astrojs/cloudflare`).
 Contact form: Web3Forms (`PUBLIC_WEB3FORMS_KEY` env var — public key, safe to expose).
 API routes: Cloudflare Pages Functions (`export const prerender = false`).
 
+## Git Protocol (STRICT — permanent, carries to all clones)
+
+1. **No auto-push. Wait for explicit instruction.** Never `git push` or `git commit` unless the user explicitly says so ("push", "commit", or equivalent). After changes: stop, report, leave uncommitted. Never infer permission from context.
+2. **Always sync before changing anything.** Before the first edit of a session, in order: (a) `git pull` (fetch + merge) latest from the remote, (b) resolve any merge conflicts, (c) **verify the project builds (`npm run build`) before proceeding**. Only start development once the local tree is current with `origin/master`, conflict-free, AND building cleanly. The repo has multiple developers; never start from a stale or broken base. If a conflict is non-trivial or the build fails, pause and ask.
+
+Local branch `main` tracks `origin/master`; push via `git push origin main:master`. These two rules are strict and non-negotiable.
+
 ## Project Log Protocol (Mandatory)
 
 A lightweight project log lives at `.project-log.md` (project root). It is committed to GitHub but never deployed — it sits outside `src/` and `public/`, so neither Astro nor Cloudflare Pages can serve it.
