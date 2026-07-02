@@ -137,7 +137,10 @@ const cfg = cookieConsentConfig;
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
 
-      // Default all consent to denied before any tag loads
+      // Default all consent to denied before any tag loads — GLOBALLY
+      // (no region: scoping; a region-scoped default leaves visitors
+      // outside the listed regions with NO default at all, which Google
+      // treats as consent-undetermined — a GDPR gap).
       gtag('consent', 'default', {
         analytics_storage:       'denied',
         ad_storage:              'denied',
@@ -148,6 +151,18 @@ const cfg = cookieConsentConfig;
         security_storage:        'granted',
         wait_for_update:         500,
       });
+
+      // Advanced Consent Mode companions (must be set once, before any
+      // consent update or GTM load):
+      // • url_passthrough — carries gclid/dclid through internal
+      //   navigation while ad_storage is denied, so Ads attribution
+      //   survives a later Accept. Directly improves conversion
+      //   reporting for paid traffic.
+      // • ads_data_redaction — strips ad-click identifiers from the
+      //   cookieless pings while ad_storage is denied; ignored once
+      //   the user grants. Google-recommended privacy default.
+      gtag('set', 'url_passthrough', true);
+      gtag('set', 'ads_data_redaction', true);
 
       // Immediately restore consent if visitor already consented this policy version
       (function () {

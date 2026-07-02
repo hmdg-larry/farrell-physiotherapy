@@ -43,7 +43,10 @@ const scriptConfig = {
   policyVersion:               cfg.policyVersion,
   debug:                       cfg.debug,
   bookingDomains:              cfg.bookingDomains,
-  bookingCompletionMatchers:   cfg.bookingCompletionMatchers,
+  // bookingCompletionMatchers intentionally NOT serialised — the matcher
+  // logic is now static functions inside the inline script (see
+  // BOOKING_MATCHERS below), so no expression strings cross the
+  // config→runtime boundary and nothing is ever eval'd.
   clinikoThankYouUrlPatterns:  cfg.clinikoThankYouUrlPatterns,
   redirectParam:               cfg.redirectParam,
   enabledCategories:           enabledCategories.filter(c => !c.alwaysOn).map(c => c.key),
@@ -1096,6 +1099,11 @@ const scriptConfig = {
   // ── Booking tracker ──────────────────────────────────────────────
   function isBookingUrl(href) {
     if (!href || !CCM.bookingDomains || !CCM.bookingDomains.length) return null;
+    // Fast-exit: relative paths, #anchors, tel:, mailto: can never be a
+    // booking-platform URL. Without this, new URL(href) THROWS for every
+    // non-absolute href and the throw/catch cycle dominates the scan
+    // cost on throttled mobile CPUs.
+    if (href.indexOf('http://') !== 0 && href.indexOf('https://') !== 0) return null;
     try {
       var hostname = new URL(href).hostname.replace(/^www\./, '');
       for (var i = 0; i < CCM.bookingDomains.length; i++) {
@@ -1110,7 +1118,28 @@ const scriptConfig = {
     return 'hmdg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
   }
 
+  // Current-consent gate for the server-side Measurement Protocol relay.
+  // The _ga cookie PERSISTS after a user later rejects consent, so
+  // "has a client_id" is NOT the same as "has consent" — a returning
+  // visitor who granted last month and clicked Reject All today would
+  // otherwise still have client_id + gclid + UTMs posted to our server.
+  // MP events carry identifying data, so they require a live analytics
+  // or marketing grant under the CURRENT policyVersion.
+  // (dataLayer pushes are NOT gated here — GTM is consent-aware and
+  // its tags respect Consent Mode signals on their own.)
+  function hasTrackingConsent() {
+    var stored = readCookie();
+    return !!(stored &&
+      stored.policyVersion === CCM.policyVersion &&
+      (stored.analytics || stored.marketing));
+  }
+
   function fireMPEvent(endpoint, eventName, platform, bookingUrl, extra) {
+    if (!hasTrackingConsent()) {
+      log('MP skipped — analytics/marketing consent not granted');
+      return;
+    }
+
     var clientId  = getGA4ClientId();
     var sessionId = getGA4SessionId();
     var gclid     = getGclid();
@@ -1235,28 +1264,39 @@ const scriptConfig = {
     obs.observe(document.body, { childList: true, subtree: true });
   }
 
-  // postMessage listener for booking completions
-  function setupPostMessageListener() {
-    var matchers = CCM.bookingCompletionMatchers;
-    if (!matchers) return;
+  // postMessage listener for booking completions.
+  // Matchers are STATIC functions — previously these were config-defined
+  // expression strings evaluated via new Function() (eval-adjacent). That
+  // was safe while the config was developer-controlled, but would become
+  // a code-injection vector the day the config moved to a CMS. The
+  // config's bookingCompletionMatchers now serves as documentation of
+  // each platform's postMessage shape; the executable logic lives here.
+  var BOOKING_MATCHERS = {
+    calendly:   function (data) { return !!(data && data.event === 'calendly.event_scheduled'); },
+    acuity:     function (data) { return data === 'booked'; },
+    youcanbook: function (data) { return typeof data === 'string' && data.indexOf('ycbm:booking:complete') !== -1; },
+    jane:       function (data) { return !!(data && data.type === 'jane:appointment:booked'); },
+    simplybook: function (data) { return !!(data && data.action === 'booking_complete'); },
+    phorest:    function (data) { return !!(data && data.type === 'phorest:booking:confirmed'); },
+    timely:     function (data) { return !!(data && data.event === 'timely:booking:confirmed'); },
+  };
 
+  function setupPostMessageListener() {
     window.addEventListener('message', function (e) {
       if (e.origin === location.origin) return; // ignore same-origin
       if (e.data && JSON.stringify(e.data).length > 10240) return; // ignore >10KB
 
       var data = e.data;
-      var platforms = Object.keys(matchers);
+      var platforms = Object.keys(BOOKING_MATCHERS);
       for (var i = 0; i < platforms.length; i++) {
         var platform = platforms[i];
-        var testExpr = matchers[platform];
         try {
-          var matched = new Function('e', 'data', 'try{return(' + testExpr + ');}catch(_){return false;}')(e, data);
-          if (matched) {
+          if (BOOKING_MATCHERS[platform](data)) {
             fireBookingCompleted(platform, '');
             break;
           }
         } catch (err) {
-          // ignore eval errors
+          // ignore matcher errors
         }
       }
     });
@@ -1403,10 +1443,26 @@ const scriptConfig = {
     logGroupEnd();
 
     wireEvents();
-    processAllBookingLinks();
-    watchForNewBookingLinks();
     setupPostMessageListener();
     checkReturnUrl();
+
+    // Booking-link scan + MutationObserver are non-urgent analytics
+    // wiring — defer them off the DOMContentLoaded task so the banner
+    // show + button wiring never share a long task with the full-page
+    // querySelectorAll('a[href]') sweep (INP/TBT headroom as pages
+    // grow). Banner, consent buttons, postMessage completion listener
+    // and thank-you URL detection above stay synchronous on purpose.
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function () {
+        processAllBookingLinks();
+        watchForNewBookingLinks();
+      }, { timeout: 2000 });
+    } else {
+      setTimeout(function () {
+        processAllBookingLinks();
+        watchForNewBookingLinks();
+      }, 200);
+    }
     getGclid();    // persist GCLID from URL on page load
     getUtmParams(); // persist UTM params on page load
   }

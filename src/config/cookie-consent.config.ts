@@ -183,9 +183,13 @@ export const cookieConsentConfig = {
   cookieExpiryDays: 180,
 
   /**
-   * postMessage completion matchers for booking platforms.
-   * Each value is a JS expression evaluated against the message event.
-   * Only update if a platform changes their postMessage event format.
+   * postMessage completion matchers for booking platforms — DOCUMENTATION ONLY.
+   * These expression strings are NO LONGER evaluated at runtime (the old
+   * new Function() pattern was eval-adjacent and would become a code-
+   * injection vector if this config ever moved to a CMS). The executable
+   * matching logic is the static BOOKING_MATCHERS object in
+   * src/components/CookieConsent.astro — keep BOTH in sync if a platform
+   * changes their postMessage event format.
    * Cliniko is NOT here — it uses URL redirect detection (see clinikoThankYouUrlPatterns).
    */
   bookingCompletionMatchers: {
