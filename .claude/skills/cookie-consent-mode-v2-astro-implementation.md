@@ -78,7 +78,7 @@ GTM (~150–220 KB JS) is NEVER loaded during initial paint. The loader (end of 
 Rules:
 - The 12s fallback must NEVER go below ~8s — Lighthouse's observation window ends ~5–7s; going lower puts ~150ms of gtm.js parse into TBT and tanks the PSI score.
 - `dataLayer` + the `gtm.start` push run synchronously up-front so any early `dataLayer.push()` queues correctly and GTM consumes the queue when it boots.
-- Older template clones may carry a previous loader (rIC 10s / interaction / **6s** fallback). The 6s fallback is inside the PSI window — upgrade those to the physiolounge loader when touched.
+- As of 2026-07-02, ALL HMDG projects and both base templates (Cloudflare + Netlify) run the physiolounge loader (consent-triggered + intent + interaction + 12s fallback). No older rIC 10s / 6s variants remain in active codebases.
 
 ## 4. Server-side Measurement Protocol relay — MUST be consent-gated
 

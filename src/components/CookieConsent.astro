@@ -929,6 +929,19 @@ const scriptConfig = {
       consent_performance: stored.performance,
     });
 
+    // Notify BaseLayout's GTM loader (and anything else listening)
+    // that consent has been granted / updated. GTM stays unloaded
+    // until `analytics` OR `marketing` is granted — this dispatch
+    // is the load trigger when the user clicks Accept / Save.
+    window.dispatchEvent(new CustomEvent('hmdg:consent-update', {
+      detail: {
+        analytics:   stored.analytics,
+        functional:  stored.functional,
+        marketing:   stored.marketing,
+        performance: stored.performance,
+      },
+    }));
+
     logGroup('Consent update fired');
     log('gtag signals', update);
     logGroupEnd();

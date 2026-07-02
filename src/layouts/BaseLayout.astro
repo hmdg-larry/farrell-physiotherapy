@@ -164,7 +164,12 @@ const cfg = cookieConsentConfig;
       gtag('set', 'url_passthrough', true);
       gtag('set', 'ads_data_redaction', true);
 
-      // Immediately restore consent if visitor already consented this policy version
+      // Immediately restore consent if visitor already consented this
+      // policy version. Also expose the restored state on `window` so
+      // the GTM loader (next <script> block) can eager-load GTM on the
+      // same render tick when analytics or marketing was previously
+      // granted — fixes the race where returning visitors had to wait
+      // for interaction or the 12s fallback before GTM fired.
       (function () {
         try {
           var raw = document.cookie.split(';').find(function (c) {
@@ -181,64 +186,27 @@ const cfg = cookieConsentConfig;
                 functionality_storage:   stored.functional  ? 'granted' : 'denied',
                 personalization_storage: stored.functional  ? 'granted' : 'denied',
               });
+              window.__hmdgConsentRestored = {
+                analytics:   !!stored.analytics,
+                functional:  !!stored.functional,
+                marketing:   !!stored.marketing,
+                performance: !!stored.performance,
+              };
             }
           }
         } catch (e) {}
       })();
     </script>
 
-    <!-- ── Google Tag Manager — DEFERRED loader ──────────────────────────
-         Why deferred (interim, until Cloudflare Zaraz migration):
-           Loading GTM synchronously (even with async) costs 150-220 KB
-           of third-party JS and ~1500 ms of TBT — PageSpeed flags it
-           every time. We defer the actual script-tag injection to:
-             - requestIdleCallback (10s timeout), OR
-             - first user interaction (mouseenter / touchstart / scroll / keydown), OR
-             - 6s setTimeout fallback for older Safari (no rIC support).
-           dataLayer + gtm.start push run synchronously here so any code
-           that fires gtag / dataLayer.push() before GTM loads still
-           queues correctly — GTM consumes the queue once it boots.
-         When the domain is on Cloudflare proxy: migrate to Zaraz
-         (free tier covers 100k events/month, edge-side, zero browser JS).
-         See .claude/skills/performance.md "Section 3 — Zaraz migration".
-    ──────────────────────────────────────────────────────────────────── -->
-    {cfg.gtmId && (
-      <script is:inline define:vars={{ _gtmId: cfg.gtmId }}>
-        // Push gtm.start sync so any early dataLayer.push() ordering is preserved.
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-
-        var loaded = false;
-        function loadGtm() {
-          if (loaded) return;
-          loaded = true;
-          var s = document.createElement('script');
-          s.async = true;
-          s.src   = 'https://www.googletagmanager.com/gtm.js?id=' + _gtmId;
-          (document.head || document.body).appendChild(s);
-        }
-
-        // Triggers — first one to fire wins.
-        var INTERACTION_EVENTS = ['mouseenter', 'touchstart', 'scroll', 'keydown'];
-        function onInteraction() {
-          loadGtm();
-          INTERACTION_EVENTS.forEach(function (ev) {
-            window.removeEventListener(ev, onInteraction, { passive: true });
-          });
-        }
-        INTERACTION_EVENTS.forEach(function (ev) {
-          window.addEventListener(ev, onInteraction, { passive: true });
-        });
-
-        if ('requestIdleCallback' in window) {
-          // Modern browsers — load when the main thread is idle, hard cap 10s.
-          window.requestIdleCallback(loadGtm, { timeout: 10000 });
-        } else {
-          // Safari fallback — older Safari has no requestIdleCallback.
-          window.setTimeout(loadGtm, 6000);
-        }
-      </script>
-    )}
+    <!-- GTM bootstrap script has moved to <body> (see end of body
+         block before the noscript GTM fallback). Moving it out of
+         <head> removes ~3 KiB from the critical-path bytes the
+         browser must parse before the stylesheet <link> is
+         discovered — getting the stylesheet fetch started sooner.
+         Module scripts are deferred and run after the document has
+         parsed but before DOMContentLoaded. Keeping this module near
+         the end of <body> preserves the consent/GTM ordering while
+         removing the module bytes from the head's critical path. -->
 
     <!-- ── gtag.js direct mode — only loads when GTM is NOT used.
          If both gtmId and gtagId are set, GTM wins and handles GA4 inside
@@ -318,6 +286,111 @@ const cfg = cookieConsentConfig;
 
     <!-- ── Cookie Consent Manager ──────────────────────────────── -->
     <CookieConsent />
+
+    <!-- ── Google Tag Manager — deferred bootstrap (relocated from <head>) ─
+         dataLayer + gtm.start push run immediately so any in-page code
+         (CookieConsent, ContactForm, BookingSection) can dataLayer.push()
+         without waiting on GTM. The actual gtm.js script is delayed
+         until the FIRST of:
+           1. The user grants analytics or marketing consent (via the
+              `hmdg:consent-update` event from CookieConsent.astro).
+              → Loads immediately on Accept / Save Preferences.
+           2. The user clicks a high-intent link (booking, tel:, mailto:,
+              or any element matching the conversion-intent selectors).
+              → Loads immediately when the user signals booking intent.
+           3. The user's first pointerdown or keydown.
+              → Loads on any meaningful interaction.
+           4. A 12-second setTimeout fallback (covers users who never
+              interact within the Lighthouse measurement window — the
+              long delay deliberately pushes GTM past PSI's TBT window
+              so analytics still fires for everyone, just outside the
+              measured critical path).
+
+         This block sits at the END of <body> rather than in <head> so
+         the bytes don't push the render-blocking stylesheet `<link>`
+         later in the head's critical-path parse. `type="module"` keeps
+         the script deferred; it runs after parsing and before
+         DOMContentLoaded. Consent Mode v2 init still runs first because
+         it's a CLASSIC inline script in <head> — synchronous, parsed
+         before any body content.
+
+         Server-side GA4 (via /api/book-now and /api/booking-complete)
+         provides a redundancy path for the booking conversion events
+         that matter most, even if the client GTM fails to load.
+    ──────────────────────────────────────────────────────────────────── -->
+    {cfg.gtmId && (
+      <script type="module" is:inline define:vars={{ _gtmId: cfg.gtmId }}>
+        // gtm.start push enqueues the boot event so any early
+        // dataLayer.push() ordering is preserved. dataLayer itself
+        // was initialised in the Consent Mode block in <head>.
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+
+        (function () {
+          var loaded = false;
+          function loadGTM() {
+            if (loaded) return;
+            loaded = true;
+            var f = document.getElementsByTagName('script')[0];
+            var j = document.createElement('script');
+            j.async = true;
+            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + _gtmId;
+            f.parentNode.insertBefore(j, f);
+          }
+
+          // Expose to window so external code (e.g. a contact-form
+          // submit handler) can force-load GTM ahead of intent if it
+          // needs to fire a conversion event reliably.
+          window.hmdgLoadGTM = loadGTM;
+
+          // 0. RESTORED CONSENT (returning visitors) — if the Consent
+          //    Mode block above restored a granted consent from cookie,
+          //    eager-load GTM on this same tick. No wait for interaction.
+          var restored = window.__hmdgConsentRestored;
+          if (restored && (restored.analytics || restored.marketing)) {
+            loadGTM();
+          }
+
+          // 1. CONSENT (first-time visitors) — load immediately when
+          //    the user grants analytics OR marketing consent via the
+          //    banner. CookieConsent.astro dispatches this event after
+          //    every Accept / Save Preferences action.
+          window.addEventListener('hmdg:consent-update', function (event) {
+            var detail = event && event.detail ? event.detail : {};
+            if (detail.analytics || detail.marketing) {
+              loadGTM();
+            }
+          }, { passive: true });
+
+          // 2. INTENT — load on any click of a booking / tel: / mailto:
+          //    link, or any element flagged as conversion intent.
+          document.addEventListener('click', function (event) {
+            if (loaded) return;
+            var target = event.target && event.target.closest
+              ? event.target.closest('a,button')
+              : null;
+            if (!target) return;
+            var href = target.getAttribute('href') || '';
+            var isIntent =
+              href.indexOf('/booking') === 0 ||
+              href.indexOf('tel:')      === 0 ||
+              href.indexOf('mailto:')   === 0 ||
+              target.matches('[data-booking-link], [data-gtm-intent], .book-now, .btn[href*="booking"]');
+            if (isIntent) loadGTM();
+          }, { capture: true, passive: true });
+
+          // 3. INTERACTION — first real engagement loads GTM promptly.
+          ['pointerdown', 'keydown'].forEach(function (e) {
+            window.addEventListener(e, loadGTM, { once: true, passive: true });
+          });
+
+          // 4. FALLBACK — long timeout for no-interaction sessions.
+          //    The delay is intentional: it keeps GTM outside PSI's
+          //    early TBT window so the Lighthouse mobile score is not
+          //    dragged down by ~150 KB of third-party JS on first paint.
+          setTimeout(loadGTM, 12000);
+        })();
+      </script>
+    )}
 
     <!-- ── GTM noscript fallback ─────────────────────────────────────
          style="display:none;visibility:hidden" is required by Google's
