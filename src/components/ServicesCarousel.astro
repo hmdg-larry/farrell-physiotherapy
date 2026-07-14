@@ -1,0 +1,356 @@
+---
+/**
+ * ServicesCarousel.astro
+ * ─────────────────────────────────────────────────────────
+ * Homepage services carousel — the centred active slide highlights
+ * (full-colour image, full-colour title — same size as every other
+ * slide, deliberately not enlarged) with a synced detail panel below
+ * it (description + "Explore Service" link); side slides stay dimmed.
+ * Reference design was a functional-medicine course catalogue (module
+ * thumbnails + "Explore Course") — adapted the interaction pattern to
+ * Farrell's real 15 services from src/data/services.ts, not the
+ * reference's content.
+ *
+ * Swiper-powered, same pattern as TestimonialSlider.astro (tree-shaken
+ * module imports, no full bundle). `loop: true` — Swiper clones full
+ * slide outerHTML (including the data-excerpt/data-href attributes the
+ * detail panel reads from), so clones stay in sync automatically. The
+ * one thing loop mode requires care for is click-to-navigate: clones
+ * carry `data-swiper-slide-index` (their real, non-cloned index), so
+ * the click handler uses `slideToLoop(realIndex)` rather than
+ * `slideTo(index)`, and is attached once via event delegation on the
+ * swiper container rather than per-slide at init — attaching to each
+ * `.services-carousel-slide` individually would miss every clone.
+ *
+ * Images are still /images/placeholder.webp pending real per-service
+ * photography (same placeholder strategy as Hero/FooterCTA/AboutSection).
+ * Description text reuses each service's existing `excerpt` from
+ * services.ts rather than inventing 15 new one-off blurbs — that
+ * field is deliberately generic, honest placeholder copy already
+ * reviewed for the "no fabricated clinical claims" rule.
+ */
+import { services } from '../data/services';
+import { site } from '../data/site';
+
+interface Props {
+  /** Eyebrow label above the heading. */
+  eyebrow?: string;
+  /** Section heading. */
+  heading?: string;
+  /** Show the "Book an Appointment" CTA under the heading. */
+  showCta?: boolean;
+  /** Exclude one service by href (e.g. the current service on a detail page). */
+  excludeHref?: string;
+}
+const {
+  eyebrow = 'What We Offer',
+  heading = 'Comprehensive Physiotherapy Services Designed Around Your Recovery and Long-Term Goals',
+  showCta = true,
+  excludeHref,
+} = Astro.props;
+
+const list = excludeHref ? services.filter((s) => s.href !== excludeHref) : services;
+
+// Per-service card imagery (keyed by href). Services without an entry
+// fall back to the placeholder.
+const cardImages: Record<string, string> = {
+  '/service/physiotherapy-services/': '/images/hero/hero-physio.avif',
+  '/service/sports-massage/': '/images/hero/hero-massage.avif',
+  '/service/pilates/': '/images/hero/hero-pilates.avif',
+  '/service/corporate-health/': '/images/hero/hero-corporate.avif',
+  '/service/virtual-clinic/': '/images/hero/hero-virtual.avif',
+  '/service/ergonomic-work-based-assessments/': '/images/hero/hero-ergonomic.avif',
+  '/service/joint-manipulation/': '/images/hero/hero-joint.avif',
+  '/service/manual-traction/': '/images/hero/hero-manual.avif',
+  '/service/soft-tissue-manipulation/': '/images/hero/hero-soft-tissue.avif',
+  '/service/transcutaneous-electrical-nerve-stimulation-tens/': '/images/hero/hero-tens.avif',
+  '/service/taping-postural-and-sports/': '/images/hero/hero-taping.avif',
+  '/service/joint-mobilisations/': '/images/hero/hero-joint-mobilisation.avif',
+  '/service/gait-analysis/': '/images/hero/hero-gait-analysis.avif',
+  '/service/muscle-energy-techniques/': '/images/hero/hero-muscle-energy.avif',
+  '/service/trigger-points/': '/images/hero/hero-trigger-points.avif',
+};
+---
+
+<section class="services secondsection services-carousel-section bg-(--color-muted)">
+  <div class="container-main">
+    <div class="section-header text-left max-w-4xl">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="m-0 mt-3">{heading}</h2>
+      {showCta && <a href={site.bookingCta.href} class="btn btn-default mt-6">Book an Appointment</a>}
+    </div>
+  </div>
+
+  <div class="services-carousel-wrap relative mt-12">
+    <div class="services-carousel-header">
+      <span>Our Services</span>
+      <span>{list.length} Services</span>
+    </div>
+
+    <div class="swiper services-swiper">
+      <div class="swiper-wrapper">
+        {list.map((service) => (
+          <div
+            class="swiper-slide services-carousel-slide"
+            data-excerpt={service.excerpt}
+            data-href={service.href}
+          >
+            <a href={service.href} class="services-carousel-card">
+              <img
+                src={cardImages[service.href] ?? "/images/placeholder.webp"}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="400"
+                height="400"
+                class="services-carousel-img"
+              />
+              <span class="services-carousel-title">{service.title}</span>
+            </a>
+          </div>
+        ))}
+      </div>
+      <div class="swiper-button-prev services-carousel-prev"></div>
+      <div class="swiper-button-next services-carousel-next"></div>
+    </div>
+
+    <div class="services-carousel-detail" data-detail-panel>
+      <span class="services-carousel-detail-label">Service Overview</span>
+      <p class="services-carousel-detail-text" data-detail-text></p>
+      <a href="#" class="services-carousel-detail-link" data-detail-link>
+        Explore Service
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import Swiper from 'swiper';
+  import { Navigation } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/navigation';
+
+  const detailPanel = document.querySelector<HTMLElement>('[data-detail-panel]');
+  const detailText = document.querySelector<HTMLElement>('[data-detail-text]');
+  const detailLink = document.querySelector<HTMLAnchorElement>('[data-detail-link]');
+
+  // Sync the detail panel to whichever slide Swiper currently marks active.
+  // We read Swiper's own `.swiper-slide-active` class (which it keeps correct
+  // through loop wrap-arounds) rather than a manually-toggled class — the
+  // image/title dimming is driven off that same class in CSS. In loop mode
+  // Swiper's `loopFix` instantly repositions to the real slide WITHOUT a
+  // transition (so `slideChangeTransitionEnd` never fires for that jump),
+  // which is why the panel + active styling used to get stuck on a clone.
+  let lastHref = '';
+  function updateDetail(swiper: any) {
+    const active = swiper.wrapperEl?.querySelector('.swiper-slide-active') as HTMLElement | null;
+    if (!active) return;
+
+    if (detailText) detailText.textContent = active.dataset.excerpt ?? '';
+    if (detailLink) detailLink.href = active.dataset.href ?? '#';
+
+    // Re-trigger the fade-in-up only when the active service actually changed
+    // (loopFix can re-fire this for the same slide) — removing the class then
+    // forcing a reflow before re-adding it restarts the CSS animation.
+    const href = active.dataset.href ?? '';
+    if (detailPanel && href !== lastHref) {
+      detailPanel.classList.remove('fade-in-up');
+      void detailPanel.offsetWidth;
+      detailPanel.classList.add('fade-in-up');
+    }
+    lastHref = href;
+  }
+
+  const swiper = new Swiper('.services-swiper', {
+    modules: [Navigation],
+    slidesPerView: 'auto',
+    centeredSlides: true,
+    spaceBetween: 24,
+    loop: true,
+    navigation: {
+      nextEl: '.services-carousel-next',
+      prevEl: '.services-carousel-prev',
+    },
+    on: {
+      init: (sw) => updateDetail(sw),
+      slideChange: (sw) => updateDetail(sw),
+      slideChangeTransitionEnd: (sw) => updateDetail(sw),
+      loopFix: (sw) => updateDetail(sw),
+    },
+  });
+
+  // Event delegation, not per-slide listeners attached at init — loop mode
+  // clones slides for the wrap-around buffer, and those clones don't exist
+  // yet (or don't carry JS listeners even if they did, being cloneNode
+  // copies) when a plain querySelectorAll().forEach() would have run.
+  // slideToLoop() + data-swiper-slide-index (which Swiper stamps onto both
+  // real and cloned slides) is the correct way to navigate to a specific
+  // slide's real index in loop mode — plain slideTo(index) would be wrong
+  // for anything after the first clone set.
+  document.querySelector('.services-swiper')?.addEventListener('click', (e) => {
+    const slide = (e.target as HTMLElement).closest<HTMLElement>('.services-carousel-slide');
+    if (!slide || slide.classList.contains('swiper-slide-active')) return;
+    const realIndex = slide.getAttribute('data-swiper-slide-index');
+    if (realIndex === null) return;
+    e.preventDefault();
+    swiper.slideToLoop(Number(realIndex));
+  });
+</script>
+
+<style>
+  .services-carousel-header {
+    width:            320px;
+    max-width:        90vw;
+    margin:           0 auto 1rem;
+    display:          flex;
+    align-items:      center;
+    justify-content:  space-between;
+    background-color: var(--color-white);
+    border-radius:    var(--radius-card);
+    box-shadow:       var(--shadow-card);
+    padding:          1rem 1.5rem;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            var(--color-headline);
+  }
+
+  .services-swiper {
+    padding: 0.5rem 0 2rem;
+  }
+
+  .services-carousel-slide {
+    width: 320px;
+  }
+
+  .services-carousel-card {
+    display:        block;
+    text-decoration: none;
+  }
+
+  .services-carousel-img {
+    width:            100%;
+    aspect-ratio:     1 / 1;
+    object-fit:       cover;
+    border-radius:    var(--radius-card);
+    box-shadow:       var(--shadow-card);
+    filter:           grayscale(0.4);
+    opacity:          0.55;
+    transition:       filter 0.3s ease, opacity 0.3s ease;
+  }
+  .services-carousel-slide.swiper-slide-active .services-carousel-img {
+    filter:  none;
+    opacity: 1;
+  }
+
+  .services-carousel-title {
+    display:      block;
+    margin-top:   1rem;
+    font-family:  var(--font-heading);
+    font-size:    1.125rem;
+    font-weight:  600;
+    color:        var(--color-caption);
+    transition:   color 0.3s ease;
+  }
+  .services-carousel-slide.swiper-slide-active .services-carousel-title {
+    color: var(--color-headline);
+  }
+
+  .services-carousel-detail {
+    background-color: var(--color-white);
+    border-radius:     var(--radius-card);
+    box-shadow:        var(--shadow-card);
+    padding:           1.75rem;
+    width:             320px;
+    max-width:         90vw;
+    margin:            0 auto;
+    font-size:         0.875rem;
+  }
+  .services-carousel-detail.fade-in-up {
+    animation: services-fade-in-up 0.4s ease;
+  }
+  @keyframes services-fade-in-up {
+    from {
+      opacity:   0;
+      transform: translateY(1.25rem);
+    }
+    to {
+      opacity:   1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .services-carousel-detail.fade-in-up {
+      animation: none;
+    }
+  }
+  .services-carousel-detail-label {
+    display:        block;
+    font-size:      var(--text-xs);
+    font-weight:    600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color:          var(--color-caption);
+    margin-bottom:  0.75rem;
+  }
+  .services-carousel-detail-text {
+    margin:      0 0 1.25rem;
+    color:       var(--color-body);
+    font-size:   0.875rem;
+    line-height: 1.6;
+  }
+  .services-carousel-detail-link {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             0.375rem;
+    font-weight:     600;
+    color:           var(--blue-text);
+    text-decoration: none;
+  }
+  .services-carousel-detail-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Navigation arrows — same circular badge as .btn::after, nested
+       inside .services-swiper (Swiper's own standard structure) so the
+       default top:50% centers them on the swiper's own box — i.e.
+       vertically centered on .services-carousel-slide, not a hand-tuned
+       fixed offset that drifts if slide content changes. Arrow glyph is
+       a plain CSS border-chevron (no SVG/icon-font) — same technique
+       reused by TeamSection's carousel nav. ── */
+  .services-carousel-prev,
+  .services-carousel-next {
+    width:             3rem;
+    height:            3rem;
+    margin-top:        -1.5rem;
+    border-radius:     9999px;
+    background-color: var(--color-primary);
+    color:             var(--color-headline) !important; /* global.css forces .swiper-button-* color !important — this must win */
+  }
+  /* Swiper injects its own <svg class="swiper-navigation-icon"> as a
+     real DOM child of the button (modern Swiper versions don't use an
+     icon-font ::after glyph) — hide it so only our CSS border-chevron
+     ::before shows, not both stacked on top of each other. */
+  .services-carousel-prev :global(svg.swiper-navigation-icon),
+  .services-carousel-next :global(svg.swiper-navigation-icon) {
+    display: none;
+  }
+  .services-carousel-prev::after,
+  .services-carousel-next::after {
+    display: none;
+  }
+  .services-carousel-prev::before,
+  .services-carousel-next::before {
+    content:       '';
+    width:         0.55rem;
+    height:        0.55rem;
+    border-top:    2px solid currentColor;
+    border-right:  2px solid currentColor;
+  }
+  .services-carousel-prev::before {
+    transform: rotate(-135deg) translate(-1px, 1px);
+  }
+  .services-carousel-next::before {
+    transform: rotate(45deg) translate(-1px, 1px);
+  }
+</style>

@@ -2,13 +2,43 @@
 /**
  * Header.astro
  * ─────────────────────────────────────────────────────
- * Global sticky navigation header. Used once in BaseLayout.astro.
+ * Global fixed navigation header. Used once in BaseLayout.astro.
  * Do NOT duplicate this component in individual pages.
  *
  * Per-client customisation (SANITY-READY — content lives in data files):
  *   - Clinic name + Book Now CTA  → src/data/site.ts
  *   - Nav links                   → src/data/navigation.ts (headerNav)
  *   This component only renders — do not hardcode content here.
+ *
+ * ── Two-state header (transparent-over-hero → solid on scroll) ──
+ * `#site-header-wrapper` is `position: fixed` (see .claude/skills/
+ * header-menu.md "Two-State Header System") so it overlays the hero
+ * image on every page — Hero.astro and PageHero.astro both already
+ * reserve top padding to clear it. Default state is transparent with
+ * white text/logo/nav and a ghost CTA (`btn-transparent`); past
+ * `scrollY > 60` the JS below adds `.is-scrolled`, which the CSS in
+ * global.css flips to a solid white bar with dark text and the primary
+ * CTA (`btn-default`). Since there's no logo image, the text logo's
+ * colour itself swaps instead of a dual-logo crossfade.
+ *
+ * Structure (driven by src/data/navigation.ts headerNav):
+ *   - kind 'link'            → plain nav link (or the primary CTA button when
+ *                              `cta: true` — e.g. Book Now, linking to /book-now/)
+ *   - kind 'grouped-dropdown' → multi-column mega panel (titled groups, e.g. Services)
+ *   - kind 'dropdown'        → mega panel: left-column list of items (an item with
+ *                              `children` becomes a nested flyout — mid-level flyout
+ *                              tier, e.g. "Prices" inside "About"), plus an optional
+ *                              right-hand `cards` grid (image + title + desc) with a
+ *                              vertical divider, e.g. About / Our Clinics. Every mega/
+ *                              grouped-dropdown panel is `absolute top-full left-0` —
+ *                              aligned to the LEFT edge of its own trigger (per user
+ *                              request, matching the reference design's logo-adjacent
+ *                              nav). This works well now that Logo+Nav are grouped
+ *                              together near the left edge of the header, leaving
+ *                              plenty of room for a wide panel to extend rightward.
+ * Desktop dropdowns/flyouts open on hover AND :focus-within (pure CSS — see
+ * .claude/skills/header-menu.md) — JS only syncs aria-expanded for screen
+ * readers, never controls the visual open state.
  *
  * ── Active-state system (MANDATORY on every nav change) ─────────
  * Every nav link on the site must visually indicate the current
@@ -21,14 +51,15 @@
  *
  * Tiers to cover on any dropdown/mega-menu change:
  *   1. Top-level plain links          → isActive
- *   2. Top-level dropdown triggers    → isSection
- *   3. Mid-level flyout triggers      → isSection  (MOST MISSED)
+ *   2. Top-level dropdown triggers    → entryActive (below)
+ *   3. Mid-level flyout triggers      → itemActive (below) (MOST MISSED)
  *   4. Leaf links in dropdowns        → isActive
  *   5. Every mobile equivalent        → same helpers, no drift
  */
 
 import { site } from '../data/site';
 import { headerNav } from '../data/navigation';
+import type { HeaderNavEntry, NavItem } from '../lib/content/types';
 
 const currentPath = Astro.url.pathname;
 
@@ -39,87 +70,393 @@ const isActive = (href: string): boolean => {
   return currentPath === norm || currentPath === norm.slice(0, -1);
 };
 
-// Prefix match — use for dropdown parents and mid-level flyout
-// triggers so children activate their ancestors. Kept in scope even
-// when the current nav has no dropdowns so the pattern is visible
-// to anyone adding a submenu later.
+// Prefix match — dropdown / flyout triggers whose descendants should
+// activate the parent (e.g. viewing /condition/ankle/fractures/ activates
+// the "Ankle" flyout trigger and, transitively, "What We Treat").
 const isSection = (prefix: string): boolean => currentPath.startsWith(prefix);
-void isSection; // reserved for future dropdown / mid-level flyout triggers
+
+// Tier 3 — mid-level flyout trigger. `isSection(item.href)` covers the
+// item's own page plus any real descendant. The `isActive` fallback over
+// children additionally covers cross-listed pages that live under a
+// DIFFERENT parent's URL prefix (e.g. "Trapped Nerve" and "Facet Joint
+// Dysfunction" are each listed under two categories in SITEMAP.md).
+const itemActive = (item: NavItem): boolean =>
+  isSection(item.href) || (item.children ?? []).some((c) => isActive(c.href));
+
+// Tier 2 — top-level dropdown trigger, active if any descendant matches.
+const entryActive = (entry: HeaderNavEntry): boolean => {
+  if (entry.kind === 'link') return isActive(entry.href);
+  if (entry.kind === 'grouped-dropdown') {
+    return entry.groups.some((g) => g.links.some((l) => isActive(l.href)));
+  }
+  return entry.items.some(itemActive);
+};
 
 // Hash links (#services) are same-page anchors — never active.
-// Route links (/contact) get the standard is-active treatment.
 const linkActive = (href: string): boolean => href.startsWith('/') && isActive(href);
+
+const navEntries = headerNav.filter((e) => !e.cta);
+const ctaEntry = headerNav.find((e): e is Extract<HeaderNavEntry, { kind: 'link' }> => e.kind === 'link' && !!e.cta);
 ---
 
-<header class="sticky top-0 z-50 bg-white border-b border-[--color-border] shadow-[--shadow-nav]">
-  <div class="container px-[--spacing-section-x] py-4 flex items-center justify-between">
+<header id="site-header-wrapper" class="fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow,border-color] duration-300">
+  <div class="container-main h-16 grid grid-cols-[auto_1fr_auto] items-center gap-4 relative">
 
-    <!-- Logo / Clinic Name -->
-    <a href="/" class="text-xl font-bold text-[--color-primary]">
-      {site.name}
+    <!-- Logo — column 1 -->
+    <a href="/" class="site-logo-wrap relative flex items-center shrink-0" aria-label={site.name}>
+      <img
+        src="/images/logo-white.svg"
+        alt={site.name}
+        width="339"
+        height="101"
+        decoding="async"
+        fetchpriority="high"
+        class="site-logo-mark site-logo-mark--transparent h-9 w-auto transition-opacity duration-300"
+      />
+      <img
+        src="/images/logo.svg"
+        alt=""
+        aria-hidden="true"
+        width="339"
+        height="101"
+        decoding="async"
+        class="site-logo-mark site-logo-mark--scrolled absolute left-0 top-1/2 -translate-y-1/2 h-9 w-auto transition-opacity duration-300 pointer-events-none"
+      />
     </a>
 
-    <!-- Desktop Navigation — rendered from src/data/navigation.ts -->
+    <!-- Desktop Navigation — column 2, true-centred regardless of the
+         logo/button-cluster widths either side (see mega-panel centring
+         below, which keeps dropdowns on-screen now triggers can sit
+         anywhere across the centred nav, not just the left half). -->
     <nav
-      class="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-body]"
+      class="hidden xl:flex items-center justify-center text-[0.875rem] font-medium"
       aria-label="Main navigation"
     >
-      {headerNav.map((link) => (
-        <a
-          href={link.href}
-          class:list={["site-nav-item hover:text-[--color-primary] transition-colors", { "is-active": linkActive(link.href) }]}
-        >{link.label}</a>
-      ))}
-    </nav>
+      {navEntries.map((entry) => {
+        if (entry.kind === 'link') {
+          return (
+            <a
+              href={entry.href}
+              class:list={["site-nav-item px-3 py-1.5 rounded-full transition-colors", { "is-active": isActive(entry.href) }]}
+            >{entry.label}</a>
+          );
+        }
 
-    <!-- Mobile Hamburger (visible on mobile only) -->
-    <button
-      class="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
-      aria-label="Open navigation menu"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-      id="mobile-menu-toggle"
-    >
-      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
-      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
-      <span class="block w-6 h-0.5 bg-[--color-headline]"></span>
-    </button>
+        if (entry.kind === 'grouped-dropdown') {
+          const active = entryActive(entry);
+          return (
+            <div class="group">
+              <button
+                type="button"
+                class:list={["site-nav-item flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors", { "is-active": active }]}
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                {entry.label}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="nav-flyout-panel absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible transition-all duration-200 group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible z-50">
+                <div class="mega-panel w-[880px]">
+                  <div class="grid grid-cols-2 gap-1 items-start">
+                    {entry.groups.map((g) => (
+                      <div>
+                        <div class="nav-dropdown-group-title">{g.title}</div>
+                        <div class:list={[g.links.length > 6 ? "grid grid-cols-2 gap-x-2" : "flex flex-col"]}>
+                          {g.links.map((l) => (
+                            <a href={l.href} class:list={["nav-dropdown-item", { "is-active": isActive(l.href) }]}>{l.label}</a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
 
-    <!-- Book Now CTA — from src/data/site.ts -->
-    <a href={site.bookingCta.href} class="btn btn-default hidden md:inline-flex">
-      {site.bookingCta.label}
-    </a>
+        // kind === 'dropdown' — mega panel: left list + optional right cards
+        const active = entryActive(entry);
+        return (
+          <div class="group">
+            <button
+              type="button"
+              class:list={["site-nav-item flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors", { "is-active": active }]}
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {entry.label}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="nav-flyout-panel absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible transition-all duration-200 group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible z-50">
+              <div class:list={["mega-panel", entry.cards && entry.cards.length > 0 ? "w-[800px] grid grid-cols-[200px_1px_1fr] gap-6" : "w-[260px]"]}>
+                <div>
+                  <span class="mega-eyebrow">{entry.label}</span>
+                  <div class="mt-3 flex flex-col gap-1">
+                    {entry.items.map((item) => (
+                      item.children && item.children.length > 0 ? (
+                        <div class="relative group/sub">
+                          <div class="flex items-center">
+                            <a href={item.href} class:list={["nav-dropdown-item flex-1", { "is-active": itemActive(item) }]} aria-haspopup="true" aria-expanded="false">{item.label}</a>
+                            <span class="pr-3 text-(--color-caption)" aria-hidden="true">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                            </span>
+                          </div>
+                          <div class="nav-flyout-panel absolute left-full top-0 pl-2 min-w-[240px] opacity-0 invisible translate-x-1 transition-all duration-200 group-hover/sub:opacity-100 group-hover/sub:visible group-hover/sub:translate-x-0 group-focus-within/sub:opacity-100 group-focus-within/sub:visible group-focus-within/sub:translate-x-0 z-50">
+                            <div class="nav-dropdown-panel">
+                              {item.children.map((c) => (
+                                <a href={c.href} class:list={["nav-dropdown-item", { "is-active": isActive(c.href) }]}>{c.label}</a>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <a href={item.href} class:list={["nav-dropdown-item", { "is-active": isActive(item.href) }]}>{item.label}</a>
+                      )
+                    ))}
+                  </div>
+                </div>
+                {entry.cards && entry.cards.length > 0 && (
+                  <>
+                    <div class="bg-(--color-border)" aria-hidden="true"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                      {entry.cards.map((cardItem) => (
+                        <a href={cardItem.href} class="mega-card">
+                          <img
+                            src={cardItem.image ?? '/images/placeholder.webp'}
+                            alt=""
+                            width="400"
+                            height="240"
+                            loading="lazy"
+                            decoding="async"
+                            class="mega-card-img"
+                          />
+                          <span class="mega-card-title">{cardItem.title}</span>
+                          <span class="mega-card-desc">{cardItem.desc}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      </nav>
 
+    <!-- Hamburger + Call + Book Now — column 3 -->
+    <div class="flex items-center gap-3 justify-self-end">
+      <!-- Mobile Hamburger (visible below xl:) -->
+      <button
+        class="xl:hidden flex flex-col gap-1.5 p-2 -mr-2 min-w-[44px] min-h-[44px] items-center justify-center shrink-0"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        id="mobile-menu-toggle"
+      >
+        <span class="mobile-toggle-bar block w-6 h-0.5 rounded-full"></span>
+        <span class="mobile-toggle-bar block w-6 h-0.5 rounded-full"></span>
+        <span class="mobile-toggle-bar block w-6 h-0.5 rounded-full"></span>
+      </button>
+
+      <!-- Book Now CTA — from src/data/navigation.ts (headerNav, cta entry) -->
+      {ctaEntry && (
+        <a id="header-cta" href={ctaEntry.href} class="btn btn-white hidden xl:inline-flex">
+          {ctaEntry.label}
+        </a>
+      )}
+    </div>
   </div>
 
   <!-- Mobile Menu Drawer -->
   <div
     id="mobile-menu"
-    class="md:hidden hidden border-t border-[--color-border] bg-white"
+    class="xl:hidden hidden border-t border-(--color-border) bg-white max-h-[calc(100dvh-64px)] overflow-y-auto"
     aria-hidden="true"
   >
-    <nav class="flex flex-col px-[--spacing-section-x] py-4 gap-4 text-sm font-medium text-[--color-body]" aria-label="Mobile navigation">
-      {headerNav.map((link) => (
-        <a
-          href={link.href}
-          class:list={["mobile-nav-item site-nav-item hover:text-[--color-primary] transition-colors py-2", { "is-active": linkActive(link.href) }]}
-        >{link.label}</a>
-      ))}
-      <a href={site.bookingCta.href} class="btn btn-default self-start mt-2">{site.bookingCta.label}</a>
+    <nav class="flex flex-col px-(--spacing-section-x) py-4 gap-1 text-[0.875rem] font-medium text-(--color-body)" aria-label="Mobile navigation">
+      {navEntries.map((entry) => {
+        if (entry.kind === 'link') {
+          return (
+            <a
+              href={entry.href}
+              class:list={["mobile-nav-item", { "is-active": linkActive(entry.href) }]}
+            >{entry.label}</a>
+          );
+        }
+
+        if (entry.kind === 'grouped-dropdown') {
+          const active = entryActive(entry);
+          return (
+            <div class="mobile-accordion">
+              <button type="button" class:list={["mobile-nav-item flex items-center justify-between", { "is-active": active }]} aria-expanded="false">
+                {entry.label}
+                <svg class="mobile-accordion-chevron w-4 h-4 shrink-0 text-(--color-caption)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="mobile-accordion-panel hidden pl-3 pb-2 space-y-3">
+                {entry.groups.map((g) => (
+                  <div>
+                    <div class="nav-dropdown-group-title pl-0">{g.title}</div>
+                    {g.links.map((l) => (
+                      <a href={l.href} class:list={["mobile-sub-item", { "is-active": isActive(l.href) }]}>{l.label}</a>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+
+        // kind === 'dropdown'
+        const active = entryActive(entry);
+        return (
+          <div class="mobile-accordion">
+            <button type="button" class:list={["mobile-nav-item flex items-center justify-between", { "is-active": active }]} aria-expanded="false">
+              {entry.label}
+              <svg class="mobile-accordion-chevron w-4 h-4 shrink-0 text-(--color-caption)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="mobile-accordion-panel hidden pl-3 pb-2 space-y-0.5">
+              {entry.items.map((item) => (
+                item.children && item.children.length > 0 ? (
+                  <div class="mobile-accordion">
+                    <button type="button" class:list={["mobile-sub-item w-full flex items-center justify-between pr-0", { "is-active": itemActive(item) }]} aria-expanded="false">
+                      {item.label}
+                      <svg class="mobile-accordion-chevron w-3.5 h-3.5 shrink-0 text-(--color-caption)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="mobile-accordion-panel hidden pl-3 pb-1 space-y-0.5">
+                      <a href={item.href} class:list={["mobile-sub-item", { "is-active": isActive(item.href) }]}>{item.label} overview</a>
+                      {item.children.map((c) => (
+                        <a href={c.href} class:list={["mobile-sub-item", { "is-active": isActive(c.href) }]}>{c.label}</a>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <a href={item.href} class:list={["mobile-sub-item", { "is-active": isActive(item.href) }]}>{item.label}</a>
+                )
+              ))}
+              {entry.cards && entry.cards.length > 0 && (
+                <div class="mega-cards-mobile grid-cols-1 gap-3 mt-3">
+                  {entry.cards.map((cardItem) => (
+                    <a href={cardItem.href} class="mega-card mega-card--mobile">
+                      <img
+                        src={cardItem.image ?? '/images/placeholder.webp'}
+                        alt=""
+                        width="400"
+                        height="200"
+                        loading="lazy"
+                        decoding="async"
+                        class="mega-card-img"
+                      />
+                      <span class="mega-card-title">{cardItem.title}</span>
+                      <span class="mega-card-desc">{cardItem.desc}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {ctaEntry && (
+        <a href={ctaEntry.href} class="btn btn-default w-full justify-between mt-2">
+          {ctaEntry.label}
+        </a>
+      )}
     </nav>
   </div>
 </header>
 
 <script>
+  // Two-state header — transparent-over-hero at the top, solid on scroll.
+  // CTA button class swap is JS-driven (ghost/transparent ↔ default), not
+  // CSS-only, matching .claude/skills/header-menu.md. The Book Now CTA is
+  // now a static .btn-white (readable on both the transparent-hero and
+  // solid-scrolled states — see global.css for the scrolled-state border
+  // that keeps it from blending into the white bar), so it no longer
+  // needs a JS class swap here.
+  const wrapper = document.getElementById('site-header-wrapper');
+
+  function applyScrollState(scrolled: boolean) {
+    if (scrolled) {
+      wrapper?.classList.add('is-scrolled');
+    } else {
+      wrapper?.classList.remove('is-scrolled');
+    }
+  }
+  applyScrollState(window.scrollY > 60);
+  window.addEventListener('scroll', () => applyScrollState(window.scrollY > 60), { passive: true });
+
   // Mobile menu toggle — progressive enhancement
   const toggle = document.getElementById('mobile-menu-toggle');
   const menu   = document.getElementById('mobile-menu');
+
+  function closeMenu() {
+    if (!menu || !toggle) return;
+    menu.classList.add('hidden');
+    menu.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open navigation menu');
+  }
+
   if (toggle && menu) {
     toggle.addEventListener('click', () => {
       const isOpen = !menu.classList.contains('hidden');
-      menu.classList.toggle('hidden', isOpen);
-      menu.setAttribute('aria-hidden', String(isOpen));
-      toggle.setAttribute('aria-expanded', String(!isOpen));
+      if (isOpen) {
+        closeMenu();
+      } else {
+        menu.classList.remove('hidden');
+        menu.setAttribute('aria-hidden', 'false');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Close navigation menu');
+        // Force the solid header state while the drawer is open — a
+        // transparent bar above an opaque drawer looks broken, and the
+        // drawer itself needs a solid header to sit visually attached to.
+        wrapper?.classList.add('is-scrolled');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+        closeMenu();
+        toggle.focus();
+        applyScrollState(window.scrollY > 60);
+      }
     });
   }
+
+  // Desktop dropdown/flyout ARIA sync — CSS (:hover / :focus-within) drives
+  // the visual open state; this only keeps aria-expanded in sync for screen
+  // readers, per .claude/skills/header-menu.md / mega-menu.md.
+  document.querySelectorAll('.group, .group\\/sub').forEach((group) => {
+    const trigger = group.querySelector(':scope > [aria-haspopup="true"], :scope > .flex > [aria-haspopup="true"]');
+    if (!trigger) return;
+    const open  = () => trigger.setAttribute('aria-expanded', 'true');
+    const close = () => trigger.setAttribute('aria-expanded', 'false');
+    group.addEventListener('mouseenter', open);
+    group.addEventListener('mouseleave', close);
+    group.addEventListener('focusin', open);
+    group.addEventListener('focusout', (e) => {
+      const next = (e as FocusEvent).relatedTarget as Node | null;
+      if (!next || !group.contains(next)) close();
+    });
+  });
+
+  // Mobile accordion — works for both top-level and nested accordions.
+  // stopPropagation prevents a nested accordion click from also toggling
+  // its parent accordion (they're DOM descendants of the parent panel).
+  document.querySelectorAll('.mobile-accordion > button').forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const acc = trigger.parentElement;
+      const panel = acc?.querySelector(':scope > .mobile-accordion-panel') as HTMLElement | null;
+      const icon = trigger.querySelector('svg');
+      if (!panel) return;
+      const isOpen = !panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', isOpen);
+      trigger.setAttribute('aria-expanded', String(!isOpen));
+      if (icon) icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+    });
+  });
 </script>

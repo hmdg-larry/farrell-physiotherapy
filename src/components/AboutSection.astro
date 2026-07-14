@@ -1,0 +1,101 @@
+---
+/**
+ * AboutSection.astro
+ * ─────────────────────────────────────────────────────
+ * Homepage "About Us" section — sits directly after the Hero.
+ * Solid blue background with a large blurred orange/red "orb"
+ * bleeding in from the top-left corner (`.orb`, clipped by the
+ * section's own `overflow-hidden`) — recreates the reference
+ * design's soft colour blend without a literal CSS gradient. Copy
+ * is real Farrell Physiotherapy messaging (sourced from
+ * farrellphysiotherapy.co.uk/about-us/ — "your well-being is at
+ * the heart of everything we do", the symptom-vs-cause differentiator,
+ * HCPC registration), not placeholder text.
+ *
+ * The reference's photo panel is a product-UI screenshot (an EHR
+ * dashboard) — irrelevant to a physiotherapy clinic and not
+ * something to fabricate. Used a plain photo card instead (still
+ * /images/placeholder.webp pending real clinic photography, same
+ * as Hero.astro and FooterCTA.astro) with a real trust badge
+ * overlay, matching the reference's "floating card on the photo"
+ * treatment without inventing fake UI.
+ *
+ * Reusable via props (eyebrow / heading / paragraphs) — defaults are
+ * the homepage copy, so <AboutSection /> with no props is unchanged.
+ * The /about/ page reuses the same design with the fuller practice
+ * history from the live site.
+ */
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  paragraphs?: string[];
+  /** Photo panel image. Defaults to the placeholder. */
+  image?: string;
+  imageAlt?: string;
+}
+const {
+  eyebrow = 'About Us',
+  heading = 'Your Well-Being Is At the Heart of Everything We Do',
+  paragraphs = [
+    "We don't just treat your symptoms — our HCPC-registered physiotherapists identify and resolve the underlying cause of your pain, with personalised rehabilitation programmes designed to prevent re-injury and help you return to pre-injury levels of activity.",
+  ],
+  image = '/images/placeholder.webp',
+  imageAlt = '',
+} = Astro.props;
+---
+
+<section class="about firstsection about-gradient relative overflow-hidden flex items-center min-h-[800px]">
+  <div class="orb" aria-hidden="true"></div>
+  <div class="container-main relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <div>
+        <span class="eyebrow about-eyebrow">{eyebrow}</span>
+        <h2 class="text-white m-0 mt-3">{heading}</h2>
+        <div class="mt-6 flex flex-col gap-4 max-w-lg">
+          {paragraphs.map((p) => (
+            <p class="m-0 text-white/85 text-base leading-relaxed">{p}</p>
+          ))}
+        </div>
+      </div>
+
+      <div class="about-photo relative rounded-(--radius-card) overflow-hidden aspect-4/3 shadow-(--shadow-raised)">
+        <img
+          src={image}
+          alt={imageAlt}
+          loading="lazy"
+          decoding="async"
+          width="800"
+          height="600"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+        <div class="absolute left-5 bottom-5 flex items-center gap-2 bg-white rounded-(--radius-badge) px-4 py-2 shadow-(--shadow-raised)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-(--color-headline) shrink-0" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span class="text-sm font-semibold text-(--color-headline) whitespace-nowrap">HCPC-Registered &amp; Fully Insured</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-gradient {
+    background-color: var(--blue);
+  }
+  .orb {
+    filter:           blur(175px);
+    pointer-events:    none;
+    background-image: radial-gradient(circle, #d91e01 13.95%, #ff8100 40.41%, #ffb202 70.52%, #fabbe6 90%);
+    border-radius:     100%;
+    width:             66em;
+    height:            66em;
+    position:          absolute;
+    inset:             0% auto auto 0%;
+    transform:         translate(-35%, -35%);
+  }
+  .about-eyebrow {
+    color:     rgb(255 255 255 / 0.85);
+    font-size: var(--text-xs);
+  }
+</style>

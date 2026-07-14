@@ -47,8 +47,10 @@ const ccEmail = rawClientEmail.replace(/,\s*/g, '; ');
 // ── Clinic data — single source of truth: src/data/site.ts ───
 // Update per-client values THERE, not here. Header, Footer, this
 // page, and the JSON-LD all consume the same object (Sanity-ready).
-const clinicPhoneDisplay = site.contact.phoneDisplay;
-const clinicPhoneTel     = site.contact.phoneTel;
+const clinicPhoneDisplay  = site.contact.phoneDisplay;
+const clinicPhoneTel      = site.contact.phoneTel;
+const clinicMobileDisplay = site.contact.mobileDisplay;
+const clinicMobileTel     = site.contact.mobileTel;
 const clinicEmail        = site.contact.email;
 const clinicAddressLine1 = site.contact.addressLine1;
 const clinicAddressLine2 = site.contact.addressLine2;
@@ -57,7 +59,7 @@ const clinicMapsUrl      = site.contact.mapsUrl;
 const clinicHours     = site.hours;
 const clinicHoursAttr = JSON.stringify(clinicHours);
 
-const heroImg = '/images/contact-hero.webp';
+const heroImg = '/images/hero/hero-contact.avif';
 
 // ── MedicalClinic JSON-LD — local SEO signal ─────────────────
 // Built from site settings by src/lib/content/normalize.ts so the
@@ -79,8 +81,10 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
     image={heroImg}
     imageAlt=""
     eyebrow="CONTACT"
-    headline={`Let's Start the <span class="heading-accent">Conversation</span>`}
-    intro="Tell us how we can help. Phone, email, or send a message — every enquiry is answered by a human within one working day."
+    headline="Let's Start the Conversation"
+    intro="Have a question or want to book? Message us — we reply within one working day."
+    showCta={false}
+    compact
   />
 
   <!-- ── Section 1 — navy strip with white curved card ────────── -->
@@ -94,7 +98,7 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
           <div class="contact-info">
 
             <span class="eyebrow">CONTACT</span>
-            <h2 class="contact-h2">Get in <span class="heading-accent">Touch</span></h2>
+            <h2 class="contact-h2">Get in Touch</h2>
 
             <p class="contact-intro">
               Whether you have a question about a treatment, a quote, or want to
@@ -130,6 +134,24 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
                   </span>
                 </a>
               </li>
+
+              <!-- Mobile -->
+              {clinicMobileTel && (
+                <li>
+                  <a class="contact-card-row" href={`tel:${clinicMobileTel}`} aria-label={`Call our mobile on ${clinicMobileDisplay}`}>
+                    <span class="contact-icon-circle" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                      </svg>
+                    </span>
+                    <div class="contact-text">
+                      <span class="contact-label">Mobile</span>
+                      <span class="contact-value">{clinicMobileDisplay}</span>
+                    </div>
+                  </a>
+                </li>
+              )}
 
               <!-- Email -->
               <li>
@@ -623,7 +645,7 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
 <style>
   /* ── Section: navy strip with curved white card overlay ─────────── */
   .contact-strip {
-    background-color: var(--color-hero-dark);
+    background-color: var(--beige);
     padding-top:    var(--spacing-section-y);
     padding-bottom: var(--spacing-section-y);
   }
@@ -674,10 +696,6 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
 
   .contact-h2 {
     margin: 0;
-  }
-  .contact-h2 :global(.heading-accent) {
-    font-style: italic;
-    color:      var(--color-primary);
   }
 
   .contact-intro {
@@ -779,8 +797,8 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
     height:          2.75rem;
     min-width:       2.75rem;
     border-radius:   50%;
-    background:      var(--color-accent);
-    color:           var(--color-primary);
+    background:      var(--color-muted);
+    color:           var(--blue-text);
     display:         flex;
     align-items:     center;
     justify-content: center;
@@ -791,8 +809,8 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
     height: 1.25rem;
   }
   .contact-card-row:hover .contact-icon-circle {
-    background: var(--color-hero-dark);
-    color:      var(--color-white);
+    background: var(--color-primary);
+    color:      var(--color-headline);
   }
 
   .contact-text {
@@ -1016,7 +1034,7 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
   .pref-pill input[type="radio"]:checked + .pref-pill-inner {
     background:   color-mix(in srgb, var(--color-primary) 10%, white);
     border:       1.5px solid var(--color-primary);
-    color:        var(--color-primary);
+    color:        var(--color-headline);
     font-weight:  var(--font-weight-semibold);
   }
   .pref-pill input[type="radio"]:focus-visible + .pref-pill-inner {
@@ -1089,6 +1107,10 @@ const medicalClinicJsonLd = buildMedicalClinicJsonLd(site, _siteOrigin + '/conta
   }
   .cf-submit {
     width: 100%;
+    /* Full-width .btn: pin the arrow badge to the right edge so the
+       pill + circle math holds (per the .btn note in global.css —
+       justify-start on a widened button fuses the two shapes). */
+    justify-content: space-between;
   }
   @media (prefers-reduced-motion: no-preference) {
     .cf-submit:hover {

@@ -7,6 +7,7 @@
  * Primary colour brand accents throughout.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 
 const sections = [
   { id: "types-of-information",  label: "Types of Information",   num: "01" },
@@ -20,8 +21,8 @@ const sections = [
 ---
 
 <BaseLayout
-  title="Privacy Policy — ClinicName"
-  description="Privacy Policy for ClinicName. Read how we collect, use, and protect your personal data."
+  title={`Privacy Policy — ${site.name}`}
+  description={`Privacy Policy for ${site.name}. Read how we collect, use, and protect your personal data.`}
 >
 
   <!-- ── Scroll progress bar ───────────────────────────────── -->

@@ -11,10 +11,11 @@
  *       HMDG's brand mention competing with clinic content in SERPs.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 ---
 
 <BaseLayout
-  title="Credits — ClinicName"
+  title={`Credits — ${site.name}`}
   description="Website designed and developed by HMDG — experts in physiotherapy website design, physiotherapy marketing, and healthcare marketing in the UK."
   noindex={true}
 >

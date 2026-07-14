@@ -1,0 +1,124 @@
+---
+/**
+ * clinics/[slug].astro — Clinic location page template
+ * ─────────────────────────────────────────────────────────
+ * Renders the 3 clinic pages from src/data/locations.ts (Chelmsford,
+ * Witham, Leigh-on-Sea). Address/phone/hours are PLACEHOLDER data —
+ * see the header comment in locations.ts before this site goes live.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ClinicMap from '../../components/ClinicMap.astro';
+import { locations } from '../../data/locations';
+import { site } from '../../data/site';
+import { formatOpeningHours, buildMedicalClinicJsonLd, buildBreadcrumbList } from '../../lib/content/normalize';
+
+export const getStaticPaths = (() => {
+  return locations.map((location) => ({
+    params: { slug: location.slug },
+    props: { location },
+  }));
+}) satisfies GetStaticPaths;
+
+const { location } = Astro.props;
+const heroImages: Record<string, string> = {
+  chelmsford: '/images/hero/hero-chelmsford.avif',
+  witham: '/images/hero/hero-witham.avif',
+  'leigh-on-sea': '/images/hero/hero-leigh.avif',
+};
+const heroImg = heroImages[location.slug] ?? '/images/placeholder.webp';
+const hoursLines = formatOpeningHours(location.hours);
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const clinicJsonLd = buildMedicalClinicJsonLd(
+  { name: `${site.name} — ${location.name}`, contact: location.contact, hours: location.hours },
+  _siteOrigin + location.clinicHref
+);
+const breadcrumbLd = buildBreadcrumbList([
+  { name: 'Home', url: `${_siteOrigin}/` },
+  { name: 'Our Clinics', url: `${_siteOrigin}/clinics/` },
+  { name: `${location.name} Clinic`, url: _siteOrigin + location.clinicHref },
+]);
+const clinicSchema = [clinicJsonLd, breadcrumbLd];
+---
+
+<BaseLayout
+  title={`${location.name} Clinic — ${site.name}`}
+  description={`Visit ${site.name} in ${location.name}. Address, phone, opening hours, and directions.`}
+  heroImage={heroImg}
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(clinicSchema)}></script>
+
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Our Clinics"
+    headline={`${location.name} Clinic`}
+    intro={`Book online or call today — expert physiotherapy care at our ${location.name} clinic is closer than you think.`}
+  />
+
+  <section class="contact firstsection">
+    <div class="container-main">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <div>
+          <span class="eyebrow">Visit Us</span>
+          <h2>{location.name}</h2>
+          <ul class="flex-layout flex-layout--col gap-4 mt-6 list-none p-0 m-0">
+            <li>
+              <a href={`tel:${location.contact.phoneTel}`} class="text-(--color-body) hover:text-(--color-headline) transition-colors">{location.contact.phoneDisplay}</a>
+            </li>
+            <li>
+              <a href={`mailto:${location.contact.email}`} class="text-(--color-body) hover:text-(--color-headline) transition-colors">{location.contact.email}</a>
+            </li>
+            <li>
+              <a href={location.contact.mapsUrl} target="_blank" rel="noopener noreferrer" class="text-(--color-body) hover:text-(--color-headline) transition-colors">
+                {location.contact.addressLine1}, {location.contact.addressLine2}
+              </a>
+            </li>
+          </ul>
+          <div class="flex-layout mt-8">
+            <a href={location.bookingHref} target="_blank" rel="noopener noreferrer" class="btn btn-default">Book an Appointment</a>
+            <a href={location.pricesHref} class="btn btn-secondary">View Prices</a>
+          </div>
+        </div>
+
+        <div>
+          <span class="eyebrow">Opening Hours</span>
+          <h2>Hours</h2>
+          <ul class="flex-layout flex-layout--col gap-2 mt-6 list-none p-0 m-0">
+            {hoursLines.map((line) => (
+              <li class="flex-layout flex-layout--between text-sm text-(--color-body) border-b border-(--color-border) pb-2">
+                <span>{line.days}</span>
+                <span>{line.hours}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="clinic-map-wrap">
+        <span class="eyebrow">Find Us</span>
+        <ClinicMap
+          src={location.contact.mapEmbed}
+          query={`${site.name} ${location.name}, ${location.contact.addressLine1}, ${location.contact.addressLine2}`}
+          label={`${site.name} — ${location.name}`}
+          mapsUrl={location.contact.mapsUrl}
+          addressLine={`${location.contact.addressLine1}, ${location.contact.addressLine2}`}
+        />
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .clinic-map-wrap {
+    margin-top: 3.5rem;
+  }
+  .clinic-map-wrap .eyebrow {
+    display: block;
+    margin-bottom: 1rem;
+  }
+</style>

@@ -1,0 +1,351 @@
+---
+/**
+ * condition/[...slug].astro — Condition taxonomy template
+ * ─────────────────────────────────────────────────────────
+ * One template renders BOTH levels of the "What We Treat" taxonomy
+ * from src/data/conditions.ts (SITEMAP.md — 13 categories, ~70 leaf
+ * conditions):
+ *   - category hub  (e.g. /condition/ankle/)               → list of conditions in that category
+ *   - leaf condition (e.g. /condition/ankle/sprained-ankle/) → single condition detail
+ *
+ * Two conditions are intentionally cross-listed under two categories
+ * (Trapped Nerve, Facet Joint Dysfunction — see SITEMAP.md). Leaf
+ * paths are de-duplicated by href before getStaticPaths runs so each
+ * renders exactly once; whichever category lists it LAST in
+ * conditions.ts becomes its displayed parent (harmless for both —
+ * neither has one single "true" canonical parent).
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ConditionsSection from '../../components/ConditionsSection.astro';
+import { conditionCategories } from '../../data/conditions';
+import { site } from '../../data/site';
+import { buildBreadcrumbList } from '../../lib/content/normalize';
+import type { Condition, ConditionCategory } from '../../lib/content/types';
+
+export const getStaticPaths = (() => {
+  const toSlug = (href: string) => href.replace(/^\/condition\//, '').replace(/\/$/, '');
+
+  const hubPaths = conditionCategories.map((category) => ({
+    params: { slug: toSlug(category.href) },
+    props: { kind: 'hub' as const, category, condition: undefined },
+  }));
+
+  const leafByHref = new Map<string, { condition: Condition; category: ConditionCategory }>();
+  for (const category of conditionCategories) {
+    for (const condition of category.conditions) {
+      leafByHref.set(condition.href, { condition, category }); // last listing wins
+    }
+  }
+  const leafPaths = Array.from(leafByHref.values()).map(({ condition, category }) => ({
+    params: { slug: toSlug(condition.href) },
+    props: { kind: 'leaf' as const, category, condition },
+  }));
+
+  return [...hubPaths, ...leafPaths];
+}) satisfies GetStaticPaths;
+
+const { kind, category, condition } = Astro.props;
+const placeholder = '/images/placeholder.webp';
+// Per-page image overrides (Sanity-ready): hub pages read from the category,
+// leaf pages from the condition; both fall back to the placeholder.
+const heroImg = (kind === 'hub' ? category.heroImage : condition!.heroImage) ?? placeholder;
+const detailImg = (kind === 'hub' ? category.image : condition!.image) ?? placeholder;
+const pageTitle = kind === 'hub' ? category.title : condition!.title;
+
+// Sibling conditions in the same category (leaf pages only) — the current
+// condition removed, so we surface the "other conditions we treat" nearby.
+const siblings =
+  kind === 'leaf' ? category.conditions.filter((c) => c.href !== condition!.href) : [];
+
+// Hero call-to-action line (~15 words) shown under the H1.
+const heroIntro =
+  kind === 'hub'
+    ? `Book an assessment for ${category.title} today — our physiotherapists will diagnose and treat the underlying cause.`
+    : `Book an appointment today and start your recovery from ${condition!.title} with our expert physiotherapy care.`;
+
+// ── BreadcrumbList structured data ───────────────────────────────
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const crumbs = [
+  { name: 'Home', url: `${_siteOrigin}/` },
+  { name: 'What We Treat', url: `${_siteOrigin}/conditions/` },
+  { name: category.title, url: `${_siteOrigin}${category.href}` },
+];
+if (kind === 'leaf') crumbs.push({ name: condition!.title, url: `${_siteOrigin}${condition!.href}` });
+const breadcrumbLd = buildBreadcrumbList(crumbs);
+---
+
+<BaseLayout
+  title={`${pageTitle} — ${site.name}`}
+  description={kind === 'hub' ? category.excerpt : `${condition!.title} — ${condition!.excerpt ?? ''}`}
+  heroImage={heroImg}
+  schema={breadcrumbLd}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="What We Treat"
+    headline={pageTitle}
+    intro={heroIntro}
+  />
+
+  {kind === 'leaf' && (
+    <nav class="container-main pt-8" aria-label="Breadcrumb">
+      <a href={category.href} class="text-sm text-(--color-caption) hover:text-(--color-headline) transition-colors">&larr; Back to {category.title}</a>
+    </nav>
+  )}
+
+  <section class:list={["conditions firstsection", { "bg-(--color-muted)": kind === 'hub' }]}>
+    <div class="container-main">
+      {kind === 'leaf' ? (
+        <div class="cond-detail grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div class="cond-detail-content">
+            <h2 class="cond-detail-title">{pageTitle} Treatment at {site.name}</h2>
+            <p class="section-lead">{condition!.excerpt}</p>
+            {condition!.body && (
+              <div class="condition-body flex flex-col gap-4 mt-6">
+                {condition!.body.split('\n').map((para) => para.trim()).filter(Boolean).map((para) => (
+                  <p class="text-(--color-body) leading-relaxed">{para}</p>
+                ))}
+              </div>
+            )}
+            <div class="flex-layout mt-8">
+              <a href={site.bookingCta.href} class="btn btn-default">{site.bookingCta.label}</a>
+              <a href="/contact/" class="btn btn-secondary">Ask a Question</a>
+            </div>
+          </div>
+
+          <div class="cond-detail-visual" aria-hidden="true">
+            <div class="cond-detail-orb"></div>
+            <img
+              src={detailImg}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="900"
+              class="cond-detail-img"
+            />
+          </div>
+        </div>
+      ) : (
+        <div class="cond-detail grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div class="cond-detail-content">
+            <h2 class="cond-detail-title">{pageTitle} Treatment at {site.name}</h2>
+            <p class="section-lead">{category.excerpt}</p>
+            <ul class="cond-tile-grid grid grid-cols-1 gap-3 list-none m-0 p-0 mt-8">
+              {category.conditions.map((c) => (
+                <li>
+                  <a href={c.href} class="cond-tile">
+                    <span class="cond-tile-marker" aria-hidden="true"></span>
+                    <span class="cond-tile-name">{c.title}</span>
+                    <svg class="cond-tile-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="2" y1="7" x2="11" y2="7" />
+                      <polyline points="7 3 11 7 7 11" />
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="flex-layout mt-8">
+              <a href={site.bookingCta.href} class="btn btn-default">{site.bookingCta.label}</a>
+              <a href="/contact/" class="btn btn-secondary">Ask a Question</a>
+            </div>
+          </div>
+
+          <div class="cond-detail-visual" aria-hidden="true">
+            <div class="cond-detail-orb"></div>
+            <img
+              src={detailImg}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="900"
+              class="cond-detail-img"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {kind === 'hub' && (
+    <ConditionsSection excludeHref={category.href} numberClass="secondsection" />
+  )}
+
+  {kind === 'leaf' && siblings.length > 0 && (
+    <section class="conditions secondsection bg-(--beige)">
+      <div class="container-main">
+        <div class="cond-related">
+          <div class="cond-related-head">
+            <span class="eyebrow">{category.title}</span>
+            <h2 class="m-0 mt-3">Related Conditions</h2>
+            <a href={category.href} class="cond-hub-link">
+              View all {category.title}
+              <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="2" y1="7" x2="11" y2="7" />
+                <polyline points="7 3 11 7 7 11" />
+              </svg>
+            </a>
+          </div>
+          <ul class="cond-tile-grid grid grid-cols-1 gap-3 list-none m-0 p-0">
+            {siblings.map((c) => (
+              <li>
+                <a href={c.href} class="cond-tile">
+                  <span class="cond-tile-marker" aria-hidden="true"></span>
+                  <span class="cond-tile-name">{c.title}</span>
+                  <svg class="cond-tile-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="2" y1="7" x2="11" y2="7" />
+                    <polyline points="7 3 11 7 7 11" />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )}
+
+</BaseLayout>
+
+<style>
+  /* ── Leaf detail — blue + blurred-orb visual panel ──────────────
+     Same treatment as the homepage WhyChooseUsSection: solid blue
+     background with an off-screen blurred orb and a photo inset. On lg
+     the panel sticks alongside the (often taller) condition body. */
+  .cond-detail-title {
+    margin: 0 0 1rem;
+    text-wrap: balance;
+  }
+  .cond-detail-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    padding: 1.5rem;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--blue);
+  }
+  @media (min-width: 1024px) {
+    .cond-detail-visual {
+      padding: 2.5rem;
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .cond-detail-orb {
+    position: absolute;
+    inset: 0% auto auto 0%;
+    width: 22em;
+    height: 22em;
+    border-radius: 100%;
+    filter: blur(100px);
+    pointer-events: none;
+    background-image: radial-gradient(circle, #d91e01 13.95%, #ff8100 40.41%, #ffb202 70.52%, #fabbe6 90%);
+    transform: translate(-45%, -45%);
+  }
+  .cond-detail-img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Second section — heading on top, condition list stacked below,
+     centred single column capped at 800px (used by both the hub
+     "Conditions We Treat" and the leaf "Related Conditions" sections). */
+  .cond-related {
+    max-width: 800px;
+    margin-inline: auto;
+  }
+  .cond-related-head {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .cond-hub-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    margin-top: 1.25rem;
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-headline);
+    text-decoration: none;
+  }
+  .cond-hub-link svg {
+    color: var(--blue-text);
+    transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cond-hub-link:hover svg { transform: translateX(3px); }
+  @media (prefers-reduced-motion: reduce) {
+    .cond-hub-link svg { transition: none; }
+  }
+
+  /* ── Conditions list — tile style matching the /condition/ hub ──── */
+  .cond-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    color: var(--color-headline);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .cond-tile:hover {
+    box-shadow: var(--shadow-raised);
+    transform: translateY(-2px);
+  }
+  .cond-tile:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .cond-tile-marker {
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    transition: transform 0.2s ease;
+  }
+  .cond-tile:hover .cond-tile-marker { transform: scale(1.4); }
+  .cond-tile-name {
+    flex: 1;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .cond-tile-arrow {
+    flex-shrink: 0;
+    color: var(--blue-text);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cond-tile:hover .cond-tile-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cond-tile,
+    .cond-tile-marker,
+    .cond-tile-arrow { transition: none; }
+    .cond-tile:hover { transform: none; }
+  }
+</style>

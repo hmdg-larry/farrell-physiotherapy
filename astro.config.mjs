@@ -91,6 +91,11 @@ function sitemapAutoScan() {
               if (e.name === 'api') continue;
               out.push(...walk(p));
             } else if (e.name.endsWith('.astro')) {
+              // Dynamic routes ([slug].astro, [...slug].astro) can't be
+              // resolved to real URLs by a static file-tree walk — their
+              // generated paths are merged in separately by src/lib/sitemap.ts
+              // from the same typed data files that feed getStaticPaths.
+              if (e.name.includes('[')) continue;
               out.push(p);
             }
           }
@@ -131,6 +136,11 @@ export const sitemapPaths: readonly string[] = ${JSON.stringify(paths, null, 2)}
 
 // https://astro.build/config
 export default defineConfig({
+  // Production origin — anchors canonical, OG, and sitemap URLs (see
+  // BaseLayout.astro). Pages prerender, so without this they would bake
+  // the build/preview host (localhost / *.pages.dev) into the HTML.
+  // CONFIRM this is the final launch domain before go-live.
+  site: 'https://farrellphysiotherapy.co.uk',
   // output: 'static' is the default in Astro 6 (hybrid mode removed — same behaviour).
   // Pages opt into SSR individually with: export const prerender = false
   adapter: cloudflare({

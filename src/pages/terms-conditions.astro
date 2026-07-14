@@ -7,6 +7,7 @@
  * Primary colour brand accents throughout.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 
 const sections = [
   { id: "overview",           label: "Overview",               num: "01" },
@@ -31,8 +32,8 @@ const sections = [
 ---
 
 <BaseLayout
-  title="Terms & Conditions — ClinicName"
-  description="Terms and Conditions for ClinicName. Read our terms of service and usage policy."
+  title={`Terms & Conditions — ${site.name}`}
+  description={`Terms and Conditions for ${site.name}. Read our terms of service and usage policy.`}
 >
 
   <!-- ── Scroll progress bar ───────────────────────────────── -->

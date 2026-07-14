@@ -2,22 +2,30 @@
 /**
  * Hero.astro
  * ─────────────────────────────────────────────────────
- * Reusable homepage hero with controlled adaptive height.
+ * Reusable homepage hero — full viewport height with a 4K cap.
  *
- * Height strategy:
- *   Mobile  — full viewport height (min-h-svh) so the hero
- *             feels immersive on small screens
- *   Tablet  — min-h floor of 600px
- *   Desktop — min-h floor of 640px
- *   4K/UW   — max-h cap of 900px to prevent empty void
+ * Height strategy (see .claude/agents/frontend-builder.md "Hero
+ * Section — Full Height with 4K Cap"):
+ *   Mobile/tablet — min-h-[600px] floor
+ *   Desktop (md+) — h-screen (100vh, full viewport height)
+ *   4K+ (viewport height >= 2160px) — .hero-4k-cap caps it at 85vh /
+ *     max-height 1200px so the hero doesn't become an empty void on
+ *     very tall displays. CSS lives in global.css, OUTSIDE @layer.
  *
- * Content sits in the lower-third (flex justify-end) so
- * headings feel grounded and intentional, not floating.
+ * Layout (per reference design — two content blocks, not one):
+ *   TOP    — eyebrow + H1 + primary CTA
+ *   BOTTOM — left: subheading + "Scroll to learn more" cue
+ *            right: a row of logos (e.g. accreditations/insurance —
+ *            see `logos` prop), shown only when `logos` is passed
+ * `justify-between` on the section pins these to the top and bottom
+ * of the full-height hero. Both wrapped in .container-main for the
+ * standard 1340px max-width + responsive horizontal padding.
  *
  * Per-client customisation:
  *   - Pass image, alt, headline, body, ctaText, ctaHref
- *   - Optional: eyebrow, trustItems, secondaryCta
+ *   - Optional: eyebrow, trustItems, secondaryCta, logos, logosLabel
  */
+import { heroMobileSrc } from '../lib/content/normalize';
 
 interface Props {
   /** Path to .webp hero background image. Always required — used as poster
@@ -35,18 +43,34 @@ interface Props {
   eyebrow?: string;
   /** H1 headline text — supports HTML via Fragment */
   headline: string;
-  /** Supporting paragraph below the headline */
+  /** Supporting paragraph — rendered directly under the H1, top block */
   body?: string;
   /** Primary CTA button text */
   ctaText?: string;
   /** Primary CTA button href */
   ctaHref?: string;
-  /** Secondary CTA button text */
+  /** Secondary CTA button text — stacked under the primary CTA, top block */
   secondaryCtaText?: string;
   /** Secondary CTA button href */
   secondaryCtaHref?: string;
-  /** Trust bar items — array of short strings like "4.9 Google Rating" */
+  /** Short bold statement above the feature row, bottom block
+   *  (e.g. "Built on evidence. Focused on you."). */
+  tagline?: string;
+  /** Three-column icon + title + description row, bottom block —
+   *  the hero's trust-building pillars (replaces trustItems/logos
+   *  when provided). */
+  features?: { icon: 'user' | 'pulse' | 'support'; title: string; desc: string }[];
+  /** Trust bar items — array of short strings like "4.9 Google Rating".
+   *  Rendered bottom-left when provided and `features` is not. */
   trustItems?: string[];
+  /** Bottom-right logo row — e.g. accreditations/insurance logos.
+   *  PLACEHOLDER-friendly: pass any image paths for now (see index.astro
+   *  for the current placeholder set) and swap for the real confirmed
+   *  set later — zero template changes needed. Rendered only when
+   *  `features` is not provided. */
+  logos?: string[];
+  /** Small uppercase caption above the logo row (e.g. "Accreditations"). */
+  logosLabel?: string;
 }
 
 const {
@@ -56,28 +80,44 @@ const {
   eyebrow,
   headline,
   body,
-  ctaText = 'Book Now',
+  ctaText = 'Book an Appointment',
   ctaHref = '#contact',
   secondaryCtaText,
   secondaryCtaHref,
+  tagline,
+  features,
   trustItems,
+  logos,
+  logosLabel,
 } = Astro.props;
+
+// Mobile hero crop (portrait, lighter) served under 768px via <picture>.
+const imageMobile = heroMobileSrc(image);
+
+const FEATURE_ICONS: Record<string, string> = {
+  user: '<circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c0-4.5 3.5-7 7.5-7s7.5 2.5 7.5 7"/>',
+  pulse: '<path d="M3 12h4l2-7 4 14 2-7h6"/>',
+  support: '<path d="M8.5 13.5 4 18l1 1.8L11 15M15.5 13.5 20 18l-1 1.8L13 15"/><path d="M7 10.5V8a5 5 0 0 1 10 0v2.5"/><rect x="4" y="10.5" width="4" height="5" rx="1.5"/><rect x="16" y="10.5" width="4" height="5" rx="1.5"/>',
+};
 ---
 
-<section class="hero-section relative overflow-hidden bg-[--color-hero-dark] min-h-svh md:min-h-[600px] lg:min-h-[640px] 2xl:max-h-[900px] flex flex-col justify-end">
+<section class="hero-section relative overflow-hidden bg-(--color-hero-dark) min-h-[800px] md:h-screen hero-4k-cap flex flex-col justify-between">
 
   <!-- Background image — also acts as the video poster when `video` is set -->
-  <img
-    src={image}
-    alt={imageAlt}
-    class="absolute inset-0 w-full h-full object-cover object-center"
-    loading="eager"
-    decoding="async"
-    fetchpriority="high"
-    width="1920"
-    height="1080"
-    aria-hidden={imageAlt ? undefined : 'true'}
-  />
+  <picture>
+    {imageMobile && <source media="(max-width: 767px)" srcset={imageMobile} width="800" height="1000" />}
+    <img
+      src={image}
+      alt={imageAlt}
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1920"
+      height="1080"
+      aria-hidden={imageAlt ? undefined : 'true'}
+    />
+  </picture>
 
   <!-- Optional self-hosted MP4 hero video.
        Source is injected by JS only on desktop AND only when
@@ -103,44 +143,111 @@ const {
   )}
 
   <!-- Dark overlay for text readability -->
-  <div class="absolute inset-0 bg-gradient-to-t from-[--color-hero-dark]/90 via-[--color-hero-dark]/50 to-[--color-hero-dark]/30" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-(--color-hero-dark)/90 via-(--color-hero-dark)/50 to-(--color-hero-dark)/30" aria-hidden="true"></div>
 
-  <!-- Content -->
-  <div class="relative z-10 px-[--spacing-section-x] pb-16 pt-32 md:pb-20 md:pt-40 lg:pb-24 lg:pt-48">
-    <div class="max-w-[--spacing-container-max] mx-auto">
+  <!-- Top block: eyebrow + H1 + body + CTA(s) -->
+  <div class="container-main relative z-10 pt-32 md:pt-40 lg:pt-48">
+    {eyebrow && (
+      <span class="eyebrow hero-eyebrow">{eyebrow}</span>
+    )}
 
-      {eyebrow && (
-        <span class="eyebrow">{eyebrow}</span>
-      )}
+    <h1 class="text-white m-0 mt-3 max-w-3xl" set:html={headline} />
 
-      <h1 class="text-white m-0 mt-3 max-w-3xl" set:html={headline} />
+    {body && (
+      <p class="m-0 mt-4 text-white/80 max-w-xl text-lg leading-relaxed">
+        {body}
+      </p>
+    )}
 
-      {body && (
-        <p class="m-0 mt-5 text-white/65 max-w-xl text-lg leading-relaxed">
-          {body}
-        </p>
-      )}
+    {(ctaText || secondaryCtaText) && (
+      <div class="flex flex-col items-start gap-3 mt-8">
+        {ctaText && (
+          <a href={ctaHref} class="btn btn-default">{ctaText}</a>
+        )}
+        {secondaryCtaText && secondaryCtaHref && (
+          <a href={secondaryCtaHref} class="btn btn-transparent">{secondaryCtaText}</a>
+        )}
+      </div>
+    )}
+  </div>
 
-      {(ctaText || secondaryCtaText) && (
-        <div class="flex flex-wrap items-center gap-4 mt-8">
-          {ctaText && (
-            <a href={ctaHref} class="btn btn-default">{ctaText}</a>
-          )}
-          {secondaryCtaText && secondaryCtaHref && (
-            <a href={secondaryCtaHref} class="btn btn-transparent">{secondaryCtaText}</a>
+  <!-- Bottom block: tagline + full-bleed divider + 3-col feature row, or
+       (fallback when no `features` prop) the original subheading/scroll-cue/
+       logo layout. -->
+  <div class="relative z-10">
+    {features && features.length > 0 ? (
+      <div>
+        <div class="container-main">
+          {tagline && (
+            <p class="text-white text-xl md:text-2xl font-semibold m-0">{tagline}</p>
           )}
         </div>
-      )}
+        <!-- Full-bleed divider — deliberately outside .container-main so
+             it spans the full viewport width, not just the 1340px column. -->
+        <div class="w-full border-t border-white/15 mt-6" aria-hidden="true"></div>
+        <div class="container-main">
+          <!-- pt-8 lives on every card and the pb-10/12/16 hero-bottom
+               spacing lives ONLY on the last card, not on the grid or the
+               outer section — so the last row always reaches the hero's
+               true bottom edge regardless of how many rows wrap on mobile. -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {features.map((f) => (
+              <div class="flex flex-col gap-3 pt-8 last:pb-10 last:md:pb-12 last:lg:pb-16">
+                <svg class="hero-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={FEATURE_ICONS[f.icon] ?? ''} />
+                <div>
+                  <h3 class="text-(--color-primary) text-base font-semibold m-0">{f.title}</h3>
+                  <p class="text-white/70 text-sm leading-relaxed mt-1 m-0">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    ) : (
+    <div class="container-main pb-10 md:pb-12 lg:pb-16">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
 
-      {trustItems && trustItems.length > 0 && (
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-10 pt-8 border-t border-white/10">
-          {trustItems.map((item) => (
-            <span class="text-sm font-medium text-white/50">{item}</span>
-          ))}
+      <div>
+        <p class="hero-scroll-cue flex items-center gap-2 text-sm font-medium text-white/60 mt-5">
+          Scroll to learn more
+          <svg class="hero-scroll-cue-arrow w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </p>
+
+        {trustItems && trustItems.length > 0 && (
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 pt-6 border-t border-white/10">
+            {trustItems.map((item) => (
+              <span class="text-sm font-medium text-white/50">{item}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {logos && logos.length > 0 && (
+        <div class="shrink-0">
+          {logosLabel && (
+            <span class="block text-xs font-medium text-white/45 uppercase tracking-widest mb-3">{logosLabel}</span>
+          )}
+          <div class="flex flex-wrap items-center gap-3">
+            {logos.map((logo) => (
+              <div class="bg-white rounded-lg px-3 py-2 flex items-center justify-center">
+                <img
+                  src={logo}
+                  alt=""
+                  width="120"
+                  height="40"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-5 md:h-6 w-auto object-contain"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
     </div>
+    </div>
+    )}
   </div>
 
 </section>
@@ -182,10 +289,43 @@ const {
 )}
 
 <style>
+  /* ── Hero eyebrow — override for the dark hero backdrop ───────
+     The base .eyebrow class (global.css) is --color-headline,
+     a dark amber tuned for text on light section backgrounds — on
+     this dark hero overlay it would read as dark-on-dark. Use the
+     light --color-primary fill colour here instead (light amber
+     reads clearly against the dark overlay, same logic as
+     PageHero's own .page-hero-eyebrow override).                  */
+  .hero-eyebrow {
+    color: var(--color-primary);
+  }
+
+  .hero-feature-icon {
+    width:            2.75rem;
+    height:           2.75rem;
+    padding:          0.6rem;
+    border-radius:    9999px;
+    background-color: rgb(255 255 255 / 0.1);
+    border:           1px solid rgb(255 255 255 / 0.2);
+    color:            #ffffff;
+    flex-shrink:      0;
+  }
+
   .hero-video {
     transition: opacity 0.6s ease;
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-video { transition: none; }
+  }
+
+  .hero-scroll-cue-arrow {
+    animation: hero-scroll-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes hero-scroll-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-scroll-cue-arrow { animation: none; }
   }
 </style>

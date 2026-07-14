@@ -1,0 +1,93 @@
+---
+/**
+ * PricingNotes.astro
+ * ─────────────────────────────────────────────────────
+ * Shared payment / insurance / home-visit notes for the prices pages.
+ * Content from farrellphysiotherapy.co.uk/prices/. Contact details
+ * come from src/data/site.ts (never hardcode).
+ */
+import { site } from '../data/site';
+
+const notes = [
+  {
+    title: 'Payment',
+    body: 'All payments are made after each session. We accept cash, all major credit cards and cheques.',
+  },
+  {
+    title: 'Insurance',
+    body: 'We are recognised by all major health insurers, including Bupa, AXA PPP, WPA, Cigna, Aviva, PruHealth and Nuffield. Please check your cover before booking.',
+  },
+  {
+    title: 'Home Visits & Emergencies',
+    body: 'Home visits can be arranged on request, and same-day or emergency appointments are usually available — just give us a call.',
+  },
+];
+---
+
+<div class="pricing-notes">
+  {notes.map((n) => (
+    <div class="pricing-note">
+      <h3 class="pricing-note-title">{n.title}</h3>
+      <p class="pricing-note-body">{n.body}</p>
+    </div>
+  ))}
+</div>
+
+<div class="pricing-contact">
+  <p class="pricing-contact-text">Questions about pricing or your insurance cover?</p>
+  <div class="pricing-contact-actions">
+    <a href={`tel:${site.contact.phoneTel}`} class="btn btn-default">Call {site.contact.phoneDisplay}</a>
+    <a href="/contact/" class="btn btn-secondary">Send a Message</a>
+  </div>
+</div>
+
+<style>
+  .pricing-notes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .pricing-notes { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  }
+  .pricing-note {
+    padding: 1.5rem;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+  .pricing-note-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-headline);
+  }
+  .pricing-note-body {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-body);
+  }
+
+  .pricing-contact {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+  }
+  .pricing-contact-text {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-headline);
+  }
+  .pricing-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+</style>

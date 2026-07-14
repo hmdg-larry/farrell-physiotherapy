@@ -37,9 +37,15 @@
        --color-primary       → bg-primary  / text-primary  / border-primary
        --color-primary-hover → bg-primary-hover / text-primary-hover
        --color-accent        → bg-accent   / text-accent   / border-accent
+
+     --color-primary is a light amber — great as a button/badge FILL
+     (with dark --color-headline text on top), but too light to use
+     as TEXT on a white/light background (measured ~1.8:1 contrast,
+     fails WCAG AA's 4.5:1). For text/links/accents on light
+     backgrounds use --color-headline (near-black) or --blue-text.
      ────────────────────────────────────────────────────────── */
-  --color-primary:        #DB003E;   /* main brand — buttons, links, accents    */
-  --color-primary-hover:  #dd0d48;   /* hover state — slightly lighter red      */
+  --color-primary:        #FFB442;   /* main brand fill — buttons, badges       */
+  --color-primary-hover:  #E09E3A;   /* hover state — slightly darker amber     */
   --color-accent:         #FDF2F5;   /* light brand tint — section backgrounds  */
 
   /* ──────────────────────────────────────────────────────────
@@ -47,7 +53,7 @@
      Text colours for headings, body, and captions.
      Consistent across all clinic builds.
      ────────────────────────────────────────────────────────── */
-  --color-headline:  #040303;   /* near-black — all headings h1–h6            */
+  --color-headline:  #140B00;   /* near-black — all headings h1–h6            */
   --color-body:      #151515;   /* near-black — paragraphs and body text      */
   --color-caption:   #94a3b8;   /* light grey — captions, labels, meta text   */
 
@@ -55,12 +61,26 @@
      SURFACE & LAYOUT COLOURS
      Background and border colours for sections, cards, inputs.
      ────────────────────────────────────────────────────────── */
-  --color-muted:    #F2F2F2;   /* light grey — alternating section backgrounds */
+  --color-muted:    #F9F7F0;   /* warm cream — alternating section backgrounds, footer */
+  --beige:          #EFE4C7;   /* warm beige — Conditions section background         */
   --color-surface:  #f8fafc;   /* off-white — cards, form backgrounds          */
   --color-border:   #e2e8f0;   /* subtle borders and dividers                  */
+  --color-borderdark: #00000033; /* darker divider — 20% black                 */
   --color-white:    #ffffff;   /* pure white — card backgrounds, nav           */
   --color-black:    #000000;   /* pure black — use sparingly                   */
   --color-hero-dark: #0a0f1a;  /* deep navy-black — legal page hero backgrounds */
+
+  /* ──────────────────────────────────────────────────────────
+     SECONDARY ACCENT — BLUE
+     Used for the About Us / Why Choose Us section backgrounds
+     (solid fill behind the blurred orb). --blue is too light for
+     text on white (~3.2:1, fails WCAG AA's 4.5:1) — --blue-text is
+     a darkened variant of the same hue for that role (eyebrows,
+     active/hover nav states on light backgrounds), same darkened-
+     variant pattern as --color-primary / --color-primary-hover above.
+     ────────────────────────────────────────────────────────── */
+  --blue:      #4397D6;   /* section background fill (About Us, Why Choose Us) */
+  --blue-text: #206192;   /* darkened for text/links/hover on light backgrounds (~6.6:1 on white) */
 
   /* ──────────────────────────────────────────────────────────
      TYPOGRAPHY — FONT FAMILIES
@@ -96,6 +116,9 @@
   --font-heading:  'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
   --font-body:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-sans:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Override Tailwind's default mono stack (Menlo/Monaco…) so mono-tagged
+     UI labels (reviews eyebrows/meta) render in Inter, not Menlo. */
+  --font-mono:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
   /* ──────────────────────────────────────────────────────────
      TYPOGRAPHY — RESPONSIVE HEADING SIZES (clamp)
@@ -164,7 +187,7 @@
   --text-sm:                  0.9375rem;   /* 15px — captions, labels          */
   --text-sm--line-height:     1.6;
 
-  --text-xs:                  0.875rem;    /* 14px — fine print, badges        */
+  --text-xs:                  0.75rem;     /* 12px — fine print, badges        */
   --text-xs--line-height:     1.5;
 
   --text-lg:                  1.125rem;    /* 18px — lead paragraphs, intros   */
@@ -210,7 +233,7 @@
   --spacing-section-y-lg:     5.625rem;  /* 90px   — vertical padding desktop (≥1200px) */
   --spacing-hero-top:         11.25rem;  /* 180px  — hero top padding, all screens      */
   --spacing-section-x:        1.875rem;  /* 30px   — horizontal padding, all screens    */
-  --spacing-container-max:    83.75rem;  /* 1340px — max-width for all containers       */
+  --spacing-container-max:    90rem;     /* 1440px — max-width for all containers       */
   --spacing-card-p:           1.75rem;   /* 28px   — inner padding for cards            */
   --spacing-gap:              0.9375rem; /* 15px   — default flex-layout gap            */
   --spacing-gap-md:           1.5rem;    /* 24px   — medium gap (cards, grids)          */
@@ -310,7 +333,8 @@
   h1, h2, h3, h4, h5, h6 {
     font-family:  var(--font-heading);
     color:        var(--color-headline);
-    font-weight:  var(--font-weight-extrabold);
+    font-weight:  var(--font-weight-medium);
+    text-wrap:    balance;
   }
 
   h1 {
@@ -329,28 +353,24 @@
     font-size:      var(--text-h3);
     line-height:    var(--text-h3--line-height);
     letter-spacing: var(--text-h3--letter-spacing);
-    font-weight:    var(--font-weight-bold);
   }
 
   h4 {
     font-size:      var(--text-h4);
     line-height:    var(--text-h4--line-height);
     letter-spacing: var(--text-h4--letter-spacing);
-    font-weight:    var(--font-weight-bold);
   }
 
   h5 {
     font-size:      var(--text-h5);
     line-height:    var(--text-h5--line-height);
     letter-spacing: var(--text-h5--letter-spacing);
-    font-weight:    var(--font-weight-semibold);
   }
 
   h6 {
     font-size:      var(--text-h6);
     line-height:    var(--text-h6--line-height);
     letter-spacing: var(--text-h6--letter-spacing);
-    font-weight:    var(--font-weight-semibold);
   }
 
   /* ── Body & Paragraph ─────────────────────────────────────*/
@@ -367,7 +387,7 @@
 
   /* ── Links ────────────────────────────────────────────────*/
   a {
-    color:           var(--color-primary);
+    color:           var(--color-headline);
     text-decoration: none;
     transition:      color 0.2s ease;
   }
@@ -644,11 +664,11 @@
   /* Eyebrow label — small uppercase text above the heading   */
   .eyebrow {
     display:         block;
-    font-size:       var(--text-sm);
+    font-size:       var(--text-xs);
     font-weight:     var(--font-weight-semibold);
     letter-spacing:  0.1em;
     text-transform:  uppercase;
-    color:           var(--color-primary);
+    color:           var(--blue-text);
     margin-bottom:   0.75rem;
   }
 
@@ -658,7 +678,7 @@
     line-height: var(--text-lg--line-height);
     color:       var(--color-body);
     max-width:   40rem;
-    margin:      0.75rem auto 0;
+    margin:      0;
   }
 
   /* ════════════════════════════════════════════════════════
@@ -687,30 +707,119 @@
   /* ── Base — shared across all button variants ─────────────
      Every button must have both .btn AND a variant class.
      .btn alone has no colour — it only sets size and shape.
-     ────────────────────────────────────────────────────────*/
+
+     Pill (text) + a SEPARATE circular arrow badge, per the reference
+     design — two distinct rounded shapes side by side, with the page
+     background visibly showing through the gap between them (NOT a
+     single pill-shaped background stretched to cover both — that was
+     the first attempt at this and it visually merged the two shapes
+     into one long pill with no gap, since `.btn` itself is the flex
+     container for both the text AND the circle).
+       ::before — the pill's own background/border, absolutely
+                  positioned and sized to stop short of the circle
+                  (`right: calc(3rem + 5px)`) so it never extends
+                  under the gap or the circle.
+       ::after  — the circle, a genuine flex item (in normal flow,
+                  not absolutely positioned) so it always reserves
+                  real layout space after the gap.
+     Both stay token-driven: `background-color`/`border-color` on
+     each pseudo-element are real CSS custom properties (per variant,
+     below), and the arrow inside the circle is a `background-image`
+     SVG with `stroke='currentColor'` reading that pseudo-element's
+     own `color` — nothing is baked into the SVG itself.
+
+     The maths connecting `gap`, `padding-right` and `::before`'s own
+     `right` cutoff has to agree, or the "gap" between the two shapes
+     silently collapses to zero (this happened once already — the
+     pill and circle rendered as one fused shape because `::before`'s
+     cutoff landed exactly on the circle's own left edge instead of
+     short of it). With `padding-right: 0` (circle sits flush at the
+     button's outer edge) and `gap: calc(1.75rem + 5px)` (the text's
+     own trailing breathing room, 28px, plus the 5px visible gap):
+     `::before`'s cutoff of `calc(3rem + 5px)` from the right edge
+     lands exactly 5px short of the circle's own left edge — the pill
+     background covers the text plus 28px of padding, THEN stops,
+     leaving a genuine 5px gap before the circle begins.
+
+     `#header-cta` (the header's own Book Now button) opts out of the
+     circle via `display:none` on its `::after`, and widens `::before`
+     back to the full pill (`right: 0`) — see its rule further down.
+
+     IMPORTANT — `::before`'s cutoff is a FIXED distance from `.btn`'s
+     own right edge, which only lines up with the circle's actual left
+     edge when the circle sits flush against that edge. That's true
+     for `justify-content: flex-start` (the default) or `space-between`
+     — NOT for `justify-content: center` on a widened (e.g. `w-full`)
+     button, which shifts the circle inward and makes `::before`
+     overlap it, fusing the two shapes back together (this happened
+     once already, on the mobile drawer's `w-full` Book Now — fixed by
+     swapping `justify-center` for `justify-between`, which keeps the
+     circle pinned to the true right edge at any width). If a future
+     `.btn` needs centering inside a wider wrapper, centre the button
+     itself (e.g. `mx-auto` on a block-level wrapper) — don't put
+     `justify-center` on the `.btn` element.                          */
   .btn {
+    position:         relative;
+    z-index:          0; /* establishes a LOCAL stacking context so ::before's
+                             z-index:-1 (below) only ever drops behind this
+                             button's own text — without this, it resolves
+                             against the nearest ancestor stacking context
+                             instead, which can be miles up the DOM (e.g. a
+                             .card wrapping the button), letting THAT
+                             ancestor's own opaque background paint over the
+                             pill entirely. */
     display:          inline-flex;
     align-items:      center;
-    justify-content:  center;
-    gap:              0.5rem;
+    gap:              calc(1.75rem + 5px);
     height:           3rem;              /* 48px — consistent height all buttons */
-    padding:          0 1.875rem;        /* 30px horizontal, height via fixed px  */
+    padding:          0 0 0 1.75rem;     /* no right padding — the circle sits flush at the edge */
     font-family:      var(--font-body);
-    font-size:        var(--text-sm);
+    font-size:        0.875rem;
     font-weight:      500;
     line-height:      1;
-    border-radius:    var(--radius-btn); /* 10px — global button rule             */
-    border:           1px solid transparent;
+    border-radius:    9999px;            /* pill shape — global button rule (focus ring only; see ::before for the visible fill) */
     white-space:      nowrap;
     text-decoration:  none;
     cursor:           pointer;
     transition:
-      background-color  0.2s ease,
       color             0.2s ease,
-      border-color      0.2s ease,
-      opacity           0.2s ease,
-      box-shadow        0.2s ease,
       transform         0.15s ease;
+  }
+
+  .btn::before {
+    content:      '';
+    position:     absolute;
+    z-index:      -1; /* an absolutely-positioned element paints ON TOP of
+                          normal-flow content regardless of source order —
+                          without this the pill background covers the
+                          button's own text entirely. */
+    top:          0;
+    left:         0;
+    bottom:       0;
+    right:        calc(3rem + 5px); /* stop short of the gap + circle */
+    border-radius: 9999px;
+    border:       1px solid transparent;
+    transition:
+      background-color 0.2s ease,
+      border-color      0.2s ease,
+      box-shadow        0.2s ease;
+  }
+
+  .btn::after {
+    content:                '';
+    position:                relative;
+    display:                 flex;
+    width:                   3rem;
+    height:                  3rem;
+    flex-shrink:             0;
+    border-radius:           9999px;
+    background-color:       var(--color-white); /* badge circle — light by default */
+    color:                   var(--color-headline); /* arrow tint (currentColor below) — dark by default */
+    background-image:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M7 7h10v10'/%3E%3C/svg%3E");
+    background-repeat:       no-repeat;
+    background-position:    center;
+    background-size:        1.1rem;
+    pointer-events: none;
   }
 
   .btn:active {
@@ -724,76 +833,148 @@
 
   /* ── btn-default — primary filled ─────────────────────────
      Use on: main CTA buttons, hero CTAs, form submits
-     Background: primary (#DB003E)
-     Text: white
-     Hover: opacity 0.4 (strong fade — clearly interactive)
+     Background: primary · Text: headline · Hover: darker primary
      ────────────────────────────────────────────────────────*/
   .btn-default {
+    color: var(--color-headline);
+  }
+  .btn-default::before {
     background-color: var(--color-primary);
-    color:            var(--color-white);
-    border-color:     transparent;
   }
   .btn-default:hover {
+    color:     var(--color-headline);
+    transform: translateY(-1px);
+  }
+  .btn-default:hover::before {
     background-color: var(--color-primary-hover);
-    color:            var(--color-white);
-    transform:        translateY(-1px);
   }
 
   /* ── btn-white — white filled ──────────────────────────────
      Use on: buttons placed on coloured backgrounds (CTA
      banners, hero sections with dark/brand backgrounds)
-     Background: white
-     Text: headline (near-black)
-     Hover: subtle lift + light shadow
+     Background: white · Text: headline · Hover: subtle lift + shadow
      ────────────────────────────────────────────────────────*/
   .btn-white {
+    color: var(--color-headline);
+  }
+  .btn-white::before {
     background-color: var(--color-white);
-    color:            var(--color-headline);
-    border-color:     transparent;
   }
   .btn-white:hover {
+    color:     var(--color-headline);
+    transform: translateY(-1px);
+  }
+  .btn-white:hover::before {
     background-color: var(--color-muted);
-    color:            var(--color-headline);
-    transform:        translateY(-1px);
     box-shadow:       var(--shadow-raised);
   }
 
   /* ── btn-transparent — ghost on dark background ────────────
      Use on: dark section overlays, coloured hero backgrounds,
      image sections where a solid button would feel heavy
-     Background: transparent
-     Border: white
-     Text: white
-     Hover: subtle white fill (10% opacity)
+     Background: transparent · Border: white · Text: white
      ────────────────────────────────────────────────────────*/
   .btn-transparent {
+    color: var(--color-white);
+  }
+  .btn-transparent::before {
     background-color: transparent;
-    color:            var(--color-white);
     border-color:     var(--color-white);
   }
   .btn-transparent:hover {
+    color:     var(--color-white);
+    transform: translateY(-1px);
+  }
+  .btn-transparent:hover::before {
     background-color: rgb(255 255 255 / 0.12);
-    color:            var(--color-white);
-    transform:        translateY(-1px);
   }
 
   /* ── btn-secondary — ghost on light background ─────────────
      Use on: secondary actions next to btn-default, service
      pages, anywhere a soft call-to-action is needed
-     Background: transparent
-     Border: primary colour
-     Text: primary colour
-     Hover: light accent background tint
+     Background: transparent · Border/Text: headline
      ────────────────────────────────────────────────────────*/
   .btn-secondary {
+    color: var(--color-headline);
+  }
+  .btn-secondary::before {
     background-color: transparent;
-    color:            var(--color-primary);
-    border-color:     var(--color-primary);
+    border-color:     var(--color-headline);
   }
   .btn-secondary:hover {
+    color:     var(--color-headline);
+    transform: translateY(-1px);
+  }
+  .btn-secondary:hover::before {
     background-color: var(--color-accent);
-    color:            var(--color-primary);
-    transform:        translateY(-1px);
+  }
+
+  /* ── Icon badge colour per variant ─────────────────────────
+     btn-white and btn-secondary both sit on light/white surfaces
+     — the default white badge circle would be invisible there, so
+     these two invert to a headline-coloured circle with a white
+     arrow. btn-transparent keeps the base .btn::after default (white
+     circle, dark arrow) — it sits on a transparent/dark hero overlay,
+     unrelated to --color-primary's own value. btn-default matches its
+     own pill fill — circle is the same --color-primary as the pill,
+     arrow is --color-headline (~11:1 contrast against the amber fill,
+     matching the reference design's same-colour pill+circle look).
+     `background-color` sets the circle, `color` sets the arrow tint
+     (the arrow is currentColor).                                    */
+  .btn-white::after,
+  .btn-secondary::after {
+    background-color: var(--color-headline);
+    color:            var(--color-white);
+    /* currentColor is NOT resolved from the element's `color` inside a
+       data-URI background-image SVG, so the white arrow needs its stroke
+       baked in — otherwise it renders black on the dark circle. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M7 7h10v10'/%3E%3C/svg%3E");
+  }
+  .btn-default::after {
+    background-color: var(--color-primary);
+    color:            var(--color-headline);
+  }
+
+  /* ── Header "Book Now" — no arrow badge, compact pill ─────────
+     Per-instance override, not a .btn system change — every other
+     button site-wide keeps the circular arrow badge and the shared
+     .btn height/padding.
+     - No arrow badge (explicitly excluded from the global pattern).
+     - Smaller height + tighter horizontal padding than the shared
+       .btn default (reduced per request — the shared 48px/28px pill
+       felt oversized for the header specifically).
+     - .btn-white (white bg, heading-colour text) by default, reading
+       clearly on the transparent-over-hero state; once `.is-scrolled`
+       the header itself turns solid white, so the button flips to
+       primary bg + headline text instead — reusing .btn-white there
+       would make the pill disappear into the now-white header bar.
+     - No hover drop-shadow — .btn-white:hover's box-shadow (meant
+       for buttons floating over photos/colour) reads as a stray
+       shadow sitting directly in the header bar; suppressed here
+       only, every other .btn-white usage keeps it.                */
+  #header-cta::after {
+    display: none;
+  }
+  #header-cta::before {
+    right: 0; /* no circle reserved — the pill fills the button's full width */
+  }
+  #header-cta {
+    height:       2.5rem;
+    padding:      0 1.25rem;
+    font-size:    0.875rem;
+  }
+  #header-cta:hover::before {
+    box-shadow: none;
+  }
+  #site-header-wrapper.is-scrolled #header-cta {
+    color: var(--color-headline);
+  }
+  #site-header-wrapper.is-scrolled #header-cta::before {
+    background-color: var(--color-primary);
+    border-color:     transparent;
+  }
+  #site-header-wrapper.is-scrolled #header-cta:hover::before {
+    background-color: var(--color-primary-hover);
   }
 
   /* ── Card ──────────────────────────────────────────────────*/
@@ -830,35 +1011,268 @@
      for the full helper + handoff rules.
      ════════════════════════════════════════════════════════ */
 
-  /* ── Header nav item — white bg, primary active colour ───
-     Used on every site-nav-item and mobile-nav-item. Hover
-     styling is kept inline in the Header.astro markup via
-     Tailwind so this only owns the active-state layer.      */
-  .site-nav-item.is-active,
+  /* ── Header nav item — two-state active treatment ─────────
+     Default (transparent header over a dark hero): white text on
+     a subtle white pill, matching the hover treatment. Scrolled
+     (solid white header): primary-tint pill. Dropdown-panel and
+     mobile-drawer items always sit on a white surface regardless
+     of header scroll state, so they keep a flat primary-colour
+     active treatment (no pill needed).                          */
+  .site-nav-item.is-active {
+    color:            #ffffff;
+    background-color: rgb(255 255 255 / 0.15);
+  }
+  #site-header-wrapper.is-scrolled .site-nav-item.is-active,
+  #site-header-wrapper.is-scrolled .site-nav-item.is-active:hover {
+    color:            var(--color-headline);
+    background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
   .nav-dropdown-item.is-active,
   .mobile-nav-item.is-active,
   .mobile-sub-item.is-active {
-    color:       var(--color-primary);
+    color:       var(--color-headline);
     font-weight: 500;
   }
+  .nav-dropdown-item.is-active {
+    background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
 
-  /* ── Footer link — dark bg, semibold white for active ────
-     Dark footer background requires a stronger active state
-     than hover. Default = caption grey, hover = white/400,
-     active = white/600. Three-tier contrast keeps current
-     page distinguishable from hover without extra decoration. */
+  /* ── Footer link — light cream bg (--color-muted) ─────────
+     Default = body (dark), hover = headline (darker/near-black),
+     active = blue-text (brand colour) + semibold — the brand
+     colour on active gives current-page a distinct signal beyond
+     just a weight change, not just a lighter/darker dark-on-dark
+     shift that would be hard to perceive. */
   .footer-link {
-    color:       var(--color-caption);
+    color:       var(--color-body);
+    font-weight: 500;
     transition:  color 0.2s ease;
   }
   .footer-link:hover {
-    color: #ffffff;
+    color: var(--color-headline);
   }
   .footer-link.is-active {
-    color:       #ffffff;
+    color:       var(--blue-text);
     font-weight: 600;
   }
 
+
+  /* ════════════════════════════════════════════════════════
+     TWO-STATE HEADER (transparent-over-hero → solid on scroll)
+     ════════════════════════════════════════════════════════
+     Default: #site-header-wrapper is transparent so the hero image
+     shows through (header is `position: fixed` — see Header.astro).
+     Text/nav render white for contrast against the dark hero overlay.
+     A subtle full-width hairline sits at the header's bottom edge in
+     both states (light on transparent, `--color-border` on scrolled)
+     since the border lives on the header element itself, not the
+     inner .container-main, it always spans the full viewport width.
+     Past scrollY > 60, Header.astro's inline script adds `.is-scrolled`,
+     flipping to a solid white bar with dark text. The logo itself is a
+     dual-logo crossfade (see .claude/skills/header-menu.md "Two-State
+     Header System"): the white wordmark (logo-white.svg) sits in-flow
+     and is visible by default, the full-colour wordmark (logo.svg) is
+     absolutely stacked on top and fades in once `.is-scrolled` is
+     present — its dark wordmark needs a solid light background to
+     stay legible. ═══════════════════════════════════════════════ */
+
+  #site-header-wrapper {
+    background-color: transparent;
+    border-bottom:    1px solid rgb(255 255 255 / 0.15);
+  }
+  #site-header-wrapper .site-logo-mark--scrolled {
+    opacity: 0;
+  }
+  #site-header-wrapper .site-nav-item {
+    color: #ffffff;
+  }
+  #site-header-wrapper .site-nav-item:hover {
+    color: rgb(255 255 255 / 0.75);
+  }
+  #site-header-wrapper .mobile-toggle-bar {
+    background-color: #ffffff;
+  }
+
+  #site-header-wrapper.is-scrolled {
+    background-color:  var(--color-white);
+    border-bottom-color: var(--color-border);
+    box-shadow:        var(--shadow-nav);
+  }
+  #site-header-wrapper.is-scrolled .site-logo-mark--transparent {
+    opacity: 0;
+  }
+  #site-header-wrapper.is-scrolled .site-logo-mark--scrolled {
+    opacity: 1;
+  }
+  #site-header-wrapper.is-scrolled .site-nav-item {
+    color: var(--color-body);
+  }
+  #site-header-wrapper.is-scrolled .site-nav-item:hover {
+    color: var(--blue-text);
+  }
+  #site-header-wrapper.is-scrolled .mobile-toggle-bar {
+    background-color: var(--color-headline);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     MEGA MENU PANEL (About / Services / Our Clinics)
+     ════════════════════════════════════════════════════════
+     Wider, more spacious variant of .nav-dropdown-panel — used as
+     the direct visible surface for grouped-dropdown and dropdown
+     mega panels (which render their own list/grid inside, rather
+     than nesting a .nav-dropdown-panel). Left-column lists always
+     use .nav-dropdown-item; an optional right-hand .mega-card grid
+     (image + title + desc) appears when the entry has `cards` in
+     src/data/navigation.ts, separated by a thin divider column. */
+  .mega-panel {
+    position:      relative;
+    background:    #ffffff;
+    border-radius: 1rem;
+    box-shadow:    0 20px 50px rgb(0 0 0 / 0.15), 0 4px 12px rgb(0 0 0 / 0.08);
+    padding:       1.5rem;
+    /* Triggers are now spread across a centred nav (see Header.astro),
+       so a fixed-width panel centred under a trigger near the viewport
+       edge could clip — clamp to the viewport as a safety net. */
+    max-width:     calc(100vw - 2rem);
+  }
+  .mega-eyebrow {
+    display:         block;
+    font-size:       var(--text-xs);
+    font-weight:     600;
+    letter-spacing:  0.1em;
+    text-transform:  uppercase;
+    color:           var(--color-caption);
+  }
+  .mega-card {
+    display:         flex;
+    flex-direction:  column;
+    text-decoration: none;
+    transition:      transform 0.2s ease;
+  }
+  .mega-card:hover {
+    transform: translateY(-2px);
+  }
+  .mega-card-img {
+    width:         100%;
+    aspect-ratio:  5 / 3;
+    object-fit:    cover;
+    border-radius: 0.75rem;
+  }
+  .mega-card-title {
+    display:     block;
+    margin-top:  0.75rem;
+    font-size:   0.875rem;
+    font-weight: 600;
+    color:       var(--color-headline);
+  }
+  .mega-card-desc {
+    display:     block;
+    margin-top:  0.25rem;
+    font-size:   0.875rem;
+    color:       var(--color-caption);
+    line-height: 1.5;
+  }
+  .mega-card--mobile {
+    border:  1px solid var(--color-border);
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+  /* Mega cards are a desktop-only flourish — hide the mobile-drawer
+     copies on tablet and mobile. */
+  .mega-cards-mobile {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mega-card { transition: none; }
+  }
+
+  /* ════════════════════════════════════════════════════════
+     HEADER DROPDOWN + FLYOUT NAVIGATION
+     ════════════════════════════════════════════════════════
+     Pure-CSS hover/focus-within open (see .claude/skills/header-menu.md).
+     JS only syncs aria-expanded for screen readers — never controls the
+     visual open state. Keyboard users tab into the panel, mouse users
+     hover; both work without JS. ════════════════════════════════════ */
+
+  .nav-dropdown-panel {
+    position:      relative;
+    background:    #ffffff;
+    border-radius: 0.75rem;
+    box-shadow:    0 8px 32px rgba(0, 0, 0, 0.11), 0 2px 8px rgba(0, 0, 0, 0.07);
+    padding:       0.375rem;
+  }
+  .nav-dropdown-panel--caret::before {
+    content:      '';
+    position:     absolute;
+    top:          -6px;
+    left:         1.25rem;
+    border-left:  7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #ffffff;
+  }
+  .nav-dropdown-item {
+    display:        block;
+    padding:        0.625rem 1rem;
+    font-size:      0.875rem;
+    font-family:    var(--font-heading);
+    color:          var(--color-body);
+    text-decoration: none;
+    border-radius:  80px;
+    transition:     background-color 0.15s ease, color 0.15s ease;
+  }
+  .nav-dropdown-item:hover,
+  .nav-dropdown-item:focus-visible {
+    background-color: var(--color-primary);
+    color:            var(--color-headline);
+    outline:          none;
+  }
+  .nav-dropdown-group-title {
+    padding:        0.5rem 1rem 0.25rem;
+    font-size:      var(--text-xs);
+    font-weight:    600;
+    color:          var(--color-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-flyout-panel { transition: none; }
+  }
+
+  /* ── Mobile accordion (nav drawer) ───────────────────────────
+     Nested accordions (e.g. a "What We Treat" category inside the
+     top-level accordion) reuse this same class — no separate rules
+     needed for depth. */
+  .mobile-nav-item {
+    display:        block;
+    width:          100%;
+    padding:        0.75rem 0;
+    font-size:      0.875rem;
+    font-family:    var(--font-heading);
+    font-weight:    500;
+    color:          var(--color-headline);
+    text-decoration: none;
+    text-align:     left;
+    border-bottom:  1px solid var(--color-border);
+    transition:     color 0.15s ease;
+    background:     none;
+  }
+  .mobile-nav-item:hover { color: var(--color-headline); }
+  .mobile-sub-item {
+    display:        block;
+    padding:        0.5rem 0;
+    font-size:      0.875rem;
+    font-family:    var(--font-heading);
+    color:          var(--color-body);
+    text-decoration: none;
+    transition:     color 0.15s ease;
+  }
+  .mobile-sub-item:hover { color: var(--color-headline); }
+  .mobile-accordion-chevron {
+    transition: transform 0.2s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-accordion-chevron { transition: none; }
+  }
 
   /* ── Form inputs ───────────────────────────────────────────*/
   .input {
@@ -885,13 +1299,30 @@
 
 
 /* ============================================================
+   HERO 4K HEIGHT CAP
+   Full viewport height (h-screen) on all screens up to 2160px.
+   On 4K+ (viewport height >= 2160px), cap at 85vh + max-height
+   1200px to prevent a massive empty hero. Must stay OUTSIDE any
+   @layer block — see .claude/agents/frontend-builder.md "Hero
+   Section — Full Height with 4K Cap".
+   ============================================================ */
+
+@media (min-height: 2160px) {
+  .hero-4k-cap {
+    height:     85vh;
+    max-height: 1200px;
+  }
+}
+
+
+/* ============================================================
    SWIPER OVERRIDES
    Bring Swiper's accent colours in line with brand colour.
    ============================================================ */
 
 .swiper-button-next,
 .swiper-button-prev {
-  color: var(--color-primary) !important;
+  color: var(--color-headline) !important;
 }
 .swiper-pagination-bullet-active {
   background: var(--color-primary) !important;

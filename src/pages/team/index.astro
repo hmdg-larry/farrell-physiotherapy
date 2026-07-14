@@ -1,0 +1,33 @@
+---
+/**
+ * team/index.astro — Team directory
+ * ─────────────────────────────────────────────────────────
+ * Renders the shared homepage <TeamSection /> (CTA hidden here) so this page matches the
+ * home page's team section exactly (single source of truth). Each card
+ * links to its own profile page at /team/{slug}/. Individual
+ * profiles live in the sibling [slug].astro route, same pattern as
+ * src/pages/condition/(index|[...slug]).astro.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import TeamSection from '../../components/TeamSection.astro';
+import { site } from '../../data/site';
+
+const heroImg = '/images/hero/team-hero.avif';
+---
+
+<BaseLayout
+  title={`Meet the Team — ${site.name}`}
+  description={`Meet the HCPC-registered physiotherapists at ${site.name}.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="About"
+    headline="Meet the Team"
+    intro="Get to know our team, then book with the physiotherapist who's right for you today."
+  />
+
+  <TeamSection showCta={false} />
+</BaseLayout>

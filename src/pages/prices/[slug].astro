@@ -1,0 +1,130 @@
+---
+/**
+ * prices/[slug].astro — Per-location pricing page template
+ * ─────────────────────────────────────────────────────────
+ * Renders the clinic's real price list (src/data/locations.ts →
+ * location.prices) in a two-column layout mirroring the homepage
+ * "Why Choose Us" section (price card + blue/orb visual panel), plus
+ * shared payment / insurance / home-visit notes. Content from
+ * farrellphysiotherapy.co.uk/prices/.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import PriceCard from '../../components/PriceCard.astro';
+import PricingNotes from '../../components/PricingNotes.astro';
+import { locations } from '../../data/locations';
+import { site } from '../../data/site';
+import { buildBreadcrumbList } from '../../lib/content/normalize';
+
+export const getStaticPaths = (() => {
+  return locations.map((location) => ({
+    params: { slug: location.slug },
+    props: { location },
+  }));
+}) satisfies GetStaticPaths;
+
+const { location } = Astro.props;
+const heroImg = '/images/hero/hero-pricing.avif';
+
+// Per-clinic photo in the blue visual panel (same images as clinics/[slug]).
+const sectionImages: Record<string, string> = {
+  chelmsford: '/images/hero/hero-chelmsford.avif',
+  witham: '/images/hero/hero-witham.avif',
+  'leigh-on-sea': '/images/hero/hero-leigh.avif',
+};
+const sectionImg = sectionImages[location.slug] ?? '/images/placeholder.webp';
+
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const breadcrumbLd = buildBreadcrumbList([
+  { name: 'Home', url: `${_siteOrigin}/` },
+  { name: 'Prices', url: `${_siteOrigin}/prices/` },
+  { name: location.name, url: _siteOrigin + location.pricesHref },
+]);
+---
+
+<BaseLayout
+  title={`Prices — ${location.name} — ${site.name}`}
+  description={`Treatment prices at the ${site.name} ${location.name} clinic — initial assessments from ${location.prices[0]?.price ?? '£50'}. Payment taken after each session.`}
+  heroImage={heroImg}
+  schema={breadcrumbLd}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Prices"
+    headline={`Prices — ${location.name}`}
+    intro={`See our ${location.name} prices below, then book your appointment online or by phone — no hidden fees.`}
+  />
+
+  <section class="pricing firstsection">
+    <div class="container-main">
+      <div class="pricing-grid grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div class="pricing-card-col">
+          <PriceCard location={location} />
+        </div>
+        <div class="pricing-visual" aria-hidden="true">
+          <div class="pricing-orb"></div>
+          <img
+            src={sectionImg}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width="800"
+            height="900"
+            class="pricing-img"
+          />
+        </div>
+      </div>
+
+      <div class="pricing-info">
+        <PricingNotes />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pricing-info {
+    margin-top: 3.5rem;
+  }
+
+  /* Blue + blurred-orb visual — same treatment as the homepage
+     WhyChooseUsSection panel. Image on the right; on mobile it stacks
+     under the price card. */
+  .pricing-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 340px;
+    padding: 1.5rem;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--blue);
+  }
+  @media (min-width: 1024px) {
+    .pricing-visual { min-height: 460px; padding: 2.5rem; order: 1; }
+    .pricing-card-col { order: 0; }
+  }
+  .pricing-orb {
+    position: absolute;
+    inset: 0% auto auto 0%;
+    width: 22em;
+    height: 22em;
+    border-radius: 100%;
+    filter: blur(100px);
+    pointer-events: none;
+    background-image: radial-gradient(circle, #d91e01 13.95%, #ff8100 40.41%, #ffb202 70.52%, #fabbe6 90%);
+    transform: translate(-45%, -45%);
+  }
+  .pricing-img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+  }
+</style>

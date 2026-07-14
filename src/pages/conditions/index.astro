@@ -1,0 +1,237 @@
+---
+/**
+ * condition/index.astro — "What We Treat" hub (grouped directory)
+ * ─────────────────────────────────────────────────────────
+ * All 13 condition categories from src/data/conditions.ts, each shown
+ * as an editorial group: a sticky category aside (count + title +
+ * excerpt + "view category" link) beside a grid of every condition in
+ * that category as a linkable tile. Everything renders — no tabs, no
+ * hidden panels, no JS — so the full taxonomy is scannable and each
+ * individual condition links straight to its detail page. Below lg the
+ * aside stacks above its condition grid. Link target for the header's
+ * "What We Treat" nav item.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { conditionCategories } from '../../data/conditions';
+import { site } from '../../data/site';
+
+const heroImg = '/images/hero/hero-conditions.avif';
+---
+
+<BaseLayout
+  title={`What We Treat — ${site.name}`}
+  description={`Conditions treated at ${site.name} — from back and neck pain to sports injuries, joint problems, and more.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="What We Treat"
+    headline="Conditions We Treat"
+    intro="Whatever your pain or injury, book an assessment and our team will find the underlying cause."
+  />
+
+  <section class="conditions firstsection">
+    <div class="container-main">
+      {conditionCategories.map((cat, i) => {
+        return (
+          <div class="cond-group">
+            <div class="cond-group-aside">
+              <div class="cond-group-heading">
+                <span class="cond-group-num" aria-hidden="true">{i + 1}</span>
+                <h2 class="cond-group-title">{cat.title}</h2>
+              </div>
+              {cat.excerpt && <p class="cond-group-excerpt">{cat.excerpt}</p>}
+              <a href={cat.href} class="cond-group-link">
+                View {cat.title}
+                <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="2" y1="7" x2="11" y2="7" />
+                  <polyline points="7 3 11 7 7 11" />
+                </svg>
+              </a>
+            </div>
+
+            <ul class="cond-group-grid">
+              {cat.conditions.map((condition) => (
+                <li>
+                  <a href={condition.href} class="cond-tile">
+                    <span class="cond-tile-marker" aria-hidden="true"></span>
+                    <span class="cond-tile-name">{condition.title}</span>
+                    <svg class="cond-tile-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="2" y1="7" x2="11" y2="7" />
+                      <polyline points="7 3 11 7 7 11" />
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .conditions {
+    background-color: var(--beige);
+  }
+
+  /* ── Category group ────────────────────────────────────────── */
+  .cond-group {
+    display: grid;
+    gap: 1.75rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--color-borderdark);
+  }
+  .cond-group:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .cond-group:last-of-type {
+    padding-bottom: 0;
+  }
+  @media (min-width: 1024px) {
+    .cond-group {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      padding: 4rem 0;
+      align-items: start;
+    }
+  }
+
+  /* ── Aside (category intro) ────────────────────────────────── */
+  .cond-group-aside {
+    position: relative;
+  }
+  @media (min-width: 1024px) {
+    .cond-group-aside {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .cond-group-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .cond-group-num {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 100%;
+    background: var(--color-primary);
+    color: var(--color-headline);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .cond-group-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.75rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--color-headline);
+    text-wrap: balance;
+  }
+  .cond-group-excerpt {
+    margin: 0.875rem 0 0;
+    color: var(--color-body);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+  }
+  .cond-group-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    margin-top: 1.25rem;
+    font-family: var(--font-heading);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-headline);
+    text-decoration: none;
+  }
+  .cond-group-link svg {
+    color: var(--blue-text);
+    transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cond-group-link:hover svg { transform: translateX(4px); }
+
+  /* ── Condition tiles ───────────────────────────────────────── */
+  .cond-group-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cond-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    color: var(--color-headline);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .cond-tile:hover {
+    box-shadow: var(--shadow-raised);
+    transform: translateY(-2px);
+  }
+  .cond-tile:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .cond-tile-marker {
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    transition: transform 0.2s ease;
+  }
+  .cond-tile:hover .cond-tile-marker { transform: scale(1.4); }
+  .cond-tile-name {
+    flex: 1;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .cond-tile-arrow {
+    flex-shrink: 0;
+    color: var(--blue-text);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cond-tile:hover .cond-tile-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cond-tile,
+    .cond-tile-marker,
+    .cond-tile-arrow,
+    .cond-group-link svg {
+      transition: none;
+    }
+    .cond-tile:hover { transform: none; }
+  }
+</style>

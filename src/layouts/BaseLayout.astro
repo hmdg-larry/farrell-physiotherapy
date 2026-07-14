@@ -39,12 +39,17 @@ interface Props {
 
 const {
   title,
-  description = "Professional clinic providing expert care in the UK.",
+  description = "Expert physiotherapy in Essex, with clinics in Chelmsford, Witham and Leigh-on-Sea. HCPC-registered physiotherapists treating pain, injury and movement problems.",
   noindex = true,
   heroImage,
   heroImageMobile,
   schema,
 } = Astro.props;
+
+// Mobile hero preload variant. Falls back to the -mobile.avif sibling of
+// heroImage (convention in public/images/hero/) when not passed explicitly,
+// so every page's mobile hero is preloaded without per-page wiring.
+const heroImageMobileResolved = heroImageMobile ?? heroMobileSrc(heroImage);
 
 // Canonical / OG URL.
 // Pages prerender at build time, so Astro.url.origin would bake the
@@ -61,8 +66,10 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import ReviewsSection from "../components/ReviewsSection.astro";
+import FooterCTA from "../components/FooterCTA.astro";
 import CookieConsent from "../components/CookieConsent.astro";
 import { cookieConsentConfig } from "../config/cookie-consent.config";
+import { heroMobileSrc } from "../lib/content/normalize";
 
 const cfg = cookieConsentConfig;
 ---
@@ -73,7 +80,9 @@ const cfg = cookieConsentConfig;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- ── LCP hero image preload ───────────────────────────────
          Pass heroImage (desktop) and optionally heroImageMobile.
@@ -81,13 +90,13 @@ const cfg = cookieConsentConfig;
          so each device only fetches the variant it actually paints.
          This is the single highest-impact LCP optimisation.
     ──────────────────────────────────────────────────────────── -->
-    {heroImage && heroImageMobile && (
+    {heroImage && heroImageMobileResolved && (
       <>
         <link rel="preload" as="image" href={heroImage} media="(min-width: 768px)" fetchpriority="high" />
-        <link rel="preload" as="image" href={heroImageMobile} media="(max-width: 767px)" fetchpriority="high" />
+        <link rel="preload" as="image" href={heroImageMobileResolved} media="(max-width: 767px)" fetchpriority="high" />
       </>
     )}
-    {heroImage && !heroImageMobile && (
+    {heroImage && !heroImageMobileResolved && (
       <link rel="preload" as="image" href={heroImage} fetchpriority="high" />
     )}
 
@@ -280,6 +289,9 @@ const cfg = cookieConsentConfig;
          src/data/reviews.ts; see .claude/skills/googlereviews-carousel.md
          for full pattern documentation + customisation guide. -->
     <ReviewsSection />
+
+    <!-- ── Pre-footer call to action ────────────────────── -->
+    <FooterCTA />
 
     <!-- ── Footer ────────────────────────────────────── -->
     <Footer />

@@ -16,9 +16,13 @@
  *   - image       Path to .webp hero background
  *   - imageAlt    Alt text (empty if purely decorative)
  *   - eyebrow     Small uppercase label above the H1
- *   - headline    H1 text. Use <em>word</em> for an italic accent.
+ *   - headline    H1 text. Plain text only — no <em>/<i>/accent styling.
  *   - intro       Optional supporting paragraph below the H1
+ *   - showCta     Show the "Book an Appointment" button (default true)
+ *   - ctaText/ctaHref  Override the CTA label/target (default: site booking)
  */
+import { site } from '../data/site';
+import { heroMobileSrc } from '../lib/content/normalize';
 
 interface Props {
   image: string;
@@ -26,6 +30,12 @@ interface Props {
   eyebrow?: string;
   headline: string;
   intro?: string;
+  showCta?: boolean;
+  ctaText?: string;
+  ctaHref?: string;
+  /** Shorter hero — smaller min-height + padding (e.g. contact page,
+      so the content below is visible sooner). */
+  compact?: boolean;
 }
 
 const {
@@ -34,22 +44,32 @@ const {
   eyebrow,
   headline,
   intro,
+  showCta = true,
+  ctaText = 'Book an Appointment',
+  ctaHref = site.bookingCta.href,
+  compact = false,
 } = Astro.props;
+
+// Mobile hero crop (portrait, lighter) served under 768px via <picture>.
+const imageMobile = heroMobileSrc(image);
 ---
 
-<section class="page-hero relative isolate overflow-hidden bg-[--color-hero-dark]">
+<section class:list={["page-hero relative isolate overflow-hidden bg-(--color-hero-dark)", { "page-hero--compact": compact }]}>
 
-  <img
-    src={image}
-    alt={imageAlt}
-    class="page-hero-img absolute inset-0 w-full h-full object-cover object-center"
-    loading="eager"
-    decoding="async"
-    fetchpriority="high"
-    width="1920"
-    height="800"
-    aria-hidden={imageAlt ? undefined : 'true'}
-  />
+  <picture>
+    {imageMobile && <source media="(max-width: 767px)" srcset={imageMobile} width="800" height="1000" />}
+    <img
+      src={image}
+      alt={imageAlt}
+      class="page-hero-img absolute inset-0 w-full h-full object-cover object-center"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1920"
+      height="800"
+      aria-hidden={imageAlt ? undefined : 'true'}
+    />
+  </picture>
 
   <div class="page-hero-overlay absolute inset-0" aria-hidden="true"></div>
 
@@ -58,6 +78,7 @@ const {
       {eyebrow && <span class="eyebrow page-hero-eyebrow">{eyebrow}</span>}
       <h1 class="page-hero-h1 text-white" set:html={headline} />
       {intro && <p class="page-hero-intro">{intro}</p>}
+      {showCta && <a href={ctaHref} class="btn btn-default page-hero-cta">{ctaText}</a>}
     </div>
   </div>
 
@@ -110,19 +131,37 @@ const {
     color:  #ffffff;
   }
 
-  /* .heading-accent used instead of <em> — <em> carries semantic stress
-     emphasis that some screen readers announce aloud. The italic colour
-     accent here is purely decorative so a neutral <span> is correct. */
-  .page-hero-h1 :global(.heading-accent) {
-    font-style: italic;
-    color:      var(--color-primary);
-  }
-
   .page-hero-intro {
     margin:      1.25rem 0 0;
     color:       rgb(255 255 255 / 0.72);
     font-size:   var(--text-lg);
     line-height: 1.6;
     max-width:   34rem;
+  }
+
+  .page-hero-cta {
+    margin-top: 2rem;
+  }
+
+  /* Compact variant — clears the fixed header but keeps the hero short
+     so the content below (e.g. the contact form) is visible sooner. */
+  .page-hero--compact {
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+    min-height: 0;
+  }
+  @media (min-width: 768px) {
+    .page-hero--compact {
+      padding-top: 7rem;
+      padding-bottom: 3.5rem;
+      min-height: 0;
+    }
+  }
+  @media (min-width: 1024px) {
+    .page-hero--compact {
+      padding-top: 8rem;
+      padding-bottom: 4rem;
+      min-height: 0;
+    }
   }
 </style>

@@ -1,0 +1,68 @@
+---
+/**
+ * ConditionsSection.astro
+ * ─────────────────────────────────────────────────────
+ * Homepage "Conditions We Treat" section — a directory-style category
+ * grid on a solid deep-navy background with a subtle on-brand glow.
+ * Deliberately NOT a photo hero (earlier version mirrored the Hero's
+ * full-bleed image + bottom-up gradient, which read as a second hero):
+ * this surfaces all condition categories with counts, giving real
+ * navigational value and needing no photography. Each card links to
+ * its category hub; the CTA links to the full "/conditions/" hub page.
+ * Data: src/data/conditions.ts (single source of truth).
+ */
+import { conditionCategories } from '../data/conditions';
+import ConditionCategoryCard from './ConditionCategoryCard.astro';
+
+interface Props {
+  /** Category href to omit from the grid (e.g. the current hub page). */
+  excludeHref?: string;
+  /** Section numbering class for the padding system. Defaults to the
+   *  homepage placement; a condition hub passes "secondsection". */
+  numberClass?: string;
+}
+const { excludeHref, numberClass = 'thirdsection' } = Astro.props;
+
+// Full count drives the intro copy (total specialist areas); the grid
+// itself may omit the current category when excludeHref is set.
+const categoryCount = conditionCategories.length;
+const categories = excludeHref
+  ? conditionCategories.filter((cat) => cat.href !== excludeHref)
+  : conditionCategories;
+---
+
+<section class:list={["conditions conditions-teaser relative overflow-hidden", numberClass]}>
+  <div class="container-main">
+
+    <div class="conditions-teaser-head grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end mb-12 lg:mb-16">
+      <div class="max-w-2xl">
+        <span class="eyebrow">What We Treat</span>
+        <h2 class="text-(--color-headline) m-0 mt-3">Conditions We Treat</h2>
+        <p class="m-0 mt-4 text-(--color-body) text-lg leading-relaxed">
+          From back and neck pain to sports injuries and joint problems, our
+          HCPC-registered team treats a wide range of conditions across {categoryCount}
+          specialist areas.
+        </p>
+      </div>
+      <a href="/conditions/" class="btn btn-default shrink-0">Explore What We Treat</a>
+    </div>
+
+    <ul class="conditions-teaser-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 list-none m-0 p-0">
+      {categories.map((cat) => (
+        <li>
+          <ConditionCategoryCard category={cat} />
+        </li>
+      ))}
+    </ul>
+
+  </div>
+</section>
+
+<style>
+  /* Warm beige background — a distinct light treatment that sits with
+     the rest of the site's light sections (not a dark photo hero).
+     The category cards live in ConditionCategoryCard.astro. */
+  .conditions-teaser {
+    background-color: var(--beige);
+  }
+</style>

@@ -95,7 +95,7 @@ const errorId   = `form-error-${id}`;
   data-recaptcha-key={recaptchaSiteKey}
   data-redirect={redirect}
   novalidate
-  class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
+  class="bg-(--color-surface) border border-(--color-border) rounded-(--radius-card) p-6 flex flex-col gap-5"
 >
   {/* Web3Forms access key — public by design, safe to expose. Bound to the
       Web3Forms dashboard form whose "Recipient Emails" = primary inbox. */}
@@ -120,8 +120,8 @@ const errorId   = `form-error-${id}`;
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
     <div class="flex flex-col gap-2">
-      <label for={nameId} class="text-sm font-semibold text-[--color-headline]">
-        Full Name <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      <label for={nameId} class="text-sm font-semibold text-(--color-headline)">
+        Full Name <span class="text-(--color-headline)" aria-hidden="true">*</span>
       </label>
       <input
         id={nameId}
@@ -134,8 +134,8 @@ const errorId   = `form-error-${id}`;
       />
     </div>
     <div class="flex flex-col gap-2">
-      <label for={emailId} class="text-sm font-semibold text-[--color-headline]">
-        Email Address <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      <label for={emailId} class="text-sm font-semibold text-(--color-headline)">
+        Email Address <span class="text-(--color-headline)" aria-hidden="true">*</span>
       </label>
       <input
         id={emailId}
@@ -151,7 +151,7 @@ const errorId   = `form-error-${id}`;
 
   {showPhone && (
     <div class="flex flex-col gap-2">
-      <label for={phoneId} class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+      <label for={phoneId} class="text-sm font-semibold text-(--color-headline)">Phone Number</label>
       <input
         id={phoneId}
         type="tel"
@@ -164,8 +164,8 @@ const errorId   = `form-error-${id}`;
   )}
 
   <div class="flex flex-col gap-2">
-    <label for={messageId} class="text-sm font-semibold text-[--color-headline]">
-      Your Message <span class="text-[--color-primary]" aria-hidden="true">*</span>
+    <label for={messageId} class="text-sm font-semibold text-(--color-headline)">
+      Your Message <span class="text-(--color-headline)" aria-hidden="true">*</span>
     </label>
     <textarea
       id={messageId}
@@ -180,7 +180,7 @@ const errorId   = `form-error-${id}`;
   {/* Status messages — hidden until submission completes */}
   <div
     id={successId}
-    class="hidden rounded-[--radius-input] bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800"
+    class="hidden rounded-(--radius-input) bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800"
     role="status"
     aria-live="polite"
   >
@@ -188,7 +188,7 @@ const errorId   = `form-error-${id}`;
   </div>
   <div
     id={errorId}
-    class="hidden rounded-[--radius-input] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
+    class="hidden rounded-(--radius-input) bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
     role="alert"
     aria-live="assertive"
   >
@@ -215,7 +215,45 @@ const errorId   = `form-error-${id}`;
 </form>
 
 {recaptchaSiteKey && (
-  <script is:inline src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+  <script is:inline define:vars={{ _rcKey: recaptchaSiteKey }}>
+    // reCAPTCHA defer-on-intent — load only when the user engages a form.
+    // Saves ~150KB JS + a TLS handshake + the v3 main-thread scoring loop off
+    // first paint. The submit handler's grecaptcha.ready() call queues
+    // correctly against a late-loaded script, so submission flow is unaffected.
+    // See .claude/skills/recaptcha-defer-on-intent.md
+    (function () {
+      var loaded = false;
+
+      function loadReCaptcha() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.google.com/recaptcha/api.js?render=' + _rcKey;
+        s.async = true;
+        document.head.appendChild(s);
+      }
+
+      function bind() {
+        // Covers every <ContactForm /> on the page (same selector the submit
+        // handler uses). focusin bubbles, so one listener covers all fields.
+        var forms = document.querySelectorAll('form[data-subject-prefix]');
+        for (var i = 0; i < forms.length; i++) {
+          var form = forms[i];
+          form.addEventListener('focusin',     loadReCaptcha, { once: true, passive: true });
+          form.addEventListener('pointerdown', loadReCaptcha, { once: true, passive: true });
+          // Submit fallback — programmatic submit + password-manager autofill.
+          // No { once: true }: the loaded flag short-circuits repeat calls.
+          form.addEventListener('submit',      loadReCaptcha, { passive: true });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind, { once: true });
+      } else {
+        bind();
+      }
+    })();
+  </script>
 )}
 
 <script>

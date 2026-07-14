@@ -1,0 +1,96 @@
+---
+/**
+ * ConditionCategoryCard.astro
+ * ─────────────────────────────────────────────────────
+ * A single condition-category card (title + condition count + arrow).
+ * Shared by the homepage ConditionsSection and the /condition/ hub so
+ * the two stay visually identical. White card on the site's global
+ * .card language, sits on the beige "conditions" section background.
+ */
+import type { ConditionCategory } from '../lib/content/types';
+
+interface Props {
+  category: ConditionCategory;
+}
+const { category } = Astro.props;
+const count = category.conditions.length;
+---
+
+<a href={category.href} class="condition-card">
+  <span class="condition-card-title">{category.title}</span>
+  <span class="condition-card-foot">
+    <span class="condition-card-count">
+      {count} condition{count === 1 ? '' : 's'}
+    </span>
+    <svg class="condition-card-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="3" y1="7" x2="11" y2="7" />
+      <polyline points="7 3 11 7 7 11" />
+    </svg>
+  </span>
+</a>
+
+<style>
+  .condition-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    height: 100%;
+    padding: 1.375rem 1.375rem 1.25rem;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .condition-card:hover {
+    box-shadow: var(--shadow-raised);
+    transform: translateY(-2px);
+  }
+  .condition-card:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .condition-card-title {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--color-headline);
+    text-wrap: balance;
+  }
+  .condition-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .condition-card-count {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-body);
+    opacity: 0.6;
+  }
+  .condition-card-arrow {
+    flex-shrink: 0;
+    color: var(--color-headline);
+    transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .condition-card:hover .condition-card-arrow {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .condition-card,
+    .condition-card-arrow {
+      transition-duration: 0.01s !important;
+      transform: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+/**
+ * FooterCTA.astro
+ * ─────────────────────────────────────────────────────
+ * Global pre-footer call-to-action. Used once in BaseLayout.astro,
+ * between ReviewsSection and Footer. Do NOT duplicate per page.
+ *
+ * Headline/subtext are real Farrell Physiotherapy messaging
+ * (sourced from farrellphysiotherapy.co.uk — "Don't Let Pain Win!") —
+ * not placeholder copy.
+ * Photos are still /images/placeholder.webp pending real photography
+ * (see .project-log.md) — swap those three <img src> values only.
+ */
+import { site } from '../data/site';
+---
+
+<section class="footer-cta bg-(--blue) relative overflow-hidden py-(--spacing-section-y) lg:py-(--spacing-section-y-lg)">
+  <div class="orb" aria-hidden="true"></div>
+  <div class="container-main relative z-10">
+
+    <div class="footer-cta-head max-w-2xl mx-auto text-center">
+      <span class="eyebrow footer-cta-eyebrow">Get Started</span>
+      <h2 class="text-white m-0">Don't Let Pain Win</h2>
+      <p class="mt-4 text-white/85 text-lg leading-relaxed">
+        We don't just treat your symptoms — we identify and resolve the underlying
+        cause of your pain, helping you return to pre-injury levels of activity.
+      </p>
+      <a href={site.bookingCta.href} class="btn btn-default mt-8">Book an Appointment</a>
+    </div>
+
+    <div class="footer-cta-collage grid grid-cols-1 sm:grid-cols-3 gap-6 items-end mt-16">
+
+      <!-- Tall photo -->
+      <div class="footer-cta-photo relative rounded-(--radius-card) overflow-hidden aspect-[4/4.5]">
+        <img
+          src="/images/home-treat-symtoms-1.avif"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width="600"
+          height="675"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Second photo -->
+      <div class="footer-cta-photo rounded-(--radius-card) overflow-hidden aspect-[4/3]">
+        <img
+          src="/images/home-treat-symtoms-2.avif"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width="600"
+          height="450"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Third photo -->
+      <div class="footer-cta-photo rounded-(--radius-card) overflow-hidden aspect-[4/4]">
+        <img
+          src="/images/home-treat-symtoms-3.avif"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width="600"
+          height="600"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  /* White eyebrow for contrast on the blue background (mirrors AboutSection) */
+  .footer-cta-eyebrow {
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  /* Matches the About Us section orb (AboutSection.astro) */
+  .orb {
+    filter:           blur(175px);
+    pointer-events:    none;
+    background-image: radial-gradient(circle, #d91e01 13.95%, #ff8100 40.41%, #ffb202 70.52%, #fabbe6 90%);
+    border-radius:     100%;
+    width:             66em;
+    height:            66em;
+    position:          absolute;
+    inset:             0% auto auto 0%;
+    transform:         translate(-35%, -35%);
+  }
+</style>
+

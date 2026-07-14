@@ -1,0 +1,172 @@
+---
+/**
+ * team/[slug].astro — Individual team member profile
+ * ─────────────────────────────────────────────────────────
+ * One template renders every profile page from src/data/team.ts.
+ * Layout: PageHero (name + role) → short intro + full bio → named
+ * specialisms (only rendered when the source data lists any — most
+ * profiles don't, and nothing is invented to fill the gap) → booking
+ * CTA → links to the other team members.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TeamSection from '../../components/TeamSection.astro';
+import { site } from '../../data/site';
+import { teamMembers } from '../../data/team';
+import { buildBreadcrumbList } from '../../lib/content/normalize';
+
+export const getStaticPaths = (() => {
+  return teamMembers.map((member) => ({
+    params: { slug: member.slug },
+    props: { member },
+  }));
+}) satisfies GetStaticPaths;
+
+const { member } = Astro.props;
+const heroImg = '/images/team-placeholder.avif';
+
+// ── Structured data: Person (E-E-A-T) + BreadcrumbList ───────────
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const memberUrl = `${_siteOrigin}/team/${member.slug}/`;
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: member.name,
+  jobTitle: member.role,
+  url: memberUrl,
+  worksFor: { '@type': 'MedicalClinic', name: site.name, url: `${_siteOrigin}/` },
+  ...(member.credentials ? { hasCredential: member.credentials } : {}),
+  ...(member.specialisms && member.specialisms.length > 0
+    ? { knowsAbout: member.specialisms }
+    : {}),
+};
+const breadcrumbLd = buildBreadcrumbList([
+  { name: 'Home', url: `${_siteOrigin}/` },
+  { name: 'Meet the Team', url: `${_siteOrigin}/team/` },
+  { name: member.name, url: memberUrl },
+]);
+const teamSchema = [personLd, breadcrumbLd];
+---
+
+<BaseLayout
+  title={member.seoTitle ?? `${member.name} — ${member.role} — ${site.name}`}
+  description={member.metaDescription ?? `Meet ${member.name}, ${member.role} at ${site.name}.`}
+  heroImage={heroImg}
+  schema={teamSchema}
+>
+  <section class="team-hero bg-(--color-hero-dark) relative overflow-hidden">
+    <div class="container-main relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <div class="team-hero-content">
+          <span class="eyebrow team-hero-eyebrow">{member.role}</span>
+          <h1 class="text-white m-0 mt-4">{member.name}</h1>
+          <p class="team-hero-intro">Book an appointment with {member.name} today and take the first confident step towards lasting recovery.</p>
+          <a href={site.bookingCta.href} class="btn btn-default mt-8">Book an Appointment</a>
+        </div>
+        <div class="team-hero-visual">
+          <img
+            src={heroImg}
+            alt={member.name}
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+            width="712"
+            height="759"
+            class="team-hero-img"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="team firstsection">
+    <div class="container-main">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+
+        <div class="lg:col-span-2 max-w-[44rem]">
+          {member.bio.map((paragraph) => (
+            <p class="text-(--color-body) text-base leading-relaxed mb-5 last:mb-0">{paragraph}</p>
+          ))}
+        </div>
+
+        <div class="lg:col-span-1">
+          {member.credentials && (
+            <div class="mb-8">
+              <h2 class="text-sm font-semibold uppercase tracking-wide text-(--color-caption) mb-3">Credentials</h2>
+              <p class="text-(--color-body) text-sm leading-relaxed">{member.credentials}</p>
+            </div>
+          )}
+
+          {member.specialisms && member.specialisms.length > 0 && (
+            <div class="mb-8">
+              <h2 class="text-sm font-semibold uppercase tracking-wide text-(--color-caption) mb-3">Areas of Interest</h2>
+              <ul class="flex flex-col gap-2">
+                {member.specialisms.map((item) => (
+                  <li class="flex items-start gap-2 text-(--color-body) text-sm leading-relaxed">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mt-0.5 shrink-0 text-(--blue-text)" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div class="card bg-(--color-muted)">
+            <h2 class="text-lg font-semibold text-(--color-headline) m-0">Book an Appointment</h2>
+            <p class="text-sm text-(--color-body) mt-2">
+              Ready to get started? Book a session with {member.name.split(' ')[0]} or one of our other physiotherapists today.
+            </p>
+            <a href={site.bookingCta.href} class="btn btn-default mt-5">Book an Appointment</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <TeamSection
+    heading="Meet the Rest of Physiotherapists Behind Your Care"
+    excludeSlug={member.slug}
+    wideHeading
+  />
+</BaseLayout>
+
+<style>
+  /* Split hero — member details left, portrait right. Padding clears
+     the fixed header and mirrors the PageHero rhythm. */
+  .team-hero {
+    padding-top: 7rem;
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 768px) {
+    .team-hero { padding-top: 9rem; padding-bottom: 5rem; }
+  }
+  @media (min-width: 1024px) {
+    .team-hero { padding-top: 10rem; padding-bottom: 6rem; }
+  }
+
+  .team-hero-eyebrow { color: rgb(255 255 255 / 0.7); }
+  .team-hero-intro {
+    margin: 1.25rem 0 0;
+    color: rgb(255 255 255 / 0.72);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    max-width: 32rem;
+  }
+
+  .team-hero-visual {
+    display: flex;
+    justify-content: center;
+  }
+  @media (min-width: 1024px) {
+    .team-hero-visual { justify-content: flex-end; }
+  }
+  .team-hero-img {
+    width: 100%;
+    max-width: 18rem;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+  }
+</style>

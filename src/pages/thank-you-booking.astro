@@ -6,6 +6,7 @@
  * request is submitted. Premium animated design.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 
 const nextSteps = [
   {
@@ -27,8 +28,8 @@ const nextSteps = [
 ---
 
 <BaseLayout
-  title="Booking Request Received — ClinicName"
-  description="Thank you for booking with ClinicName. A member of our team will be in touch by email or phone within one working day."
+  title={`Booking Request Received — ${site.name}`}
+  description={`Thank you for booking with ${site.name}. A member of our team will be in touch by email or phone within one working day.`}
   noindex={true}
 >
 

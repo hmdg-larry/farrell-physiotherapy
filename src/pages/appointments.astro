@@ -1,0 +1,167 @@
+---
+/**
+ * appointments.astro — "What To Expect"
+ * ─────────────────────────────────────────────────────────
+ * Generic, industry-standard "what happens at your first appointment"
+ * content — safe placeholder, no clinic-specific claims invented.
+ * Presented as a numbered process timeline (sticky intro + connected
+ * steps) rather than a flat card row.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+
+const heroImg = '/images/hero/hero-appointment.avif';
+
+const steps = [
+  { title: 'Assessment', body: "We'll discuss your symptoms, medical history, and what you're hoping to achieve." },
+  { title: 'Physical Examination', body: 'Your physiotherapist will carry out a physical assessment relevant to your problem.' },
+  { title: 'Treatment Plan', body: "We'll agree a personalised treatment plan and discuss what to expect going forward." },
+  { title: 'Ongoing Care', body: 'Follow-up sessions are scheduled based on your individual progress and goals.' },
+];
+---
+
+<BaseLayout
+  title={`What To Expect — ${site.name}`}
+  description={`What to expect at your first physiotherapy appointment with ${site.name}.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="What To Expect"
+    headline="Your First Appointment"
+    intro="Book your first appointment today and let our expert physiotherapists get you moving, pain-free, sooner."
+  />
+
+  <section class="appointments firstsection">
+    <div class="container-main">
+      <div class="appointments-layout">
+
+        <div class="appointments-intro">
+          <span class="eyebrow">The Process</span>
+          <h2 class="appointments-heading">How Your Visit Works</h2>
+          <p class="appointments-lead">
+            From your first hello to an ongoing care plan built around you, here's
+            exactly what to expect — no surprises, just clear, personalised care.
+          </p>
+          <div class="appointments-actions">
+            <a href={site.bookingCta.href} class="btn btn-default">{site.bookingCta.label}</a>
+            <a href="/faqs/" class="btn btn-secondary">Read Our FAQs</a>
+          </div>
+        </div>
+
+        <ol class="appointments-steps">
+          {steps.map((step, i) => (
+            <li class="appointments-step">
+              <span class="appointments-step-num" aria-hidden="true">{i + 1}</span>
+              <div class="appointments-step-body">
+                <h3 class="appointments-step-title">{step.title}</h3>
+                <p class="appointments-step-text">{step.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .appointments-layout {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .appointments-layout {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .appointments-intro {
+      position: sticky;
+      top: 7rem;
+    }
+  }
+
+  .appointments-heading {
+    margin: 0.75rem 0 0;
+    color: var(--color-headline);
+  }
+  .appointments-lead {
+    margin: 1.25rem 0 0;
+    max-width: 32rem;
+    font-size: var(--text-lg);
+    line-height: 1.65;
+    color: var(--color-body);
+  }
+  .appointments-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
+  /* ── Numbered process timeline ─────────────────────────────── */
+  .appointments-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .appointments-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+  .appointments-step:last-child { padding-bottom: 0; }
+
+  /* Connecting line between the numbered circles */
+  .appointments-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    top: 3.25rem;
+    bottom: 0.25rem;
+    width: 2px;
+    transform: translateX(-1px);
+    background: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  }
+
+  .appointments-step-num {
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    color: var(--color-headline);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.125rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .appointments-step-body {
+    padding-top: 0.375rem;
+  }
+  .appointments-step-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-headline);
+  }
+  .appointments-step-text {
+    margin: 0.5rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-body);
+    max-width: 34rem;
+  }
+</style>

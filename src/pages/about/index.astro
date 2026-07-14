@@ -1,0 +1,60 @@
+---
+/**
+ * about/index.astro — About page
+ * ─────────────────────────────────────────────────────────
+ * Reuses the homepage AboutSection (blue + orb) and WhyChooseUsSection
+ * (white checklist + visual) designs via their props, populated with
+ * the real practice content from farrellphysiotherapy.co.uk/about/
+ * (Ben Farrell's background, the founding principles, extended hours).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import AboutSection from '../../components/AboutSection.astro';
+import WhyChooseUsSection from '../../components/WhyChooseUsSection.astro';
+import { site } from '../../data/site';
+
+const heroImg = '/images/hero/about-hero.avif';
+
+const aboutParagraphs = [
+  "Farrell Physiotherapy was built on Ben Farrell's 16 years of experience across the NHS, professional sport, corporate and private practice. Every one of our therapists is highly trained, experienced and registered with the CSP and HCPC, each bringing their own areas of specialism.",
+  'We provide the latest treatments and techniques to get you pain free as soon as possible, cure the cause of your pain and help you return to pre-injury levels of activity — backed by a personalised exercise programme and preventative advice so the problem stays away.',
+  'With three clinics across Essex, extended hours from 6am to 9pm on weekdays plus Saturday mornings, and home visits available, expert care fits around your life.',
+];
+
+const principles = [
+  'We cure the problem and prevent recurrence where possible — not just treat the symptoms.',
+  'Every patient receives the same excellent standard of treatment.',
+  'You are always the focus, and your input is integral to your recovery.',
+  'Every person and problem is individual, so treatment is tailored specifically to you.',
+  'A genuine hands-on approach from CSP- and HCPC-registered therapists.',
+];
+---
+
+<BaseLayout
+  title={`About Us — ${site.name}`}
+  description={`Learn more about ${site.name} — our clinics in Chelmsford, Witham, and Leigh-on-Sea.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="About"
+    headline="About Us"
+    intro="Ready to move pain-free? Book an appointment at one of our three Essex clinics today."
+  />
+
+  <AboutSection
+    eyebrow="Who We Are"
+    heading="Treatment That Cures the Cause, Not Just the Symptoms"
+    paragraphs={aboutParagraphs}
+    image="/images/about-treatment.avif"
+  />
+
+  <WhyChooseUsSection
+    eyebrow="Our Principles"
+    heading="What Sets Our Care Apart"
+    points={principles}
+    image="/images/about-care.avif"
+    imageLeft
+  />
+</BaseLayout>

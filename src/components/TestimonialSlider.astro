@@ -27,11 +27,11 @@ const { testimonials } = Astro.props;
 ---
 
 <div class="relative">
-  <div class="swiper testimonial-swiper overflow-hidden rounded-[--radius-card]">
+  <div class="swiper testimonial-swiper overflow-hidden rounded-(--radius-card)">
     <div class="swiper-wrapper py-4">
       {testimonials.map((t) => (
         <div class="swiper-slide">
-          <div class="bg-white border border-[--color-border] rounded-[--radius-card] p-8 shadow-sm h-full flex flex-col gap-4">
+          <div class="bg-white border border-(--color-border) rounded-(--radius-card) p-8 shadow-sm h-full flex flex-col gap-4">
 
             <!-- Star rating -->
             <div class="flex gap-1 text-amber-400 text-lg">
@@ -47,9 +47,9 @@ const { testimonials } = Astro.props;
             <p class="text-slate-600 leading-relaxed flex-1">"{t.body}"</p>
 
             <!-- Author -->
-            <div class="border-t border-[--color-border] pt-4">
-              <p class="font-semibold text-[--color-headline]">{t.name}</p>
-              <p class="text-sm text-[--color-caption]">{t.role}</p>
+            <div class="border-t border-(--color-border) pt-4">
+              <p class="font-semibold text-(--color-headline)">{t.name}</p>
+              <p class="text-sm text-(--color-caption)">{t.role}</p>
             </div>
 
           </div>
@@ -62,8 +62,8 @@ const { testimonials } = Astro.props;
   </div>
 
   <!-- Navigation arrows (outside the overflow:hidden wrapper) -->
-  <div class="swiper-button-prev !text-[--color-primary] !-left-4"></div>
-  <div class="swiper-button-next !text-[--color-primary] !-right-4"></div>
+  <div class="swiper-button-prev !text-(--color-headline) !-left-4"></div>
+  <div class="swiper-button-next !text-(--color-headline) !-right-4"></div>
 </div>
 
 <script>

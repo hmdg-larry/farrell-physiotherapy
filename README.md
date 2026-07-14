@@ -1,4 +1,4 @@
-# Astro Base Template — Cloudflare
+# Farrell Physiotherapy
 
 Premium UK clinic site template — static-first, built for speed, deployed on Cloudflare Pages.
 

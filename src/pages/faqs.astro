@@ -1,0 +1,175 @@
+---
+/**
+ * faqs.astro — Frequently asked questions
+ * ─────────────────────────────────────────────────────────
+ * Renders src/data/faqs.ts as a card accordion. Uses native
+ * <details name="faqs"> so only one item is open at a time (native
+ * exclusive accordion — no JS; older browsers simply allow multiple
+ * open). Adds FAQPage JSON-LD (each Q/A here matches the visible
+ * on-page content, per this project's SEO rules).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+import { faqs } from '../data/faqs';
+
+const heroImg = '/images/hero/hero-faq.avif';
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`FAQs — ${site.name}`}
+  description={`Frequently asked questions about physiotherapy at ${site.name}.`}
+  heroImage={heroImg}
+  schema={faqJsonLd}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Support"
+    headline="Frequently Asked Questions"
+    intro="Still have questions? Book an appointment or contact us and we'll be happy to help."
+  />
+
+  <section class="faq firstsection bg-(--color-muted)">
+    <div class="container-main">
+      <ul class="faq-list">
+        {faqs.map((f) => (
+          <li>
+            <details class="faq-item" name="faqs">
+              <summary class="faq-summary">
+                <span class="faq-question">{f.question}</span>
+                <span class="faq-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </summary>
+              <div class="faq-answer-wrap">
+                <p class="faq-answer">{f.answer}</p>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+
+      <div class="faq-cta">
+        <p class="faq-cta-text">Still have a question?</p>
+        <a href="/contact/" class="btn btn-default">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .faq-list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 48rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .faq-item {
+    background: var(--color-white);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease;
+  }
+  .faq-item[open] {
+    box-shadow: var(--shadow-raised);
+  }
+
+  .faq-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--color-headline);
+  }
+  .faq-summary::-webkit-details-marker { display: none; }
+  .faq-summary::marker { content: ''; }
+  .faq-summary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-card);
+  }
+
+  .faq-icon {
+    flex-shrink: 0;
+    width: 1.875rem;
+    height: 1.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--beige);
+    color: var(--color-headline);
+    transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+                background-color 0.2s ease, color 0.2s ease;
+  }
+  .faq-icon svg { width: 1rem; height: 1rem; }
+  .faq-item[open] .faq-icon {
+    transform: rotate(180deg);
+    background: var(--color-primary);
+    color: var(--color-headline);
+  }
+
+  .faq-answer-wrap {
+    padding: 0 1.5rem 1.4rem;
+  }
+  .faq-answer {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-body);
+    max-width: 62ch;
+  }
+  .faq-item[open] .faq-answer {
+    animation: faq-reveal 0.28s ease both;
+  }
+  @keyframes faq-reveal {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .faq-cta {
+    max-width: 48rem;
+    margin: 3rem auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem 1.5rem;
+    text-align: center;
+  }
+  .faq-cta-text {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-headline);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-icon { transition: none; }
+    .faq-item[open] .faq-answer { animation: none; }
+  }
+</style>

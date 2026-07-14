@@ -1,0 +1,233 @@
+---
+/**
+ * TeamSection.astro
+ * ─────────────────────────────────────────────────────
+ * Homepage "Meet the Team" section — sits after WhyChooseUsSection.
+ * Layout follows a reference design (centred eyebrow + headline above
+ * a row of portrait cards, each with a name/role label overlaid at
+ * the bottom) — the reference's cards were video-call screenshots
+ * (mute icon, live-caption bubble); those UI affordances don't apply
+ * to static team photos, so they were dropped and only the card
+ * shape / name-role overlay treatment was carried over.
+ *
+ * Uses the same real team data as the /team/ pages
+ * (src/data/team.ts) — each card links through to that member's
+ * full profile.
+ */
+import { teamMembers } from '../data/team';
+
+interface Props {
+  /** Show the "Meet the Full Team" CTA. Off on the team page itself
+      (it would self-link), on everywhere else (homepage teaser). */
+  showCta?: boolean;
+  /** Section headline. Defaults to the homepage/team-index copy. */
+  heading?: string;
+  /** Slug to omit from the carousel (e.g. the current member on their
+      own profile page, so they don't appear in "the rest of the team"). */
+  excludeSlug?: string;
+  /** Widen the heading container (for longer headings that would
+      otherwise wrap to 3 lines). */
+  wideHeading?: boolean;
+}
+const {
+  showCta = true,
+  heading = 'Meet the Physiotherapists Behind Your Care',
+  excludeSlug,
+  wideHeading = false,
+} = Astro.props;
+
+const members = excludeSlug
+  ? teamMembers.filter((m) => m.slug !== excludeSlug)
+  : teamMembers;
+
+// Desktop column count follows the roster (max 4) so a 3-member list
+// fills the row evenly instead of leaving an empty 4th slot.
+const cols = Math.min(members.length, 4);
+---
+
+<script>
+  /* ── Lightweight carousel control (tablet/mobile only — .team-row
+     is a static grid at lg+, see the styles below) ──────────────
+     Same lazy-init + scroll-snap pattern as ReviewsSection's own
+     carousel: works without JS via touch/mouse swipe, this script
+     just adds button control on top. */
+  const initTeamCarousel = () => {
+    const track = document.querySelector<HTMLElement>('[data-team-track]');
+    const prev  = document.querySelector<HTMLButtonElement>('[data-team-prev]');
+    const next  = document.querySelector<HTMLButtonElement>('[data-team-next]');
+    if (!track || !prev || !next) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const getStep = () => {
+      const card = track.querySelector<HTMLElement>('.team-row-card');
+      if (!card) return 0;
+      const styles = window.getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      return card.offsetWidth + gap;
+    };
+
+    const scroll = (direction: 1 | -1) => {
+      track.scrollBy({ left: direction * getStep(), behavior: reduceMotion ? 'auto' : 'smooth' });
+    };
+
+    prev.addEventListener('click', () => scroll(-1));
+    next.addEventListener('click', () => scroll(1));
+
+    const updateEdges = () => {
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = track.scrollLeft >= max;
+    };
+    track.addEventListener('scroll', updateEdges, { passive: true });
+    window.addEventListener('resize', updateEdges, { passive: true });
+    updateEdges();
+  };
+
+  const teamSection = document.querySelector<HTMLElement>('.team.fifthsection');
+  if (teamSection && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, observer) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        initTeamCarousel();
+        observer.disconnect();
+      }
+    }, { rootMargin: '300px 0px' });
+    io.observe(teamSection);
+  } else {
+    initTeamCarousel();
+  }
+</script>
+
+<section class="team fifthsection bg-(--color-muted)">
+  <div class="container-main">
+    <div class:list={["section-header mx-auto", wideHeading ? "max-w-4xl" : "max-w-2xl"]}>
+      <span class="eyebrow">Our Team</span>
+      <h2 class="m-0 mt-3 text-balance">{heading}</h2>
+    </div>
+
+    <div class="team-carousel-wrap relative mt-12">
+      <div class="team-row grid grid-flow-col auto-cols-[70%] sm:auto-cols-[42%] lg:grid-flow-row lg:auto-cols-auto gap-5 lg:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none pb-2 lg:pb-0" style={`--team-cols:${cols}`} data-team-track>
+        {members.map((member) => (
+          <a href={`/team/${member.slug}/`} class="team-row-card relative block rounded-(--radius-card) overflow-hidden aspect-[4/5] snap-start">
+            <img
+              src="/images/team-placeholder.avif"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="500"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent" aria-hidden="true"></div>
+            <div class="team-row-card-label absolute left-3 right-3 bottom-3 bg-white px-3 py-2.5">
+              <p class="text-sm font-semibold text-(--color-headline) m-0 leading-tight">{member.name}</p>
+              <p class="text-xs text-(--color-caption) m-0 leading-tight mt-0.5">{member.role}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <button type="button" class="team-carousel-nav team-carousel-prev" data-team-prev aria-label="Previous team member"></button>
+      <button type="button" class="team-carousel-nav team-carousel-next" data-team-next aria-label="Next team member"></button>
+    </div>
+
+    {showCta && (
+      <div class="flex justify-center mt-12">
+        <a href="/team/" class="btn btn-default">Meet the Full Team</a>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .team-row-card-label {
+    border-radius: 10px !important;
+  }
+
+  /* Below lg: horizontal scroll-snap carousel (native, no JS — same
+     pattern as ReviewsSection's .reviews-track). At lg+ the Tailwind
+     classes above switch back to a static 4-column grid. */
+  .team-row {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .team-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Desktop column count follows --team-cols (roster size, max 4) so a
+     3-member list fills the row evenly instead of leaving an empty slot. */
+  @media (min-width: 1024px) {
+    .team-row {
+      grid-template-columns: repeat(var(--team-cols, 4), minmax(0, 1fr));
+    }
+  }
+
+  /* Phones: full-bleed track (breaks out of .container-main's 30px
+     gutter) with wider cards + scroll-padding so the previous AND next
+     cards peek — making it obvious the row scrolls. */
+  @media (max-width: 639px) {
+    .team-row {
+      margin-inline: calc(-1 * var(--spacing-section-x));
+      padding-inline: 2.25rem;
+      scroll-padding-inline: 2.25rem;
+      grid-auto-columns: 80vw;
+      column-gap: 0.75rem;
+    }
+  }
+
+  /* ── Navigation arrows — same circular badge + CSS border-chevron
+     as ServicesCarousel's nav (no SVG/icon-font). Only shown below lg
+     (see the `lg:hidden` utility on the buttons themselves), centred
+     against .team-carousel-wrap — which contains only .team-row, so
+     top:50% lands exactly on the card row, no header/footer siblings
+     to throw off the centering math. ── */
+  .team-carousel-nav {
+    position:         absolute;
+    top:              50%;
+    margin-top:       -1.5rem;
+    width:            3rem;
+    height:           3rem;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    border:           none;
+    border-radius:    9999px;
+    background-color: var(--color-primary);
+    color:            var(--color-headline);
+    cursor:           pointer;
+    z-index:          2;
+  }
+  .team-carousel-nav:disabled {
+    opacity: 0.3;
+    cursor:  not-allowed;
+  }
+  .team-carousel-prev { left: 10px; }
+  .team-carousel-next { right: 10px; }
+  .team-carousel-nav::before {
+    content:      '';
+    width:        0.55rem;
+    height:       0.55rem;
+    border-top:   2px solid currentColor;
+    border-right: 2px solid currentColor;
+  }
+  .team-carousel-prev::before {
+    transform: rotate(-135deg) translate(1px, -1px);
+  }
+  .team-carousel-next::before {
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+
+  /* lg+: .team-row becomes a static, non-scrolling grid (see the
+     Tailwind classes above) — hide the carousel nav entirely. Uses an
+     explicit media query rather than the `lg:hidden` Tailwind utility:
+     Astro's scoped <style> block is unlayered CSS, which always beats
+     `@layer utilities` regardless of the utility class being present
+     on the element — so `lg:hidden` here would silently lose to this
+     file's own `display: flex` above. */
+  @media (min-width: 1024px) {
+    .team-carousel-nav {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+/**
+ * prices/index.astro — Prices hub
+ * ─────────────────────────────────────────────────────────
+ * Shows the real treatment price list for all three clinics
+ * (src/data/locations.ts → location.prices) plus shared payment /
+ * insurance / home-visit notes. Content from the live site
+ * (farrellphysiotherapy.co.uk/prices/).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import PriceCard from '../../components/PriceCard.astro';
+import PricingNotes from '../../components/PricingNotes.astro';
+import { locations } from '../../data/locations';
+import { site } from '../../data/site';
+
+const heroImg = '/images/hero/hero-pricing.avif';
+---
+
+<BaseLayout
+  title={`Prices — ${site.name}`}
+  description={`Treatment prices at ${site.name}'s Chelmsford, Witham, and Leigh-on-Sea clinics. Initial assessments from £50, payment taken after each session.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Prices"
+    headline="Prices"
+    intro="See our transparent prices, then book your appointment at any of our three Essex clinics today."
+  />
+
+  <section class="pricing firstsection">
+    <div class="container-main">
+      <div class="pricing-grid grid grid-cols-1 md:grid-cols-3 gap-6">
+        {locations.map((location) => <PriceCard location={location} />)}
+      </div>
+
+      <div class="pricing-info">
+        <PricingNotes />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pricing-info {
+    margin-top: 3.5rem;
+  }
+</style>

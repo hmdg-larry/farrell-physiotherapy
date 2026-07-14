@@ -23,32 +23,45 @@ export const site: SiteSettings = {
   name: envSiteName,
 
   blurb:
-    'Your trusted clinic, helping patients recover faster, move better, ' +
-    'and live without pain. HCPC-registered and fully insured.',
+    'Expert physiotherapy across three Essex clinics — Chelmsford, Witham ' +
+    'and Leigh-on-Sea. HCPC-registered physiotherapists helping you recover ' +
+    'faster, move better and live without pain. Ease the pain, cure the cause.',
 
   defaultSeoDescription:
-    'Professional clinic providing expert care in the UK.',
+    'Expert physiotherapy in Essex, with clinics in Chelmsford, Witham and ' +
+    'Leigh-on-Sea. HCPC-registered physiotherapists treating pain, injury and ' +
+    'movement problems. Book your appointment today.',
 
+  // Real shared contact details (phone/mobile/email apply across all three
+  // clinics). Address below is Chelmsford's — used as the site-wide/JSON-LD
+  // representative address since there's no single head office; each real
+  // clinic has its own accurate address, phone, and hours on its own page
+  // (src/data/locations.ts + /clinics/[slug]/). Footer.astro links out to
+  // all three rather than repeating one address globally.
   contact: {
-    phoneDisplay: '+44 (0) 1234 567 890',
-    phoneTel:     '+441234567890',
-    email:        'hello@yourclinic.co.uk',
-    addressLine1: '1 Example Street',
-    addressLine2: 'Town, Postcode',
-    mapsUrl:      'https://maps.google.com/?q=1+Example+Street+Town+Postcode',
+    phoneDisplay: '01245 830280',
+    phoneTel:     '+441245830280',
+    mobileDisplay: '07980 898212',
+    mobileTel:     '+447980898212',
+    email:        'infofarrellphysiotherapy@gmail.com',
+    addressLine1: 'Unit 2, The Old Coal Yard, Little Waltham Road, Broomfield',
+    addressLine2: 'Chelmsford, CM1 7TG',
+    mapsUrl:      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Unit 2, The Old Coal Yard, Little Waltham Road, Broomfield, Chelmsford, CM1 7TG'),
   },
 
   // 24h "HH:MM"; null = closed. Mon=first. Drives the contact page
   // open/closed pill, the footer hours display, and JSON-LD.
+  // Hours from the live site: Mon–Fri 6am–9pm, Sat 9am–12pm.
+  // (See SEO note in about/index.astro re 9pm vs 9:30pm — confirm with client.)
   hours: {
-    mon: { open: '09:00', close: '17:00' },
-    tue: { open: '09:00', close: '17:00' },
-    wed: { open: '09:00', close: '17:00' },
-    thu: { open: '09:00', close: '17:00' },
-    fri: { open: '09:00', close: '17:00' },
-    sat: null,
+    mon: { open: '06:00', close: '21:00' },
+    tue: { open: '06:00', close: '21:00' },
+    wed: { open: '06:00', close: '21:00' },
+    thu: { open: '06:00', close: '21:00' },
+    fri: { open: '06:00', close: '21:00' },
+    sat: { open: '09:00', close: '12:00' },
     sun: null,
   },
 
-  bookingCta: { label: 'Book Now', href: '#contact' },
+  bookingCta: { label: 'Book an Appointment', href: '/book-now/' },
 };

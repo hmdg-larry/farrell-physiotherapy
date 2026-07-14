@@ -1,0 +1,188 @@
+---
+/**
+ * service/[slug].astro — Service detail page template
+ * ─────────────────────────────────────────────────────────
+ * Renders every service from src/data/services.ts using the homepage
+ * design language:
+ *   Hero (with one-line intro) → AboutSection (blue/orb, "About {x}")
+ *   → WhyChooseUsSection (benefits checklist) → FAQ accordion
+ *   → ServicesCarousel ("More Ways We Can Help").
+ * All copy (intro / about / points / faqs) is real content adapted
+ * from the live site (see services.ts).
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import AboutSection from '../../components/AboutSection.astro';
+import WhyChooseUsSection from '../../components/WhyChooseUsSection.astro';
+import FaqAccordion from '../../components/FaqAccordion.astro';
+import ServicesCarousel from '../../components/ServicesCarousel.astro';
+import { services } from '../../data/services';
+import { site } from '../../data/site';
+import { buildBreadcrumbList } from '../../lib/content/normalize';
+
+export const getStaticPaths = (() => {
+  return services.map((service) => ({
+    params: { slug: service.href.replace(/^\/service\//, '').replace(/\/$/, '') },
+    props: { service },
+  }));
+}) satisfies GetStaticPaths;
+
+const { service } = Astro.props;
+const slug = service.href.replace(/^\/service\//, '').replace(/\/$/, '');
+
+// Per-service imagery (hero + the two below-hero section panels).
+// Services without an entry fall back to the placeholder.
+const serviceImages: Record<string, { hero?: string; about?: string; why?: string }> = {
+  'physiotherapy-services': {
+    hero: '/images/hero/hero-physio.avif',
+    about: '/images/service/physio-about.avif',
+    why: '/images/service/physio-backpain.avif',
+  },
+  'sports-massage': {
+    hero: '/images/hero/hero-massage.avif',
+    about: '/images/service/massage-about.avif',
+    why: '/images/service/massage-leg.avif',
+  },
+  'pilates': {
+    hero: '/images/hero/hero-pilates.avif',
+    about: '/images/service/pilates-about.avif',
+    why: '/images/service/pilates-group.avif',
+  },
+  'corporate-health': {
+    hero: '/images/hero/hero-corporate.avif',
+    about: '/images/service/corporate-backpain.avif',
+    why: '/images/service/corporate-wristpain.avif',
+  },
+  'virtual-clinic': {
+    hero: '/images/hero/hero-virtual.avif',
+    about: '/images/service/virtual-about.avif',
+    why: '/images/service/virtual-stretching.avif',
+  },
+  'ergonomic-work-based-assessments': {
+    hero: '/images/hero/hero-ergonomic.avif',
+    about: '/images/service/ergonomic-backpain-alt.avif',
+    why: '/images/service/ergonomic-backpain.avif',
+  },
+  'joint-manipulation': {
+    hero: '/images/hero/hero-joint.avif',
+    about: '/images/service/joint-about.avif',
+    why: '/images/service/joint-shoulder.avif',
+  },
+  'manual-traction': {
+    hero: '/images/hero/hero-manual.avif',
+    about: '/images/service/manual-about.avif',
+    why: '/images/service/manual-pressure.avif',
+  },
+  'soft-tissue-manipulation': {
+    hero: '/images/hero/hero-soft-tissue.avif',
+    about: '/images/service/soft-tissue-about.avif',
+    why: '/images/service/soft-tissue-manipulation.avif',
+  },
+  'transcutaneous-electrical-nerve-stimulation-tens': {
+    hero: '/images/hero/hero-tens.avif',
+    about: '/images/service/tens-about-alt.avif',
+    why: '/images/service/tens-about.avif',
+  },
+  'taping-postural-and-sports': {
+    hero: '/images/hero/hero-taping.avif',
+    about: '/images/service/taping-about-alt.avif',
+    why: '/images/service/taping-about.avif',
+  },
+  'joint-mobilisations': {
+    hero: '/images/hero/hero-joint-mobilisation.avif',
+    about: '/images/service/joint-mobilisation-alt.avif',
+    why: '/images/service/joint-mobilisation.avif',
+  },
+  'gait-analysis': {
+    hero: '/images/hero/hero-gait-analysis.avif',
+    about: '/images/service/gait-analysis.avif',
+    why: '/images/service/gait-analysis-alt.avif',
+  },
+  'muscle-energy-techniques': {
+    hero: '/images/hero/hero-muscle-energy.avif',
+    about: '/images/service/muscle-energy-alt.avif',
+    why: '/images/service/muscle-energy.avif',
+  },
+  'trigger-points': {
+    hero: '/images/hero/hero-trigger-points.avif',
+    about: '/images/service/trigger-points-alt.avif',
+    why: '/images/service/trigger-points.avif',
+  },
+};
+const imgs = serviceImages[slug] ?? {};
+const heroImg = imgs.hero ?? '/images/placeholder.webp';
+
+// ── Structured data: BreadcrumbList (+ FAQPage when the service has FAQs) ──
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const breadcrumbLd = buildBreadcrumbList([
+  { name: 'Home', url: `${_siteOrigin}/` },
+  { name: service.title, url: `${_siteOrigin}${service.href}` },
+]);
+const faqLd = service.faqs && service.faqs.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: service.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    }
+  : null;
+const serviceSchema = faqLd ? [breadcrumbLd, faqLd] : [breadcrumbLd];
+
+const metaDescription = service.excerpt ?? service.intro
+  ?? `${service.title} at ${site.name} — expert physiotherapy across our three Essex clinics.`;
+---
+
+<BaseLayout
+  title={`${service.title} — ${site.name}`}
+  description={metaDescription}
+  heroImage={heroImg}
+  schema={serviceSchema}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Services"
+    headline={service.title}
+    intro={`Book your ${service.title} appointment today and let our expert physiotherapists help you recover faster.`}
+  />
+
+  {service.about && (
+    <AboutSection
+      eyebrow="Overview"
+      heading={`${service.title} at ${site.name}`}
+      paragraphs={[service.about]}
+      image={imgs.about}
+    />
+  )}
+
+  <WhyChooseUsSection
+    eyebrow="Why Choose Us"
+    heading={`Why Choose Farrell for ${service.title}`}
+    points={service.points}
+    image={imgs.why}
+    imageLeft
+  />
+
+  {service.faqs && service.faqs.length > 0 && (
+    <section class="faq firstsection bg-(--beige)">
+      <div class="container-main">
+        <div class="section-header">
+          <span class="eyebrow">FAQs</span>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <FaqAccordion faqs={service.faqs} name="service-faqs" />
+      </div>
+    </section>
+  )}
+
+  <ServicesCarousel
+    eyebrow="Explore More"
+    heading="More Ways We Can Help"
+    showCta={false}
+    excludeHref={service.href}
+  />
+</BaseLayout>

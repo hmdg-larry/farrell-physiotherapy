@@ -1,0 +1,47 @@
+---
+/**
+ * join-our-team.astro — Careers page
+ * ─────────────────────────────────────────────────────────
+ * Reuses the homepage WhyChooseUsSection design (checklist + blue/orb
+ * visual panel) via its props, with careers-focused copy. Points are
+ * honest, established messaging (experienced HCPC/CSP team, varied
+ * caseload, three Essex clinics, patient-first culture) — no invented
+ * benefits/salary claims. CTA emails a CV to the shared clinic inbox.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import WhyChooseUsSection from '../components/WhyChooseUsSection.astro';
+import { site } from '../data/site';
+
+const heroImg = '/images/hero/team-hero.avif';
+
+const reasons = [
+  'Work alongside an experienced, HCPC- and CSP-registered team',
+  'A varied caseload spanning NHS, sports, corporate and private care',
+  'Three Essex clinics with flexible, extended working hours',
+  'A supportive, patient-first culture with room to grow your skills',
+];
+---
+
+<BaseLayout
+  title={`Join Our Team — ${site.name}`}
+  description={`Careers and vacancies at ${site.name}.`}
+  heroImage={heroImg}
+>
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="Careers"
+    headline="Join Our Team"
+    intro="Ready to join a team that puts patients first? Send your CV and introduce yourself today."
+  />
+
+  <WhyChooseUsSection
+    eyebrow="Why Join Us"
+    heading="Grow Your Career with Farrell Physiotherapy"
+    points={reasons}
+    ctaText="Email Your CV"
+    ctaHref={`mailto:${site.contact.email}`}
+    image="/images/career-grow.avif"
+  />
+</BaseLayout>
