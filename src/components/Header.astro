@@ -61,6 +61,25 @@ import { site } from '../data/site';
 import { headerNav } from '../data/navigation';
 import type { HeaderNavEntry, NavItem } from '../lib/content/types';
 
+interface Props {
+  /**
+   * Force the solid header state (white bar, dark text/logo) from the
+   * very top of the page — for pages WITHOUT a dark hero behind the
+   * fixed header (e.g. /thank-you). Without this, the default
+   * transparent-over-hero state renders white text/logo on a white
+   * page → invisible until scroll. Defaults to false (two-state).
+   */
+  solid?: boolean;
+}
+
+const { solid = false } = Astro.props;
+
+// Solid pages render the header in its scrolled state from the top.
+const headerClass = [
+  'fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
+  solid ? 'is-scrolled' : '',
+].join(' ').trim();
+
 const currentPath = Astro.url.pathname;
 
 // Exact match — '/' is homepage-only; trailing slash normalised
@@ -99,7 +118,7 @@ const navEntries = headerNav.filter((e) => !e.cta);
 const ctaEntry = headerNav.find((e): e is Extract<HeaderNavEntry, { kind: 'link' }> => e.kind === 'link' && !!e.cta);
 ---
 
-<header id="site-header-wrapper" class="fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow,border-color] duration-300">
+<header id="site-header-wrapper" class={headerClass} data-header-solid={String(solid)}>
   <div class="container-main h-16 grid grid-cols-[auto_1fr_auto] items-center gap-4 relative">
 
     <!-- Logo — column 1 -->
@@ -377,16 +396,23 @@ const ctaEntry = headerNav.find((e): e is Extract<HeaderNavEntry, { kind: 'link'
   // that keeps it from blending into the white bar), so it no longer
   // needs a JS class swap here.
   const wrapper = document.getElementById('site-header-wrapper');
+  // Pages without a dark hero render the header permanently solid
+  // (data-header-solid). Skip scroll-driven toggling so it never
+  // reverts to the transparent white-on-white state at the top.
+  const forceSolid = wrapper?.dataset.headerSolid === 'true';
 
   function applyScrollState(scrolled: boolean) {
+    if (forceSolid) return;
     if (scrolled) {
       wrapper?.classList.add('is-scrolled');
     } else {
       wrapper?.classList.remove('is-scrolled');
     }
   }
-  applyScrollState(window.scrollY > 60);
-  window.addEventListener('scroll', () => applyScrollState(window.scrollY > 60), { passive: true });
+  if (!forceSolid) {
+    applyScrollState(window.scrollY > 60);
+    window.addEventListener('scroll', () => applyScrollState(window.scrollY > 60), { passive: true });
+  }
 
   // Mobile menu toggle — progressive enhancement
   const toggle = document.getElementById('mobile-menu-toggle');

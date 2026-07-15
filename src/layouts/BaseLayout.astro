@@ -35,6 +35,13 @@ interface Props {
   heroImageMobile?: string;
   /** Inject structured data — JSON-LD object or array of objects. */
   schema?: object | object[];
+  /**
+   * Render the header in its solid state (white bar, dark text/logo)
+   * from the top. Use on pages WITHOUT a dark hero behind the fixed
+   * header (e.g. /thank-you) — otherwise the default white-on-hero
+   * header is invisible against a light page. Defaults to false.
+   */
+  solidHeader?: boolean;
 }
 
 const {
@@ -44,6 +51,7 @@ const {
   heroImage,
   heroImageMobile,
   schema,
+  solidHeader = false,
 } = Astro.props;
 
 // Mobile hero preload variant. Falls back to the -mobile.avif sibling of
@@ -276,7 +284,7 @@ const cfg = cookieConsentConfig;
   <body class="bg-white text-slate-600 antialiased">
 
     <!-- ── Header ────────────────────────────────────── -->
-    <Header />
+    <Header solid={solidHeader} />
 
     <!-- ── Page Content ──────────────────────────────────── -->
     <main>
