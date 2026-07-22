@@ -69,7 +69,7 @@ const linkActive = (href: string): boolean => href.startsWith('/') && isActive(h
   <!-- ── Main columns ─────────────────────────────────────────── -->
   <div class="border-t border-(--color-border)">
     <div class="container-main py-12">
-      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-12">
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_1.35fr] lg:gap-12">
 
         <!-- Get in Touch — emphasized shared phone/mobile/email from src/data/site.ts -->
       <div class="flex-layout flex-layout--col gap-5">
@@ -139,11 +139,11 @@ const linkActive = (href: string): boolean => href.startsWith('/') && isActive(h
         <span class="eyebrow">
           Our Services
         </span>
-        <nav class="grid grid-cols-2 gap-x-4 gap-y-3" aria-label="Services navigation">
+        <nav class="footer-services-cols" aria-label="Services navigation">
           {services.map((service) => (
             <a
               href={service.href}
-              class:list={["footer-link text-[0.875rem]", { "is-active": linkActive(service.href) }]}
+              class:list={["footer-link footer-service-item text-[0.875rem]", { "is-active": linkActive(service.href) }]}
             >{service.title}</a>
           ))}
         </nav>
@@ -189,6 +189,20 @@ const linkActive = (href: string): boolean => href.startsWith('/') && isActive(h
 </footer>
 
 <style>
+  /* ── Services column — multi-column so multi-line items don't create
+       row-alignment gaps (as a 2-col grid did). Columns balance in height
+       and each link keeps consistent vertical rhythm. ─────────────── */
+  .footer-services-cols {
+    column-count: 2;
+    column-gap: 1.5rem;
+  }
+  .footer-service-item {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 0.75rem;
+  }
+  .footer-service-item:last-child { margin-bottom: 0; }
+
   /* ── Emphasized contact (Get in Touch column) ─────────────────── */
   .footer-contact {
     display: inline-flex;

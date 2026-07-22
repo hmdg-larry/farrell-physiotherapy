@@ -24,7 +24,7 @@ Do not add pages or change URLs from this document without re-running IA review.
 
 **Therapies:**
 - Physiotherapy — `/service/physiotherapy-services/`
-- Sports Massage — `/service/sports-massage/` *(changed — was location-specific slug)*
+- Sports Massage — `/service/sports-massage-chelmsford-and-witham/`
 - Pilates — `/service/pilates/`
 - Corporate Health — `/service/corporate-health/`
 - Virtual Clinic — `/service/virtual-clinic/`
@@ -183,14 +183,15 @@ Do not add pages or change URLs from this document without re-running IA review.
 /fractures-colles/ /condition/wrist/colles-fractures/ 301
 /osteoarthritis/ /condition/wrist/osteoarthritis/ 301
 /condition/hip-and-thigh/adductor-straintear/ /condition/hip-and-thigh/abductor-strain-tear/ 301
-/service/sports-massage-chelmsford-and-witham/ /service/sports-massage/ 301
+/service/sports-massage/ /service/sports-massage-chelmsford-and-witham/ 301
+/our-services/sports-massage-chelmsford-and-witham/ /service/sports-massage-chelmsford-and-witham/ 301
 /service/ergonomicwork-based-assessments-desk/ /service/ergonomic-work-based-assessments/ 301
 /chelmsford-physio/ /clinics/chelmsford/ 301
 /physio-in-witham/ /clinics/witham/ 301
 /physiotherapy-in-leigh-on-sea/ /clinics/leigh-on-sea/ 301
 ```
 
-35 redirects total. All other existing URLs are preserved exactly as-is.
+36 redirects total. All other existing URLs are preserved exactly as-is.
 
 ---
 

@@ -27,6 +27,50 @@ export const therapies: Service[] = [
       { q: "What happens during a physiotherapy session?", a: "Your physiotherapist will fully assess you at the first appointment to find out what the problem is, then create a treatment programme tailored to you. This may include hands-on techniques such as joint manipulation, soft tissue massage and muscle energy techniques, alongside exercise, taping, acupuncture, ultrasound or other approaches as appropriate." },
       { q: "Do I need a referral from my GP to be seen?", a: "You do not usually need a GP referral to book physiotherapy directly, as physiotherapists are able to assess and treat you independently. If you are claiming through private medical insurance, it is best to check your policy, as some insurers may ask for a referral first." },
       { q: "Is physiotherapy covered by health insurance?", a: "Farrell Physiotherapy accepts many major UK insurers, including AXA PPP, Bupa, PruHealth, Simply Health and Standard Life. We would recommend confirming the details of your cover with your insurer beforehand, and please get in touch if you have any questions about arranging your appointment." },
+      {
+        q: "What sort of problems can be treated with physiotherapy?",
+        a: "Physiotherapy can be used to treat a wide variety of different problems, including:",
+        aList: [
+          { label: "Joints", text: "Back and neck pain, prolapsed discs or trapped nerves, arthritis, pain, swelling, injury, stiffness, frozen shoulder, sciatica, and knee injuries involving ligament and cartilage damage." },
+          { label: "Injuries", text: "Muscle and ligament tears/sprains, whiplash, sports injuries involving muscle, ligament, capsule, cartilage and tendon damage, trauma or fractures, golfer's elbow, and tennis elbow." },
+          { label: "Pre and Post-Operative Rehabilitation", text: "Pre- and post-arthroscopy rehabilitation, scar tissue treatment, joint replacements (hip, knee, shoulder), and ACL reconstructions." },
+          { label: "Posture", text: "Ergonomic advice and postural problems, including shoulder, back, or neck problems." },
+          { label: "Neurological", text: "Head injuries, multiple sclerosis, strokes, Parkinson's disease, peripheral neuropathies, headaches, and balance issues." },
+          { label: "Occupational", text: "Personal injuries, such as accidents at work, driving accidents, or falls, and repetitive strain injuries, such as typing-related injuries." },
+        ],
+      },
+      {
+        q: "What treatment techniques are used by a physiotherapist?",
+        a: "Your physiotherapist will fully assess you initially in order to find out what the problem is. They will then create a treatment programme for you based on what they find.",
+        aListIntro: "Treatment techniques include:",
+        aLinks: [
+          { text: "Joint manipulation", href: "/service/joint-manipulation/" },
+          { text: "Soft tissue massage", href: "/service/soft-tissue-manipulation/" },
+          { text: "Trigger points", href: "/service/trigger-points/" },
+          { text: "Muscle energy techniques", href: "/service/muscle-energy-techniques/" },
+          { text: "Acupuncture" },
+          { text: "Ultrasound" },
+          { text: "Taping (postural and sports)", href: "/service/taping-postural-and-sports/" },
+          { text: "Gait analysis", href: "/service/gait-analysis/" },
+          { text: "Manual traction", href: "/service/manual-traction/" },
+          { text: "Pilates", href: "/service/pilates/" },
+          { text: "Ergonomic/work-based assessments (Desk)", href: "/service/ergonomic-work-based-assessments/" },
+          { text: "Transcutaneous electrical nerve stimulation (TENS)", href: "/service/transcutaneous-electrical-nerve-stimulation-tens/" },
+        ],
+      },
+      {
+        q: "What can physiotherapy do?",
+        a: "Physiotherapy has proven to be effective at reducing symptoms and there are several benefits of physiotherapy including:",
+        aLinks: [
+          { text: "Reduced pain" },
+          { text: "Increased range of movement" },
+          { text: "Increased strength" },
+          { text: "Improved posture" },
+          { text: "Education about your condition" },
+          { text: "Increased sporting activity" },
+          { text: "Increased functional activity" },
+        ],
+      },
     ],
     excerpt: "Physiotherapy uses physical methods — exercise, massage and manual techniques — to treat injury, pain and movement problems without surgery or medication.",
     intro: "Expert physiotherapists treating a wide range of conditions to reduce pain and restore how you move.",
@@ -39,7 +83,8 @@ export const therapies: Service[] = [
   },
   {
     title: "Sports Massage",
-    href: "/service/sports-massage/",
+    href: "/service/sports-massage-chelmsford-and-witham/",
+    heroHeadline: "Sports Massage Chelmsford & Witham",
     about: "Sports massage is a deeper, more focused form of massage that targets tension and stress in the soft tissues, combining Swedish massage with techniques such as compression, stretching, frictioning and trigger point work. At Farrell Physiotherapy it is used to stimulate circulation, relax and ease muscle tissue, reduce swelling and pain, and improve range of movement and flexibility. It can be delivered as a standalone treatment or alongside other therapies, and benefits everyone from athletes to non-sporty people looking to relieve muscle tension and aid recovery.",
     faqs: [
       { q: "What does a sports massage involve?", a: "Your therapist uses a range of hands-on techniques, including effleurage (stroking), petrissage, squeezing, frictioning and trigger point work, to release tension in the soft tissues. The treatment is tailored to you following an assessment of your needs on the day." },
@@ -119,6 +164,7 @@ export const additionalTreatments: Service[] = [
   {
     title: "Ergonomic Assessments",
     href: "/service/ergonomic-work-based-assessments/",
+    shortWhyImage: true,
     about: "An ergonomic or work-based assessment is a workstation review in which a physiotherapist visits your workplace or desk to assess how you sit and work, identifying conditions that could increase your risk of injury. Farrell Physiotherapy uses these assessments to examine your chair, desk, monitor, keyboard and wider environment, then recommends practical improvements alongside a bespoke exercise and rehabilitation programme. The focus is on prevention as much as treatment, helping to reduce pain, stiffness and the likelihood of injury or re-injury while creating a safer working environment.",
     faqs: [
       { q: "What does an ergonomic assessment involve?", a: "A physiotherapist assesses your workstation, looking at your chair, desk, monitor position, keyboard, document holders and overall environment to spot anything that could raise your risk of injury. They then recommend improvements and can provide a tailored exercise and rehabilitation programme to help prevent problems recurring." },
@@ -138,6 +184,14 @@ export const additionalTreatments: Service[] = [
   {
     title: "Gait Analysis",
     href: "/service/gait-analysis/",
+    whyExtra: {
+      heading: "There Are 3 Typical Foot Positions When Walking or Running",
+      items: [
+        "Flat Foot: Pronated Feet",
+        "Normal: Feet in Neutral",
+        "High Arched Foot: Supinated Feet",
+      ],
+    },
     about: "Gait analysis is the assessment of how you move, where a physiotherapist observes and analyses the way you walk or run through a complete gait cycle. At Farrell Physiotherapy, this often involves recording you in motion so your movement patterns can be replayed and studied in detail, identifying any abnormalities that place excessive stress on certain structures and may be contributing to pain or dysfunction. The findings are then used to create a tailored exercise programme to correct these issues, with onward referral to an orthotist or podiatrist where appropriate.",
     faqs: [
       { q: "What does a gait analysis session involve?", a: "Your physiotherapist observes and analyses how you walk or run, often recording you in motion so they can replay and study your movement in detail. They assess your foot position and overall movement patterns to identify anything that may be causing excessive stress, pain or dysfunction." },
@@ -175,6 +229,16 @@ export const additionalTreatments: Service[] = [
   {
     title: "Joint Mobilisations",
     href: "/service/joint-mobilisations/",
+    stepsSection: {
+      heading: "Grades of Mobilisation",
+      intro: "G.D. Maitland described 4 grades of mobilisation which range from a gentle movement if there is a lot of tenderness and pain. The grade intensity will increase slowly until you have normal movement again. The grade of treatment is dependent on whether stiffness or pain is the main problem as painful joints will not tolerate a high grade.",
+      steps: [
+        { title: "Small sized movement at the beginning of range" },
+        { title: "Large sized movement within free range of movement but not moving into stiffness or resistance" },
+        { title: "Large sized movement up to the end of range of movement" },
+        { title: "Small sized movement at the end of range of movement" },
+      ],
+    },
     about: "Joint mobilisations are a hands-on physiotherapy technique that involves carefully moving a joint in a controlled way to reduce pain and improve movement. At Farrell Physiotherapy, the physiotherapist uses the Maitland grading system, selecting from gentle small movements through to firmer movements at the end of range depending on whether pain or stiffness is the main problem. It is a passive treatment, so you remain in control and can stop the movement at any time, and it is often used to help painful, stiff or degenerated joints as well as recovery after injury or surgery.",
     faqs: [
       { q: "What does a joint mobilisation session involve?", a: "The physiotherapist gently and carefully moves the affected joint in a specific direction to ease pain and improve movement. It is a passive technique using graded movements, so you stay relaxed while the physiotherapist works, and you can stop the movement at any point if you need to." },

@@ -10,6 +10,8 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import ClinicMap from '../../components/ClinicMap.astro';
+import AboutSection from '../../components/AboutSection.astro';
+import WhyChooseUsSection from '../../components/WhyChooseUsSection.astro';
 import { locations } from '../../data/locations';
 import { site } from '../../data/site';
 import { formatOpeningHours, buildMedicalClinicJsonLd, buildBreadcrumbList } from '../../lib/content/normalize';
@@ -57,7 +59,40 @@ const clinicSchema = [clinicJsonLd, breadcrumbLd];
     intro={`Book online or call today — expert physiotherapy care at our ${location.name} clinic is closer than you think.`}
   />
 
-  <section class="contact firstsection">
+  {location.sections?.map((s) => (
+    s.layout === 'about' ? (
+      <AboutSection
+        eyebrow=""
+        heading={s.heading}
+        paragraphs={s.paragraphs ?? []}
+        checklist={s.checklist}
+        subsections={s.subsections}
+        image={s.image}
+        showBadge={false}
+        fitContent
+        stretchImage
+        ctaText={s.cta ? 'Book an Appointment' : undefined}
+        ctaHref={location.bookingHref}
+      />
+    ) : (
+      <WhyChooseUsSection
+        eyebrow=""
+        heading={s.heading}
+        paragraphs={s.paragraphs}
+        bodyChecklist={s.checklist}
+        closing={s.closing}
+        image={s.image}
+        imageLeft={s.imageLeft}
+        muted={s.muted}
+        checklistTwoCol={s.twoColChecklist}
+        showCta={!!s.cta}
+        ctaText="Book an Appointment"
+        ctaHref={location.bookingHref}
+      />
+    )
+  ))}
+
+  <section class="contact firstsection bg-(--beige)">
     <div class="container-main">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
@@ -66,13 +101,13 @@ const clinicSchema = [clinicJsonLd, breadcrumbLd];
           <h2>{location.name}</h2>
           <ul class="flex-layout flex-layout--col gap-4 mt-6 list-none p-0 m-0">
             <li>
-              <a href={`tel:${location.contact.phoneTel}`} class="text-(--color-body) hover:text-(--color-headline) transition-colors">{location.contact.phoneDisplay}</a>
+              <a href={`tel:${location.contact.phoneTel}`} class="text-(--color-body) hover:text-(--blue) transition-colors">{location.contact.phoneDisplay}</a>
             </li>
             <li>
-              <a href={`mailto:${location.contact.email}`} class="text-(--color-body) hover:text-(--color-headline) transition-colors">{location.contact.email}</a>
+              <a href={`mailto:${location.contact.email}`} class="text-(--color-body) hover:text-(--blue) transition-colors">{location.contact.email}</a>
             </li>
             <li>
-              <a href={location.contact.mapsUrl} target="_blank" rel="noopener noreferrer" class="text-(--color-body) hover:text-(--color-headline) transition-colors">
+              <a href={location.contact.mapsUrl} target="_blank" rel="noopener noreferrer" class="text-(--color-body) hover:text-(--blue) transition-colors">
                 {location.contact.addressLine1}, {location.contact.addressLine2}
               </a>
             </li>
@@ -88,7 +123,7 @@ const clinicSchema = [clinicJsonLd, breadcrumbLd];
           <h2>Hours</h2>
           <ul class="flex-layout flex-layout--col gap-2 mt-6 list-none p-0 m-0">
             {hoursLines.map((line) => (
-              <li class="flex-layout flex-layout--between text-sm text-(--color-body) border-b border-(--color-border) pb-2">
+              <li class="flex-layout flex-layout--between text-sm text-(--color-body) border-b border-(--color-muted) pb-2">
                 <span>{line.days}</span>
                 <span>{line.hours}</span>
               </li>

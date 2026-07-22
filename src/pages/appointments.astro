@@ -9,9 +9,21 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import WhyChooseUsSection from '../components/WhyChooseUsSection.astro';
 import { site } from '../data/site';
 
 const heroImg = '/images/hero/hero-appointment.avif';
+
+// Bespoke-session / how-to-book copy, shown in the WhyChooseUs (.fourthsection)
+// layout. The phone number and email are hyperlinked; no CTA button here.
+const appointmentInfo = [
+  "Everyone is an individual and as a result, at Farrell Physiotherapy, we ensure that every session is bespoke to you and the injury you have sustained.",
+  "Commencing with the initial consultation, we will ask you some questions about the mechanism and history of the injury. We will then examine your injury and give you're a differential diagnosis and explanation based on what the findings indicate.",
+  "Following this you will receive treatment and be given an exercise program to follow over .You may need more sessions but it will all be explained by your therapist.",
+  'To arrange an appointment, click book appointment below, or call us on <a href="tel:01245830280">01245 830280</a> or email: <a href="mailto:infofarrellphysiotherapy@gmail.com">infofarrellphysiotherapy@gmail.com</a>',
+  "All payments are made after each session. We accept cash, all major credit cards and cheques.",
+  "We are recognised by ALL major health insurance companies, including BUPA, AXA PPP, WPA, CIGNA, AVIVA, PRU HELATH and NUFFIELD. Please contact us if you have any queries about your health insurance or using it for Physiotherapy.",
+];
 
 const steps = [
   { title: 'Assessment', body: "We'll discuss your symptoms, medical history, and what you're hoping to achieve." },
@@ -34,7 +46,7 @@ const steps = [
     intro="Book your first appointment today and let our expert physiotherapists get you moving, pain-free, sooner."
   />
 
-  <section class="appointments firstsection">
+  <section class="appointments firstsection bg-(--color-muted)">
     <div class="container-main">
       <div class="appointments-layout">
 
@@ -66,6 +78,15 @@ const steps = [
       </div>
     </div>
   </section>
+
+  <WhyChooseUsSection
+    eyebrow=""
+    heading="Appointments at Farrell Physiotherapy"
+    showCta={false}
+    paragraphs={appointmentInfo}
+    image="/images/about-treatment.avif"
+    imageLeft
+  />
 </BaseLayout>
 
 <style>

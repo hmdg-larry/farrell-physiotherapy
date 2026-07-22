@@ -179,18 +179,17 @@ const FEATURE_ICONS: Record<string, string> = {
       <div>
         <div class="container-main">
           {tagline && (
-            <p class="text-white text-xl md:text-2xl font-semibold m-0">{tagline}</p>
+            <p class="text-white text-xl md:text-2xl font-semibold m-0 mt-10 md:mt-0">{tagline}</p>
           )}
         </div>
         <!-- Full-bleed divider — deliberately outside .container-main so
              it spans the full viewport width, not just the 1340px column. -->
         <div class="w-full border-t border-white/15 mt-6" aria-hidden="true"></div>
         <div class="container-main">
-          <!-- pt-8 lives on every card and the pb-10/12/16 hero-bottom
-               spacing lives ONLY on the last card, not on the grid or the
-               outer section — so the last row always reaches the hero's
-               true bottom edge regardless of how many rows wrap on mobile. -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <!-- Desktop (sm+): static 3-column row. pt-8 lives on every card
+               and the pb-10/12/16 hero-bottom spacing lives ONLY on the last
+               card so the last row always reaches the hero's true bottom edge. -->
+          <div class="hidden sm:grid sm:grid-cols-3 gap-8">
             {features.map((f) => (
               <div class="flex flex-col gap-3 pt-8 last:pb-10 last:md:pb-12 last:lg:pb-16">
                 <svg class="hero-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={FEATURE_ICONS[f.icon] ?? ''} />
@@ -200,6 +199,36 @@ const FEATURE_ICONS: Record<string, string> = {
                 </div>
               </div>
             ))}
+          </div>
+          <!-- Mobile (<sm): swipeable carousel — same Swiper style as the
+               site's other carousels (pagination dots + arrow buttons). -->
+          <div class="sm:hidden hero-features-carousel pt-10 pb-12">
+            <div class="swiper hero-features-swiper">
+              <div class="swiper-wrapper">
+                {features.map((f) => (
+                  <div class="swiper-slide h-auto">
+                    <div class="flex flex-col gap-3">
+                      <svg class="hero-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={FEATURE_ICONS[f.icon] ?? ''} />
+                      <div>
+                        <h3 class="text-(--color-primary) text-base font-semibold m-0">{f.title}</h3>
+                        <p class="text-white/70 text-sm leading-relaxed mt-1 m-0">{f.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-4 mt-8">
+              <div class="swiper-pagination hero-features-pagination"></div>
+              <div class="flex items-center gap-2.5">
+                <button type="button" class="hero-features-arrow hero-features-prev" aria-label="Previous">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button type="button" class="hero-features-arrow hero-features-next" aria-label="Next">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -288,7 +317,66 @@ const FEATURE_ICONS: Record<string, string> = {
   </script>
 )}
 
+<script>
+  /* Mobile-only trust-feature carousel (hidden sm+ where the static grid
+     shows). Same Swiper + pagination-dot style as the site's other
+     carousels. Guarded so pages using <Hero> without `features` don't init. */
+  import Swiper from 'swiper';
+  import { Pagination, Navigation } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/pagination';
+
+  if (document.querySelector('.hero-features-swiper')) {
+    new Swiper('.hero-features-swiper', {
+      modules: [Pagination, Navigation],
+      slidesPerView: 1,
+      spaceBetween: 24,
+      loop: true,
+      pagination: { el: '.hero-features-pagination', clickable: true },
+      navigation: { nextEl: '.hero-features-next', prevEl: '.hero-features-prev' },
+    });
+  }
+</script>
+
 <style>
+  /* ── Mobile trust-feature carousel controls (on the dark hero) ──── */
+  .hero-features-pagination {
+    position: static;
+    width: auto;
+    margin: 0;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .hero-features-pagination .swiper-pagination-bullet {
+    margin: 0;
+    background: #ffffff;
+    opacity: 0.4;
+  }
+  .hero-features-pagination .swiper-pagination-bullet-active {
+    background: var(--color-primary);
+    opacity: 1;
+  }
+  /* Arrow buttons — same amber circle treatment as the "What We Offer"
+     (ServicesCarousel) navigation. */
+  .hero-features-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    color: var(--color-headline);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .hero-features-arrow:hover { background: var(--color-primary-hover); }
+  .hero-features-arrow svg { width: 1.1rem; height: 1.1rem; }
+
   /* ── Hero eyebrow — override for the dark hero backdrop ───────
      The base .eyebrow class (global.css) is --color-headline,
      a dark amber tuned for text on light section backgrounds — on

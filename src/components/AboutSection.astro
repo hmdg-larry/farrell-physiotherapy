@@ -32,6 +32,23 @@ interface Props {
   /** Photo panel image. Defaults to the placeholder. */
   image?: string;
   imageAlt?: string;
+  /** Use the natural .firstsection height (standard padding, content-driven)
+      instead of the tall, vertically-centred min-h-[800px] block. */
+  fitContent?: boolean;
+  /** Optional checkmark-badge list rendered after the paragraphs (white
+      text to read on the blue background). */
+  checklist?: string[];
+  /** Optional h3 sub-sections (heading + paragraphs) rendered after the
+      paragraphs — white text on the blue background. */
+  subsections?: { heading: string; paragraphs: string[] }[];
+  /** Show the "HCPC-Registered & Fully Insured" photo badge (default true). */
+  showBadge?: boolean;
+  /** Stretch the photo to match the height of the text column at lg+
+      (instead of a fixed 4:3 box), so the two columns align vertically. */
+  stretchImage?: boolean;
+  /** Optional CTA button below the content. */
+  ctaText?: string;
+  ctaHref?: string;
 }
 const {
   eyebrow = 'About Us',
@@ -41,25 +58,61 @@ const {
   ],
   image = '/images/placeholder.webp',
   imageAlt = '',
+  fitContent = false,
+  checklist,
+  subsections,
+  showBadge = true,
+  stretchImage = false,
+  ctaText,
+  ctaHref,
 } = Astro.props;
 ---
 
-<section class="about firstsection about-gradient relative overflow-hidden flex items-center min-h-[800px]">
+<section class:list={["about firstsection about-gradient relative overflow-hidden", { "flex items-center min-h-[800px]": !fitContent }]}>
   <div class="orb" aria-hidden="true"></div>
   <div class="container-main relative z-10">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div class:list={["grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16", { "items-center": !stretchImage, "items-stretch": stretchImage }]}>
 
       <div>
-        <span class="eyebrow about-eyebrow">{eyebrow}</span>
-        <h2 class="text-white m-0 mt-3">{heading}</h2>
-        <div class="mt-6 flex flex-col gap-4 max-w-lg">
-          {paragraphs.map((p) => (
-            <p class="m-0 text-white/85 text-base leading-relaxed">{p}</p>
-          ))}
-        </div>
+        {eyebrow && <span class="eyebrow about-eyebrow">{eyebrow}</span>}
+        {heading && <h2 class="text-white m-0 mt-3">{heading}</h2>}
+        {paragraphs.length > 0 && (
+          <div class="mt-6 flex flex-col gap-4 max-w-lg">
+            {paragraphs.map((p) => (
+              <p class="m-0 text-white/85 text-base leading-relaxed">{p}</p>
+            ))}
+          </div>
+        )}
+        {checklist && checklist.length > 0 && (
+          <ul class="about-check-list mt-6 flex flex-col gap-4 max-w-lg">
+            {checklist.map((item) => (
+              <li class="flex items-start gap-3">
+                <span class="about-check flex items-center justify-center shrink-0" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="text-white/90 text-base leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {subsections && subsections.length > 0 && subsections.map((sub) => (
+          <div class="mt-8 max-w-lg">
+            <h3 class="about-subheading text-white m-0">{sub.heading}</h3>
+            <div class="mt-3 flex flex-col gap-4">
+              {sub.paragraphs.map((p) => (
+                <p class="m-0 text-white/85 text-base leading-relaxed">{p}</p>
+              ))}
+            </div>
+          </div>
+        ))}
+        {ctaText && ctaHref && (
+          <div class="mt-8">
+            <a href={ctaHref} class="btn btn-default">{ctaText}</a>
+          </div>
+        )}
       </div>
 
-      <div class="about-photo relative rounded-(--radius-card) overflow-hidden aspect-4/3 shadow-(--shadow-raised)">
+      <div class:list={["about-photo relative rounded-(--radius-card) overflow-hidden shadow-(--shadow-raised)", stretchImage ? "aspect-4/3 lg:aspect-auto" : "aspect-4/3"]}>
         <img
           src={image}
           alt={imageAlt}
@@ -69,10 +122,12 @@ const {
           height="600"
           class="absolute inset-0 w-full h-full object-cover"
         />
-        <div class="absolute left-5 bottom-5 flex items-center gap-2 bg-white rounded-(--radius-badge) px-4 py-2 shadow-(--shadow-raised)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-(--color-headline) shrink-0" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span class="text-sm font-semibold text-(--color-headline) whitespace-nowrap">HCPC-Registered &amp; Fully Insured</span>
-        </div>
+        {showBadge && (
+          <div class="absolute left-5 bottom-5 flex items-center gap-2 bg-white rounded-(--radius-badge) px-4 py-2 shadow-(--shadow-raised)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-(--color-headline) shrink-0" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span class="text-sm font-semibold text-(--color-headline) whitespace-nowrap">HCPC-Registered &amp; Fully Insured</span>
+          </div>
+        )}
       </div>
 
     </div>
@@ -97,5 +152,27 @@ const {
   .about-eyebrow {
     color:     rgb(255 255 255 / 0.85);
     font-size: var(--text-xs);
+  }
+  /* Checkmark-badge list, matching .why-choose-us-list but sized for the
+     blue background (list text is white via the utility class above). */
+  .about-check-list {
+    list-style: none;
+    margin-top: 1.5rem;
+    padding: 0;
+  }
+  .about-check {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.125rem;
+    border-radius: 9999px;
+    background-color: var(--color-muted);
+    color: var(--color-headline);
+  }
+  .about-subheading {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
   }
 </style>

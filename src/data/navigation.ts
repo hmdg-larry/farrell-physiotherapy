@@ -66,7 +66,7 @@ export const headerNav: HeaderNavEntry[] = [
         title: 'Therapies',
         links: [
           { label: 'Physiotherapy', href: '/service/physiotherapy-services/' },
-          { label: 'Sports Massage', href: '/service/sports-massage/' },
+          { label: 'Sports Massage', href: '/service/sports-massage-chelmsford-and-witham/' },
           { label: 'Pilates', href: '/service/pilates/' },
           { label: 'Corporate Health', href: '/service/corporate-health/' },
           { label: 'Virtual Clinic', href: '/service/virtual-clinic/' },

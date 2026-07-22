@@ -45,3 +45,7 @@
 # .claude/prompts/fallback-redirect.md for the full architecture.
 #
 # Add per-client specific old → new redirects ABOVE this comment.
+
+# ── Sports Massage — renamed to a location-keyword slug ────────────
+/service/sports-massage/                             /service/sports-massage-chelmsford-and-witham/  301
+/our-services/sports-massage-chelmsford-and-witham/  /service/sports-massage-chelmsford-and-witham/  301

@@ -7,7 +7,13 @@
  * `name` per page instance so the exclusive-open grouping is scoped.
  */
 interface Props {
-  faqs: { q: string; a: string }[];
+  faqs: {
+    q: string;
+    a: string;
+    aList?: { label: string; text: string }[];
+    aListIntro?: string;
+    aLinks?: { text: string; href?: string }[];
+  }[];
   /** Group name for the native exclusive accordion. Unique per instance. */
   name?: string;
 }
@@ -26,6 +32,33 @@ const { faqs, name = 'faq' } = Astro.props;
         </summary>
         <div class="faq-answer-wrap">
           <p class="faq-answer">{f.a}</p>
+          {f.aList && f.aList.length > 0 && (
+            <ul class="faq-answer-list">
+              {f.aList.map((item) => (
+                <li class="faq-answer-item">
+                  <span class="faq-answer-check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  <span class="faq-answer-item-text"><strong>{item.label}</strong>: {item.text}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {f.aListIntro && <p class="faq-answer">{f.aListIntro}</p>}
+          {f.aLinks && f.aLinks.length > 0 && (
+            <ul class="faq-answer-list">
+              {f.aLinks.map((item) => (
+                <li class="faq-answer-item">
+                  <span class="faq-answer-check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  <span class="faq-answer-item-text">
+                    {item.href ? <a href={item.href}>{item.text}</a> : item.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </details>
     </li>
@@ -101,7 +134,58 @@ const { faqs, name = 'faq' } = Astro.props;
     color: var(--color-body);
     max-width: 62ch;
   }
+  /* List styling matches .why-choose-us-list: a circular muted badge with a
+     headline-coloured tick beside each item, not a bullet marker. */
+  .faq-answer-list {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 62ch;
+  }
+  .faq-answer-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .faq-answer-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.125rem;
+    border-radius: 9999px;
+    background-color: var(--color-muted);
+    color: var(--color-headline);
+  }
+  .faq-answer-check svg { width: 0.75rem; height: 0.75rem; }
+  .faq-answer-item-text {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-body);
+  }
+  .faq-answer-list strong { color: var(--color-headline); font-weight: 600; }
+  /* Lead-in line between the answer and a following list. */
+  .faq-answer + .faq-answer,
+  .faq-answer-list + .faq-answer { margin-top: 0.85rem; }
+  /* Linked list items — underline for affordance, site link-hover colour. */
+  .faq-answer-item-text a {
+    color: var(--color-headline);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+  .faq-answer-item-text a:hover { color: var(--color-primary-hover); }
   .faq-item[open] .faq-answer { animation: faq-reveal 0.28s ease both; }
+  .faq-item[open] .faq-answer-list { animation: faq-reveal 0.28s ease both; }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item[open] .faq-answer-list { animation: none; }
+  }
   @keyframes faq-reveal {
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: none; }

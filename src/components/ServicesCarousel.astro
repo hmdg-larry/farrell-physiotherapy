@@ -55,7 +55,7 @@ const list = excludeHref ? services.filter((s) => s.href !== excludeHref) : serv
 // fall back to the placeholder.
 const cardImages: Record<string, string> = {
   '/service/physiotherapy-services/': '/images/hero/hero-physio.avif',
-  '/service/sports-massage/': '/images/hero/hero-massage.avif',
+  '/service/sports-massage-chelmsford-and-witham/': '/images/hero/hero-massage.avif',
   '/service/pilates/': '/images/hero/hero-pilates.avif',
   '/service/corporate-health/': '/images/hero/hero-corporate.avif',
   '/service/virtual-clinic/': '/images/hero/hero-virtual.avif',
@@ -82,11 +82,6 @@ const cardImages: Record<string, string> = {
   </div>
 
   <div class="services-carousel-wrap relative mt-12">
-    <div class="services-carousel-header">
-      <span>Our Services</span>
-      <span>{list.length} Services</span>
-    </div>
-
     <div class="swiper services-swiper">
       <div class="swiper-wrapper">
         {list.map((service) => (
@@ -199,22 +194,6 @@ const cardImages: Record<string, string> = {
 </script>
 
 <style>
-  .services-carousel-header {
-    width:            320px;
-    max-width:        90vw;
-    margin:           0 auto 1rem;
-    display:          flex;
-    align-items:      center;
-    justify-content:  space-between;
-    background-color: var(--color-white);
-    border-radius:    var(--radius-card);
-    box-shadow:       var(--shadow-card);
-    padding:          1rem 1.5rem;
-    font-size:        0.875rem;
-    font-weight:      600;
-    color:            var(--color-headline);
-  }
-
   .services-swiper {
     padding: 0.5rem 0 2rem;
   }

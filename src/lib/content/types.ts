@@ -182,6 +182,24 @@ export interface Service {
   title: string;
   /** Route when a dedicated page exists; hash anchor until then. */
   href: string;
+  /** Optional override for the detail-page hero H1 only. When set, the
+      visible H1 uses this (e.g. location-keyword variant) while `title`
+      continues to drive the SEO <title>, breadcrumb, cards and carousel. */
+  heroHeadline?: string;
+  /** Cap the WhyChooseUs (.fourthsection) inset photo height on this
+      service's detail page (max-height 30rem). Off by default. */
+  shortWhyImage?: boolean;
+  /** Optional sub-heading + bullet list shown in the WhyChooseUs section
+      (after the checklist) on this service's detail page. */
+  whyExtra?: { heading: string; items: string[] };
+  /** Optional numbered-steps block rendered directly before the FAQ section.
+      Same numbered-circle visual language as the "What To Expect" timeline,
+      laid out as a horizontal row (centered heading + intro above). */
+  stepsSection?: {
+    heading: string;
+    intro?: string;
+    steps: { title: string }[];
+  };
   /** Short benefit-led summary for cards. */
   excerpt?: string;
   /** One-sentence hook shown under the H1 on the detail page. */
@@ -190,8 +208,19 @@ export interface Service {
   points?: string[];
   /** "About this service" paragraph(s) for the detail page. */
   about?: string;
-  /** Per-service FAQ accordions on the detail page. */
-  faqs?: { q: string; a: string }[];
+  /** Per-service FAQ accordions on the detail page.
+      - `aList`: a checklist below the answer, each item a bold label + text
+        (e.g. "Joints: …").
+      - `aListIntro` + `aLinks`: a lead-in line followed by a checklist of
+        items, each optionally a link (relative href) — plain text when no
+        href is given. */
+  faqs?: {
+    q: string;
+    a: string;
+    aList?: { label: string; text: string }[];
+    aListIntro?: string;
+    aLinks?: { text: string; href?: string }[];
+  }[];
   image?: ImageRef;
 }
 
@@ -232,6 +261,9 @@ export interface Condition {
   excerpt?: string;
   /** Fuller descriptive/treatment copy for the condition detail page. */
   body?: string;
+  /** Optional checklist rendered after the body — an intro line plus items,
+      styled with the site's checkmark-badge list. */
+  bodyList?: { intro?: string; items: string[] };
   /** Optional hero background image; falls back to /images/placeholder.webp. */
   heroImage?: string;
   /** Optional detail-panel image; falls back to placeholder. */
@@ -277,4 +309,32 @@ export interface ClinicLocation {
   hours: OpeningHours;
   /** Treatment price list for this clinic */
   prices: PriceItem[];
+  /** Optional marketing sections on the clinic detail page, rendered in
+      order between the hero and the contact block. Each is either the
+      About layout (blue) or the WhyChooseUs layout (white/muted). */
+  sections?: ClinicSection[];
+}
+
+export interface ClinicSection {
+  /** 'about' → AboutSection (blue/orb); 'whychoose' → WhyChooseUsSection. */
+  layout: 'about' | 'whychoose';
+  heading: string;
+  /** Prose paragraphs (intro, before any checklist). May contain inline
+      HTML such as tel:/mailto: links (whychoose layout). */
+  paragraphs?: string[];
+  /** Checkmark-badge list. */
+  checklist?: string[];
+  /** h3 sub-sections (about layout only). */
+  subsections?: { heading: string; paragraphs: string[] }[];
+  /** Prose after the checklist (whychoose layout). */
+  closing?: string[];
+  image: string;
+  /** Show a "Book an Appointment" CTA linking to the clinic booking. */
+  cta?: boolean;
+  /** whychoose: place the image on the left at lg+. */
+  imageLeft?: boolean;
+  /** whychoose: use the muted (cream) background for alternation. */
+  muted?: boolean;
+  /** whychoose: render the checklist in two columns at sm+ (long lists). */
+  twoColChecklist?: boolean;
 }

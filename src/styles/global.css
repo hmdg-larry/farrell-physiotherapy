@@ -820,6 +820,10 @@
     background-position:    center;
     background-size:        1.1rem;
     pointer-events: none;
+    /* match ::before's background-color transition so the circle and the
+       pill change colour in sync on hover (e.g. btn-default amber → blue) */
+    transition:
+      background-color 0.2s ease;
   }
 
   .btn:active {
@@ -833,7 +837,12 @@
 
   /* ── btn-default — primary filled ─────────────────────────
      Use on: main CTA buttons, hero CTAs, form submits
-     Background: primary · Text: headline · Hover: darker primary
+     Background: primary · Text: headline · Hover: secondary blue
+     Hover flips the amber pill to the secondary brand blue (--blue)
+     with white label + white arrow. The arrow-badge circle flips to
+     blue too so the pill reads as one colour on hover rather than
+     going two-tone. The badge arrow is drawn with `currentColor`, so
+     setting the circle's `color` to white recolours the glyph.
      ────────────────────────────────────────────────────────*/
   .btn-default {
     color: var(--color-headline);
@@ -842,11 +851,20 @@
     background-color: var(--color-primary);
   }
   .btn-default:hover {
-    color:     var(--color-headline);
+    color:     var(--color-white);
     transform: translateY(-1px);
   }
   .btn-default:hover::before {
-    background-color: var(--color-primary-hover);
+    background-color: var(--blue);
+  }
+  .btn-default:hover::after {
+    background-color: var(--blue);
+    color:            var(--color-white);
+    /* currentColor does NOT resolve from the element's `color` inside a
+       data-URI background-image SVG (see btn-white/btn-secondary below), so
+       the white arrow needs its stroke baked in — otherwise it stays dark
+       on the blue circle regardless of the `color` above. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M7 7h10v10'/%3E%3C/svg%3E");
   }
 
   /* ── btn-white — white filled ──────────────────────────────
@@ -964,7 +982,14 @@
     font-size:    0.875rem;
   }
   #header-cta:hover::before {
-    box-shadow: none;
+    box-shadow:       none;
+    /* default (transparent-over-hero) state uses .btn-white — override its
+       cream hover so Book Now turns secondary blue like the main CTA. */
+    background-color: var(--blue);
+    border-color:     transparent;
+  }
+  #header-cta:hover {
+    color: var(--color-white); /* white label on the blue pill, matching btn-default */
   }
   #site-header-wrapper.is-scrolled #header-cta {
     color: var(--color-headline);
@@ -974,7 +999,7 @@
     border-color:     transparent;
   }
   #site-header-wrapper.is-scrolled #header-cta:hover::before {
-    background-color: var(--color-primary-hover);
+    background-color: var(--blue);
   }
 
   /* ── Card ──────────────────────────────────────────────────*/

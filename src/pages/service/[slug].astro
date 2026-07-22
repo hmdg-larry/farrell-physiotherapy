@@ -39,7 +39,7 @@ const serviceImages: Record<string, { hero?: string; about?: string; why?: strin
     about: '/images/service/physio-about.avif',
     why: '/images/service/physio-backpain.avif',
   },
-  'sports-massage': {
+  'sports-massage-chelmsford-and-witham': {
     hero: '/images/hero/hero-massage.avif',
     about: '/images/service/massage-about.avif',
     why: '/images/service/massage-leg.avif',
@@ -119,6 +119,19 @@ const breadcrumbLd = buildBreadcrumbList([
   { name: 'Home', url: `${_siteOrigin}/` },
   { name: service.title, url: `${_siteOrigin}${service.href}` },
 ]);
+// Fold any list content into the answer text so the FAQ structured data
+// carries the full answer, not just the intro line.
+const faqAnswerText = (f: NonNullable<typeof service.faqs>[number]): string => {
+  const parts = [f.a];
+  if (f.aList && f.aList.length > 0) {
+    parts.push(f.aList.map((i) => `${i.label}: ${i.text}`).join(' '));
+  }
+  if (f.aListIntro) parts.push(f.aListIntro);
+  if (f.aLinks && f.aLinks.length > 0) {
+    parts.push(f.aLinks.map((i) => i.text).join(', '));
+  }
+  return parts.join(' ');
+};
 const faqLd = service.faqs && service.faqs.length > 0
   ? {
       '@context': 'https://schema.org',
@@ -126,7 +139,7 @@ const faqLd = service.faqs && service.faqs.length > 0
       mainEntity: service.faqs.map((f) => ({
         '@type': 'Question',
         name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
+        acceptedAnswer: { '@type': 'Answer', text: faqAnswerText(f) },
       })),
     }
   : null;
@@ -146,7 +159,7 @@ const metaDescription = service.excerpt ?? service.intro
     image={heroImg}
     imageAlt=""
     eyebrow="Services"
-    headline={service.title}
+    headline={service.heroHeadline ?? service.title}
     intro={`Book your ${service.title} appointment today and let our expert physiotherapists help you recover faster.`}
   />
 
@@ -165,7 +178,30 @@ const metaDescription = service.excerpt ?? service.intro
     points={service.points}
     image={imgs.why}
     imageLeft
+    shortImage={service.shortWhyImage}
+    extra={service.whyExtra}
   />
+
+  {service.stepsSection && (
+    <section class="steps-section firstsection bg-(--color-muted)">
+      <div class="container-main">
+        <div class="section-header">
+          <h2>{service.stepsSection.heading}</h2>
+          {service.stepsSection.intro && (
+            <p class="steps-intro">{service.stepsSection.intro}</p>
+          )}
+        </div>
+        <ol class="steps-row">
+          {service.stepsSection.steps.map((step, i) => (
+            <li class="step">
+              <span class="step-num" aria-hidden="true">{i + 1}</span>
+              <p class="step-title">{step.title}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
 
   {service.faqs && service.faqs.length > 0 && (
     <section class="faq firstsection bg-(--beige)">
@@ -186,3 +222,73 @@ const metaDescription = service.excerpt ?? service.intro
     excludeHref={service.href}
   />
 </BaseLayout>
+
+<style>
+  /* Horizontal numbered-steps block (e.g. Grades of Mobilisation).
+     Reuses the .appointments-steps visual language — numbered circles,
+     heading typography, spacing — arranged as a centered horizontal row
+     within the main container. No vertical connecting line. */
+  .steps-intro {
+    margin: 1.25rem auto 0;
+    max-width: 48rem;
+    font-size: var(--text-lg);
+    line-height: 1.65;
+    color: var(--color-body);
+  }
+
+  .steps-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;        /* mobile: stacked */
+    gap: 2.5rem;
+  }
+  @media (min-width: 640px) {
+    .steps-row { grid-template-columns: repeat(2, 1fr); }   /* tablet: 2-up */
+  }
+  @media (min-width: 1024px) {
+    .steps-row {
+      grid-template-columns: repeat(4, 1fr);                /* desktop: 4-up */
+      gap: 2rem;
+      align-items: start;
+    }
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  /* Same numbered circle as .appointments-step-num */
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    color: var(--color-headline);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.125rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .step-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    color: var(--color-headline);
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+</style>

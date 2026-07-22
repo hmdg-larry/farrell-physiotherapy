@@ -175,8 +175,8 @@ const ctaEntry = headerNav.find((e): e is Extract<HeaderNavEntry, { kind: 'link'
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
               </button>
               <div class="nav-flyout-panel absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible transition-all duration-200 group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible z-50">
-                <div class="mega-panel w-[880px]">
-                  <div class="grid grid-cols-2 gap-1 items-start">
+                <div class="mega-panel">
+                  <div class="flex gap-12 items-start">
                     {entry.groups.map((g) => (
                       <div>
                         <div class="nav-dropdown-group-title">{g.title}</div>

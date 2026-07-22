@@ -33,6 +33,25 @@ interface Props {
   /** Photo inset inside the blue/orb visual panel. Defaults to placeholder. */
   image?: string;
   imageAlt?: string;
+  /** Cap the inset photo's height (careers page). */
+  shortImage?: boolean;
+  /** Optional sub-heading + bullet list rendered after the checklist,
+      before the CTA (uses the site's standard bullet-list styling). */
+  extra?: { heading: string; items: string[] };
+  /** When provided, render these as prose paragraphs in the text column
+      instead of the `points` checklist. Each string may contain inline
+      HTML (e.g. tel:/mailto: links) and is rendered with set:html. */
+  paragraphs?: string[];
+  /** Show the CTA button (default true). */
+  showCta?: boolean;
+  /** Checkmark-badge list rendered after `paragraphs` (intro prose). */
+  bodyChecklist?: string[];
+  /** Prose rendered after `bodyChecklist`. May contain inline HTML. */
+  closing?: string[];
+  /** Use the muted (cream) background instead of white — for alternation. */
+  muted?: boolean;
+  /** Render `bodyChecklist` in two columns at sm+ (for long lists). */
+  checklistTwoCol?: boolean;
 }
 const {
   eyebrow = 'Why Choose Us',
@@ -47,29 +66,82 @@ const {
   imageLeft = false,
   image = '/images/placeholder.webp',
   imageAlt = '',
+  shortImage = false,
+  extra,
+  paragraphs,
+  showCta = true,
+  bodyChecklist,
+  closing,
+  muted = false,
+  checklistTwoCol = false,
 } = Astro.props;
 ---
 
-<section class="why-choose-us fourthsection bg-white">
+<section class:list={["why-choose-us fourthsection", muted ? "bg-(--color-muted)" : "bg-white", { "why-choose-us--short-img": shortImage, "why-choose-us--muted": muted }]}>
   <div class="container-main">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
 
       <div class="flex flex-col justify-center">
-        <span class="eyebrow">{eyebrow}</span>
-        <h2 class="text-(--color-headline) m-0 mt-3 max-w-lg">{heading}</h2>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        {heading && <h2 class="text-(--color-headline) m-0 mt-3">{heading}</h2>}
 
-        <ul class="why-choose-us-list mt-8 flex flex-col gap-5">
-          {points.map((item) => (
-            <li class="why-choose-us-item flex items-start gap-3">
-              <span class="why-choose-us-check flex items-center justify-center shrink-0" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="M20 6 9 17l-5-5"/></svg>
-              </span>
-              <span class="text-(--color-body) text-base leading-relaxed">{item}</span>
-            </li>
-          ))}
-        </ul>
+        {paragraphs ? (
+          <div class="why-choose-us-prose mt-6 flex flex-col gap-4">
+            {paragraphs.map((para) => (
+              <p class="text-(--color-body) text-base leading-relaxed" set:html={para} />
+            ))}
+          </div>
+        ) : (
+          <ul class="why-choose-us-list mt-8 flex flex-col gap-5">
+            {points.map((item) => (
+              <li class="why-choose-us-item flex items-start gap-3">
+                <span class="why-choose-us-check flex items-center justify-center shrink-0" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="text-(--color-body) text-base leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        <a href={ctaHref} class="btn btn-default mt-10 self-start">{ctaText}</a>
+        {bodyChecklist && bodyChecklist.length > 0 && (
+          <ul class:list={["why-choose-us-list mt-6 flex flex-col gap-5", { "why-choose-us-list--2col": checklistTwoCol }]}>
+            {bodyChecklist.map((item) => (
+              <li class="why-choose-us-item flex items-start gap-3">
+                <span class="why-choose-us-check flex items-center justify-center shrink-0" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="text-(--color-body) text-base leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {closing && closing.length > 0 && (
+          <div class="why-choose-us-prose mt-6 flex flex-col gap-4">
+            {closing.map((para) => (
+              <p class="text-(--color-body) text-base leading-relaxed" set:html={para} />
+            ))}
+          </div>
+        )}
+
+        {extra && (
+          <div class="why-choose-us-extra">
+            <h3 class="why-choose-us-extra-heading">{extra.heading}</h3>
+            <ul class="why-choose-us-list flex flex-col gap-5">
+              {extra.items.map((item) => (
+                <li class="why-choose-us-item flex items-start gap-3">
+                  <span class="why-choose-us-check flex items-center justify-center shrink-0" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  <span class="text-(--color-body) text-base leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {showCta && <a href={ctaHref} class="btn btn-default mt-10 self-start">{ctaText}</a>}
       </div>
 
       <div class:list={["why-choose-us-visual relative rounded-(--radius-card) overflow-hidden min-h-[360px] lg:min-h-[480px] flex items-center justify-center p-6 lg:p-10", { "lg:order-first": imageLeft }]}>
@@ -90,6 +162,63 @@ const {
 </section>
 
 <style>
+  /* Cap the inset photo's height. The source image is portrait (800×900);
+     at full column width it renders ~825px tall and drags the whole row
+     (and the stretched text column) with it. Capping it lets the shorter
+     text column set the row height, with the blue panel framing a shorter
+     object-cover crop. Padding is left to the global .fourthsection rule, so
+     a section can keep standard padding while still using the shorter image. */
+  .why-choose-us--short-img .why-choose-us-visual img {
+    height:     auto;
+    max-height: 30rem;
+  }
+
+  /* Sub-heading + checklist after the main checklist. The list reuses the
+     .why-choose-us-list / .why-choose-us-check styling for identical bullets. */
+  .why-choose-us-extra {
+    margin-top: 2rem;
+  }
+  .why-choose-us-extra-heading {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    color: var(--color-headline);
+  }
+
+  /* Inline links in prose mode (e.g. tel:/mailto:). :global() is required
+     because the <a> tags are injected via set:html and so don't carry
+     Astro's scoped-style attribute. */
+  .why-choose-us-prose :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+  .why-choose-us-prose :global(a:hover) { color: var(--blue); }
+
+  /* On the muted (cream) background the default cream badge is invisible,
+     so give it a filled blue badge with a white tick for contrast. */
+  .why-choose-us--muted .why-choose-us-check {
+    background-color: var(--blue);
+    color:            var(--color-white);
+  }
+  /* Two-column checklist for long lists (stacks on mobile). */
+  .why-choose-us-list--2col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .why-choose-us-list--2col {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 2.5rem;
+    }
+  }
+
   .why-choose-us-check {
     width:            1.5rem;
     height:           1.5rem;

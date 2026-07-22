@@ -15,6 +15,10 @@ import { site } from '../data/site';
 
 const heroImg = '/images/hero/team-hero.avif';
 
+// Careers CV inbox — deliberately a different address from the site-wide
+// contact email (site.contact.email); CVs go straight to Ben.
+const cvEmail = 'benfarrellphysios@gmail.com';
+
 const reasons = [
   'Work alongside an experienced, HCPC- and CSP-registered team',
   'A varied caseload spanning NHS, sports, corporate and private care',
@@ -34,6 +38,8 @@ const reasons = [
     eyebrow="Careers"
     headline="Join Our Team"
     intro="Ready to join a team that puts patients first? Send your CV and introduce yourself today."
+    ctaText="Email Your CV"
+    ctaHref={`mailto:${cvEmail}`}
   />
 
   <WhyChooseUsSection
@@ -41,7 +47,8 @@ const reasons = [
     heading="Grow Your Career with Farrell Physiotherapy"
     points={reasons}
     ctaText="Email Your CV"
-    ctaHref={`mailto:${site.contact.email}`}
+    ctaHref={`mailto:${cvEmail}`}
     image="/images/career-grow.avif"
+    shortImage
   />
 </BaseLayout>
