@@ -1,5 +1,8 @@
 # Cookie Consent Mode v2 — Astro Implementation (Final Pattern)
 
+> **Current farrell-physiotherapy GTM timing (2026-10-27):** Hannah requested the Santis immediate-loading fix. `BaseLayout.astro` now calls `loadGTM()` immediately after parsing, following the unchanged synchronous consent defaults/restore. Existing stored-rejection guards (where present), the public hook and consent-update listener remain. Intent/interaction/timer loading is superseded for this site; do not restore it for PageSpeed scores. This changes loading time, not consent grants. Live GA4 receipt and PageSpeed impact require post-deployment verification.
+
+
 > **Status: FINAL, production-verified** on physiolounge.co.uk (2026-07-02, PSI mobile 97 / LCP 2.4s with this exact stack live).
 > This document is written so ANY model or developer can audit or re-apply the pattern safely.
 > Read the whole "Safe vs Dangerous" section before touching anything.

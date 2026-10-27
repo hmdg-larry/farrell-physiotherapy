@@ -1,5 +1,8 @@
 # Google PageSpeed Insights — Mobile LCP/FCP Optimisation (Working Solution)
 
+> **Current farrell-physiotherapy GTM timing (2026-10-27):** Hannah requested the Santis immediate-loading fix. `BaseLayout.astro` now calls `loadGTM()` immediately after parsing, following the unchanged synchronous consent defaults/restore. Existing stored-rejection guards (where present), the public hook and consent-update listener remain. Intent/interaction/timer loading is superseded for this site; do not restore it for PageSpeed scores. This changes loading time, not consent grants. Live GA4 receipt and PageSpeed impact require post-deployment verification.
+
+
 > **Status: PRODUCTION-VERIFIED** on physiolounge.co.uk, 2026-07-02.
 > Result: mobile LCP **2.7s → 2.4s**, Speed Index 4.4s → ~1.5s, performance score **97**, with zero design change and all tracking/consent intact.
 > This guide is written step-by-step so ANY model (including older ones like Opus) can execute it safely on any HMDG Astro + Sanity + Cloudflare project.

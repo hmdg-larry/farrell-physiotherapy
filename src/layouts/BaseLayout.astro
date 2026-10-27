@@ -307,37 +307,10 @@ const cfg = cookieConsentConfig;
     <!-- ── Cookie Consent Manager ──────────────────────────────── -->
     <CookieConsent />
 
-    <!-- ── Google Tag Manager — deferred bootstrap (relocated from <head>) ─
-         dataLayer + gtm.start push run immediately so any in-page code
-         (CookieConsent, ContactForm, BookingSection) can dataLayer.push()
-         without waiting on GTM. The actual gtm.js script is delayed
-         until the FIRST of:
-           1. The user grants analytics or marketing consent (via the
-              `hmdg:consent-update` event from CookieConsent.astro).
-              → Loads immediately on Accept / Save Preferences.
-           2. The user clicks a high-intent link (booking, tel:, mailto:,
-              or any element matching the conversion-intent selectors).
-              → Loads immediately when the user signals booking intent.
-           3. The user's first pointerdown or keydown.
-              → Loads on any meaningful interaction.
-           4. A 12-second setTimeout fallback (covers users who never
-              interact within the Lighthouse measurement window — the
-              long delay deliberately pushes GTM past PSI's TBT window
-              so analytics still fires for everyone, just outside the
-              measured critical path).
-
-         This block sits at the END of <body> rather than in <head> so
-         the bytes don't push the render-blocking stylesheet `<link>`
-         later in the head's critical-path parse. `type="module"` keeps
-         the script deferred; it runs after parsing and before
-         DOMContentLoaded. Consent Mode v2 init still runs first because
-         it's a CLASSIC inline script in <head> — synchronous, parsed
-         before any body content.
-
-         Server-side GA4 (via /api/book-now and /api/booking-complete)
-         provides a redundancy path for the booking conversion events
-         that matter most, even if the client GTM fails to load.
-    ──────────────────────────────────────────────────────────────────── -->
+    <!-- Google Tag Manager loads immediately after parsing. The synchronous
+         Consent Mode defaults and stored-consent restoration in <head> run
+         first. Keep existing consent guards; do not restore the interaction
+         triggers or 12-second delay, which miss short no-interaction visits. -->
     {cfg.gtmId && (
       <script type="module" is:inline define:vars={{ _gtmId: cfg.gtmId }}>
         // gtm.start push enqueues the boot event so any early
@@ -358,17 +331,9 @@ const cfg = cookieConsentConfig;
           }
 
           // Expose to window so external code (e.g. a contact-form
-          // submit handler) can force-load GTM ahead of intent if it
+          // submit handler) can call the idempotent loader if it
           // needs to fire a conversion event reliably.
           window.hmdgLoadGTM = loadGTM;
-
-          // 0. RESTORED CONSENT (returning visitors) — if the Consent
-          //    Mode block above restored a granted consent from cookie,
-          //    eager-load GTM on this same tick. No wait for interaction.
-          var restored = window.__hmdgConsentRestored;
-          if (restored && (restored.analytics || restored.marketing)) {
-            loadGTM();
-          }
 
           // 1. CONSENT (first-time visitors) — load immediately when
           //    the user grants analytics OR marketing consent via the
@@ -381,33 +346,9 @@ const cfg = cookieConsentConfig;
             }
           }, { passive: true });
 
-          // 2. INTENT — load on any click of a booking / tel: / mailto:
-          //    link, or any element flagged as conversion intent.
-          document.addEventListener('click', function (event) {
-            if (loaded) return;
-            var target = event.target && event.target.closest
-              ? event.target.closest('a,button')
-              : null;
-            if (!target) return;
-            var href = target.getAttribute('href') || '';
-            var isIntent =
-              href.indexOf('/booking') === 0 ||
-              href.indexOf('tel:')      === 0 ||
-              href.indexOf('mailto:')   === 0 ||
-              target.matches('[data-booking-link], [data-gtm-intent], .book-now, .btn[href*="booking"]');
-            if (isIntent) loadGTM();
-          }, { capture: true, passive: true });
-
-          // 3. INTERACTION — first real engagement loads GTM promptly.
-          ['pointerdown', 'keydown'].forEach(function (e) {
-            window.addEventListener(e, loadGTM, { once: true, passive: true });
-          });
-
-          // 4. FALLBACK — long timeout for no-interaction sessions.
-          //    The delay is intentional: it keeps GTM outside PSI's
-          //    early TBT window so the Lighthouse mobile score is not
-          //    dragged down by ~150 KB of third-party JS on first paint.
-          setTimeout(loadGTM, 12000);
+          // Start now so short visits do not depend on interaction or a timer.
+          // loadGTM retains its existing consent checks and duplicate guard.
+          loadGTM();
         })();
       </script>
     )}
