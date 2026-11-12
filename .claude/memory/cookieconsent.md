@@ -657,3 +657,12 @@ Implement when building the first Astro client site that:
 - Uses any supported booking platform
 
 Do not implement speculatively in the base template — add it per-client build with the config file filled in for that client.
+
+
+## Current Reject All Presentation - 12 November 2026
+
+Fel authorised this repository's Reject All actions to use the existing `hmdg-btn-primary` class, matching Accept All. This supersedes historical outline/ghost Reject and Accept-only-primary instructions. Preserve all other action classes, colours, order, dimensions, responsive rules and consent/tracking behaviour. No whole-site or compliance approval is implied. See `handoff/cookie-consent/REJECT-PRIMARY-2026-11-12.md`.
+
+## Current Fel consent action override - 2026-11-12
+
+For this project, both Accept All and Reject All use `hmdg-btn-primary` in the banner and preferences modal. Preserve every other existing class, action, colour, hover/focus treatment, DOM/keyboard/mobile order, consent behaviour and provider setting. This class-only instruction supersedes earlier Accept-only primary or outlined/ghost Reject requirements. It does not authorise a redesign or establish compliance approval. See `handoff/cookie-consent/REJECT-PRIMARY-2026-11-12.md`.

@@ -105,3 +105,12 @@ CHANGELOG.md     ← PUBLIC semver changelog of the base template itself
 - `.claude/skills/*.md` — reusable build patterns (contact form, hero video, performance, carousel, header menu). Read on demand.
 - `.claude/rules/*.md` — full delegation / workflow / quality rules. Loaded on demand from CLAUDE.md references above.
 - `SANITY_READY.md` — Sanity preparation guide: content lives in `src/data/*` (typed, render-only components); future integration replaces the data source layer only. Read before any Sanity or content-structure work.
+
+
+## Current Reject All Presentation - 12 November 2026
+
+Fel authorised this repository's Reject All actions to use the existing `hmdg-btn-primary` class, matching Accept All. This supersedes historical outline/ghost Reject and Accept-only-primary instructions. Preserve all other action classes, colours, order, dimensions, responsive rules and consent/tracking behaviour. No whole-site or compliance approval is implied. See `handoff/cookie-consent/REJECT-PRIMARY-2026-11-12.md`.
+
+## Current Fel consent action override - 2026-11-12
+
+For this project, both Accept All and Reject All use `hmdg-btn-primary` in the banner and preferences modal. Preserve every other existing class, action, colour, hover/focus treatment, DOM/keyboard/mobile order, consent behaviour and provider setting. This class-only instruction supersedes earlier Accept-only primary or outlined/ghost Reject requirements. It does not authorise a redesign or establish compliance approval. See `handoff/cookie-consent/REJECT-PRIMARY-2026-11-12.md`.
